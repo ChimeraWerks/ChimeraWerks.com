@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  /* Preset C - Brutalist Signal */
+  --color-primary: #E8E4DD;
+  --color-accent: #E63B2E;
+  --color-background: #F5F3EE;
+  --color-foreground: #111111;
+
+  --font-sans: 'Space Grotesk', sans-serif;
+  --font-serif: 'DM Serif Display', serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+@layer base {
+  :root {
+    --background: var(--color-foreground);
+    --foreground: var(--color-primary);
+    --primary: var(--color-background);
+    --accent: var(--color-accent);
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    /* Brutalist clean scrollbar */
+    scrollbar-width: none;
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+
+}
+
+@layer components {
+  /* Common UI Elements matching Preset rules */
+  .brutalist-card {
+    background-color: var(--background);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 2rem;
+    box-shadow: 0 10px 40px -10px rgba(0,0,0,0.5);
+  }
+
+  .brutalist-card-dark {
+    background-color: rgba(232, 228, 221, 0.05); /* very subtle light opacity on dark */
+    border: 1px solid rgba(232, 228, 221, 0.1);
+    border-radius: 2rem;
+  }
+
+  .btn-magnetic {
+    position: relative;
+    overflow: hidden;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    /* Magnetic hover is handled in JS/React via GSAP or raw framer, but we prep the base */
+    transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  }
+
+  .btn-magnetic span {
+    position: relative;
+    z-index: 10;
+  }
+  
+  .btn-magnetic::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--accent);
+    transition: top 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 0;
+  }
+
+  .btn-magnetic:hover {
+    color: var(--background);
+    transform: scale(1.03);
+  }
+
+  .btn-magnetic:hover::before {
+    top: 0;
+  }
+}
