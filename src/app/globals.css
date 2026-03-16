@@ -86,3 +86,82 @@
     top: 0;
   }
 }
+
+@layer utilities {
+  /* Navbar scroll state — toggled by GSAP ScrollTrigger */
+  .nav-scrolled {
+    background-color: rgba(17, 17, 17, 0.95) !important;
+    backdrop-filter: blur(12px) saturate(1.2) !important;
+    border-color: rgba(232, 228, 221, 0.1) !important;
+    top: 10px !important;
+  }
+  .nav-scrolled .logo-text {
+    mix-blend-mode: normal !important;
+    color: var(--color-primary) !important;
+  }
+  .nav-scrolled a {
+    mix-blend-mode: normal !important;
+    color: var(--color-primary) !important;
+  }
+  .nav-scrolled a:hover {
+    color: var(--color-accent) !important;
+  }
+
+  /* Prevent GSAP ScrollTrigger horizontal overflow */
+  body {
+    overflow-x: hidden;
+  }
+
+  /* Devlog typography */
+  .devlog-prose p {
+    margin-bottom: 1.25em;
+    line-height: 1.75;
+  }
+  .devlog-prose h3 {
+    font-family: var(--font-serif);
+    font-style: italic;
+    font-size: 1.5rem;
+    margin-top: 2em;
+    margin-bottom: 0.75em;
+  }
+  .devlog-prose strong {
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  .devlog-prose code {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+    background: rgba(232, 228, 221, 0.1);
+    padding: 0.15em 0.4em;
+    border-radius: 0.25rem;
+  }
+  .devlog-prose ul {
+    list-style: none;
+    padding-left: 1.25em;
+    margin-bottom: 1.25em;
+  }
+  .devlog-prose ul li {
+    position: relative;
+    padding-left: 0.25em;
+    margin-bottom: 0.5em;
+    line-height: 1.7;
+  }
+  .devlog-prose ul li::before {
+    content: '—';
+    position: absolute;
+    left: -1.25em;
+    color: var(--color-accent);
+    font-weight: 700;
+  }
+  .devlog-prose blockquote {
+    border-left: 3px solid var(--color-accent);
+    padding-left: 1em;
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+    opacity: 0.8;
+    margin: 1.5em 0;
+  }
+  .devlog-prose em {
+    font-style: italic;
+  }
+}

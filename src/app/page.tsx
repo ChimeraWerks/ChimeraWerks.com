@@ -3,7 +3,8 @@
 import React, { useEffect, useRef, useState } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
-import { Database, Activity, Lock, ArrowRight } from "lucide-react"
+import { Database, Activity, ArrowRight } from "lucide-react"
+import { DevlogTeaser } from "@/components/DevlogTeaser"
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -207,19 +208,6 @@ export default function Home() {
   return (
     <main ref={comp} className="relative min-h-screen selection:bg-[var(--color-accent)] selection:text-[var(--color-primary)]">
       
-      {/* NAVBAR */}
-      <nav className="navbar fixed top-6 left-1/2 -translate-x-1/2 z-50 flex items-center justify-between px-6 py-3 w-[90%] max-w-4xl rounded-full transition-all duration-300 border border-transparent">
-        <div className="font-mono font-bold tracking-tight text-xl mix-blend-difference text-white logo-text">Chimera_Studio</div>
-        <div className="hidden md:flex gap-6 text-sm font-sans mix-blend-difference text-white/70">
-          <a href="#features" className="hover:text-white transition-colors">Architecture</a>
-          <a href="#protocol" className="hover:text-white transition-colors">Protocol</a>
-          <a href="https://studio.chimerawerks.com" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent)] transition-colors font-bold tracking-wide">Live Demo</a>
-        </div>
-        <a href="mailto:hello@chimerawerks.com" className="px-5 py-2 text-sm font-bold bg-[var(--color-accent)] text-[var(--color-primary)] rounded-full btn-magnetic inline-block">
-          <span>Request Access</span>
-        </a>
-      </nav>
-
       {/* HERO SECTION */}
       <section className="relative h-[100dvh] w-full flex flex-col justify-end p-8 md:p-16 overflow-hidden">
         {/* Background Image with Heavy Gradient */}
@@ -240,7 +228,7 @@ export default function Home() {
           </h1>
           
           <div className="hero-cta flex flex-wrap gap-6 items-center">
-            <a href="mailto:hello@chimerawerks.com" className="btn-magnetic px-8 py-4 bg-[var(--color-accent)] text-[var(--color-primary)] font-mono font-bold uppercase rounded-full flex items-center gap-3">
+            <a href="mailto:hello@chimerawerks.com?subject=Chimera%20Studio%20Beta%20Access%20Request" className="btn-magnetic px-8 py-4 bg-[var(--color-accent)] text-[var(--color-primary)] font-mono font-bold uppercase rounded-full flex items-center gap-3">
               <span>Request Access</span>
               <ArrowRight className="w-5 h-5 relative z-10" />
             </a>
@@ -445,77 +433,20 @@ export default function Home() {
       </section>
 
       {/* BETA ACCESS CTA */}
-      <section className="relative w-full py-32 px-8 md:px-16 bg-[var(--color-primary)] text-[var(--color-foreground)] text-center border-t border-[var(--color-foreground)]/10">
+      <section className="relative w-full py-32 px-8 md:px-16 bg-[var(--color-foreground)] text-[var(--color-primary)] text-center border-t border-[var(--color-primary)]/10">
         <div className="max-w-4xl mx-auto flex flex-col items-center justify-center gap-8 relative z-10">
           <p className="font-mono text-[var(--color-accent)] text-sm tracking-widest uppercase">Beta Invite System</p>
           <h2 className="font-serif italic text-5xl md:text-7xl">Initiate Sequence.</h2>
           <p className="font-sans text-xl opacity-80 max-w-2xl">Chimera Studio is currently in closed alpha testing for select creators and engineers. Secure your early access key and start decomposing metadata locally.</p>
-          <a href="mailto:hello@chimerawerks.com" className="btn-magnetic px-10 py-5 mt-4 bg-[var(--color-foreground)] text-[var(--color-primary)] font-mono font-bold text-lg md:text-xl rounded-full flex items-center gap-3">
+          <a href="mailto:hello@chimerawerks.com?subject=Chimera%20Studio%20Beta%20Access%20Request" className="btn-magnetic px-10 py-5 mt-4 bg-[var(--color-primary)] text-[var(--color-foreground)] font-mono font-bold text-lg md:text-xl rounded-full flex items-center gap-3">
             <span>hello@chimerawerks.com</span>
             <ArrowRight className="w-5 h-5 relative z-10" />
           </a>
         </div>
       </section>
 
-      {/* FOOTER */}
-      <footer className="w-full bg-[var(--color-foreground)] text-[var(--color-primary)] px-8 md:px-16 pt-32 pb-16 relative z-10 rounded-t-[4rem]">
-        <div className="max-w-7xl mx-auto">
-          <div className="flex flex-col md:flex-row justify-between items-start gap-16">
-            <div className="max-w-sm">
-              <h2 className="font-mono font-bold text-3xl mb-4 text-[var(--color-accent)]">Chimera_Studio</h2>
-              <p className="font-sans opacity-60 mb-8 text-lg">Your local-first intelligence hub for ComfyUI outputs and AI music generation.</p>
-              <div className="flex items-center gap-3 font-mono text-sm px-4 py-2 border border-[var(--color-primary)]/20 rounded-full inline-flex">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-                System Operational
-              </div>
-            </div>
-            
-            <div className="grid grid-cols-2 gap-16 font-mono text-sm">
-              <div className="flex flex-col gap-4">
-                <span className="opacity-40 uppercase mb-2">Platform</span>
-                <a href="#" className="hover:text-[var(--color-accent)] transition-colors">Documentation</a>
-                <a href="https://github.com/ChimeraWerks/ChimeraWerks" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent)] transition-colors">GitHub</a>
-                <a href="#" className="hover:text-[var(--color-accent)] transition-colors">Releases</a>
-              </div>
-              <div className="flex flex-col gap-4">
-                <span className="opacity-40 uppercase mb-2">Legal</span>
-                <a href="#" className="hover:text-[var(--color-accent)] transition-colors">Privacy</a>
-                <a href="#" className="hover:text-[var(--color-accent)] transition-colors">License</a>
-              </div>
-            </div>
-          </div>
-          
-          <div className="mt-32 border-t border-[var(--color-primary)]/10 pt-8 flex justify-between font-mono text-xs opacity-30 uppercase">
-            <span>© 2026 Chimera Werks</span>
-            <span>Local Database Authorized</span>
-          </div>
-        </div>
-      </footer>
-      
-      {/* Global CSS overrides needed for dynamic JS classes */}
-      <style dangerouslySetInnerHTML={{__html: `
-        .nav-scrolled {
-          background-color: rgba(245, 243, 238, 0.8) !important;
-          backdrop-filter: blur(16px) !important;
-          border-color: rgba(17, 17, 17, 0.1) !important;
-          transform: translate(-50%, -10px) !important;
-        }
-        .nav-scrolled .logo-text {
-          mix-blend-mode: normal !important;
-          color: var(--color-foreground) !important;
-        }
-        .nav-scrolled a {
-          mix-blend-mode: normal !important;
-          color: var(--color-foreground) !important;
-        }
-        .nav-scrolled a:hover {
-          color: var(--color-accent) !important;
-        }
-        /* Lock overflow-X to prevent ScrollTrigger horizontal scrolling bugs */
-        body {
-          overflow-x: hidden;
-        }
-      `}} />
+      {/* DEVLOG TEASER */}
+      <DevlogTeaser />
 
     </main>
   )
