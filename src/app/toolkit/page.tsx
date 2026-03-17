@@ -4,9 +4,7 @@ import React, { useEffect, useRef } from "react"
 import gsap from "gsap"
 import { ScrollTrigger } from "gsap/ScrollTrigger"
 import {
-  Download,
   Shield,
-  Code,
   Search,
   GitBranch,
   Globe,
@@ -15,20 +13,17 @@ import {
   Cpu,
   FileSearch,
   BookOpen,
-  Paintbrush,
-  Bot,
-  Wrench,
   Package,
   Zap,
-  Eye,
   Layers,
-  MonitorSmartphone,
   ExternalLink,
   FolderOpen,
   FileText,
   Monitor,
   Smartphone,
   FileDown,
+  Network,
+  Radar,
 } from "lucide-react"
 
 gsap.registerPlugin(ScrollTrigger)
@@ -76,28 +71,6 @@ const plugins: ToolEntry[] = [
     install: "/plugins in CC CLI",
   },
   {
-    name: "Semgrep",
-    tag: "semgrep@claude-plugins-official",
-    description: "Static analysis security scanner. Catches vulnerabilities, anti-patterns, and code smells across Python and TypeScript.",
-    why: "Automated security gate — catches OWASP issues before they ship.",
-    icon: <Shield className="w-5 h-5" />,
-    link: "https://semgrep.dev",
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI + semgrep CLI required",
-  },
-  {
-    name: "CodeRabbit",
-    tag: "coderabbit@claude-plugins-official",
-    description: "AI-powered code review. Analyzes diffs for bugs, logic errors, security issues, and style violations.",
-    why: "Second pair of eyes on every change. Catches what linters miss.",
-    icon: <Eye className="w-5 h-5" />,
-    link: "https://coderabbit.ai",
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI",
-  },
-  {
     name: "Code Simplifier",
     tag: "code-simplifier@claude-plugins-official",
     description: "Automatically simplifies and refines code after writing. Reduces complexity while preserving functionality.",
@@ -113,16 +86,6 @@ const plugins: ToolEntry[] = [
     description: "Specialized review agents for pull requests. Runs code review, type analysis, silent failure detection, and comment analysis in parallel.",
     why: "Comprehensive PR review without context-switching to a browser.",
     icon: <Layers className="w-5 h-5" />,
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI",
-  },
-  {
-    name: "Security Guidance",
-    tag: "security-guidance@claude-plugins-official",
-    description: "Recommends secure-by-default libraries and patterns. Covers XSS, CSRF, SSRF, deserialization, and crypto.",
-    why: "Proactive security nudges instead of reactive patching.",
-    icon: <Shield className="w-5 h-5" />,
     source: "official",
     platform: "cli",
     install: "/plugins in CC CLI",
@@ -147,59 +110,6 @@ const plugins: ToolEntry[] = [
     source: "official",
     platform: "cli",
     install: "/plugins in CC CLI",
-  },
-  {
-    name: "Firecrawl",
-    tag: "firecrawl@claude-plugins-official",
-    description: "Web scraping and research tool. Crawls URLs, extracts content, and returns LLM-optimized text for analysis.",
-    why: "Research libraries, APIs, and competitors without leaving the terminal.",
-    icon: <Globe className="w-5 h-5" />,
-    link: "https://firecrawl.dev",
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI",
-  },
-  {
-    name: "Frontend Design",
-    tag: "frontend-design@claude-plugins-official",
-    description: "Production-grade UI generation. Creates distinctive interfaces with high design quality using React, Tailwind, and modern patterns.",
-    why: "Rapid UI prototyping that actually looks professional.",
-    icon: <Paintbrush className="w-5 h-5" />,
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI",
-  },
-  {
-    name: "CLAUDE.md Management",
-    tag: "claude-md-management@claude-plugins-official",
-    description: "Audits and improves CLAUDE.md project instruction files. Ensures Claude always has accurate context about the codebase.",
-    why: "Keeps the AI's knowledge of the project fresh and correct.",
-    icon: <FileSearch className="w-5 h-5" />,
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI",
-  },
-  {
-    name: "Document Skills",
-    tag: "document-skills@anthropic-agent-skills",
-    description: "Skill pack for creating PDFs, Word docs, spreadsheets, presentations, and algorithmic art. Reads and writes office formats natively.",
-    why: "Generate reports, exports, and docs directly from the CLI.",
-    icon: <Package className="w-5 h-5" />,
-    link: "https://github.com/anthropics/skills",
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI + anthropic-agent-skills marketplace",
-  },
-  {
-    name: "Claude API Skills",
-    tag: "claude-api@anthropic-agent-skills",
-    description: "Build apps using the Claude API and Anthropic SDK. Provides patterns, examples, and best practices for AI-powered applications.",
-    why: "Useful when building AI features into Chimera Studio.",
-    icon: <Bot className="w-5 h-5" />,
-    link: "https://github.com/anthropics/skills",
-    source: "official",
-    platform: "cli",
-    install: "/plugins in CC CLI + anthropic-agent-skills marketplace",
   },
 ]
 
@@ -226,29 +136,15 @@ const mcpServers: ToolEntry[] = [
     platform: "both",
     install: "~/.claude/.mcp.json (CLI) + claude_desktop_config.json (CCD)",
   },
-]
-
-const ccdExtensions: ToolEntry[] = [
   {
     name: "Filesystem",
     tag: "ant.dir.ant.anthropic.filesystem",
-    description: "Read, write, search, and manage files and directories. Gives Claude Desktop direct access to your local filesystem for editing code, organizing files, and exploring project structures.",
-    why: "Lets CCD read and edit files on disk — essential for any coding task in Claude Desktop.",
+    description: "Read, write, search, and manage files and directories. Gives Claude direct access to your local filesystem for editing code, organizing files, and exploring project structures.",
+    why: "Essential for any coding task in Claude Desktop. CC CLI has this built-in.",
     icon: <FolderOpen className="w-5 h-5" />,
     source: "official",
-    platform: "ccd",
-    install: "CCD Extensions tab",
-  },
-  {
-    name: "PDF",
-    tag: "ant.dir.gh.anthropic.pdf-server-mcp",
-    description: "Read, parse, and extract content from PDF documents. Handles text extraction, page navigation, and structured data retrieval from PDF files.",
-    why: "Analyze research papers, invoices, documentation — any PDF — directly in chat.",
-    icon: <FileText className="w-5 h-5" />,
-    link: "https://github.com/anthropics/pdf-server-mcp",
-    source: "official",
-    platform: "ccd",
-    install: "CCD Extensions tab",
+    platform: "both",
+    install: "~/.claude/.mcp.json (CLI) + CCD Extensions tab",
   },
   {
     name: "Windows-MCP",
@@ -257,8 +153,8 @@ const ccdExtensions: ToolEntry[] = [
     why: "System automation — kill processes, check ports, manage services without switching to a terminal.",
     icon: <Monitor className="w-5 h-5" />,
     source: "community",
-    platform: "ccd",
-    install: "CCD Extensions tab (requires uv)",
+    platform: "both",
+    install: "~/.claude/.mcp.json (CLI) + CCD Extensions tab",
   },
   {
     name: "Android-MCP",
@@ -268,8 +164,8 @@ const ccdExtensions: ToolEntry[] = [
     icon: <Smartphone className="w-5 h-5" />,
     link: "https://github.com/anthropics/android-mcp",
     source: "community",
-    platform: "ccd",
-    install: "CCD Extensions tab (requires Android emulator running)",
+    platform: "both",
+    install: "~/.claude/.mcp.json (CLI) + CCD Extensions tab",
   },
   {
     name: "Docling MCP",
@@ -279,8 +175,8 @@ const ccdExtensions: ToolEntry[] = [
     icon: <FileDown className="w-5 h-5" />,
     link: "https://github.com/docling-project/docling-mcp",
     source: "community",
-    platform: "ccd",
-    install: "CCD Extensions tab (requires Python + pipx)",
+    platform: "both",
+    install: "~/.claude/.mcp.json (CLI) + CCD Extensions tab",
   },
 ]
 
@@ -297,17 +193,6 @@ const prerequisites: ToolEntry[] = [
     install: "irm https://astral.sh/uv/install.ps1 | iex",
   },
   {
-    name: "Semgrep CLI",
-    tag: "semgrep v1.155+",
-    description: "The command-line binary that powers the Semgrep plugin. Performs actual static analysis scans on your codebase.",
-    why: "Plugin is just the integration layer — the real scanning engine runs locally.",
-    icon: <Code className="w-5 h-5" />,
-    link: "https://semgrep.dev",
-    source: "community",
-    platform: "system",
-    install: "pip install semgrep",
-  },
-  {
     name: "Voidtools Everything",
     tag: "voidtools.com",
     description: "System-wide instant file search for Windows. Indexes every file on all NTFS drives in seconds. Runs as a lightweight tray app. The Everything SDK DLL is needed for the MCP server.",
@@ -317,6 +202,98 @@ const prerequisites: ToolEntry[] = [
     source: "community",
     platform: "system",
     install: "winget install voidtools.Everything + SDK DLL",
+  },
+]
+
+type SkillScope = "global" | "project"
+
+interface SkillEntry {
+  name: string
+  command: string
+  description: string
+  why: string
+  icon: React.ReactNode
+  scope: SkillScope
+}
+
+const customSkills: SkillEntry[] = [
+  {
+    name: "Research",
+    command: "/research",
+    description: "Auto-scaling web research powered by Crawl4AI. Searches the web, scrapes results in parallel with BM25 content filtering, and auto-escalates to adaptive deep crawling when information is incomplete or conflicting.",
+    why: "Get thorough, sourced answers without leaving the terminal. Reads the actual pages, not summaries.",
+    icon: <Radar className="w-5 h-5" />,
+    scope: "global",
+  },
+  {
+    name: "Scrape",
+    command: "/scrape",
+    description: "Direct URL extraction with Crawl4AI. Fetches raw markdown, structured data via CSS selectors, deep site crawls, and PDF parsing. Supports virtual scroll for infinite-feed sites.",
+    why: "When you need the actual content from a specific page — not a search engine summary.",
+    icon: <Network className="w-5 h-5" />,
+    scope: "global",
+  },
+  {
+    name: "Security Audit",
+    command: "/audit-security",
+    description: "On-demand security audit using Semgrep static analysis + manual OWASP Top 10 review. Scans changed files or full project, triages findings, and filters false positives.",
+    why: "Replaced always-on security plugins that burned tokens every message. Run when you actually need it.",
+    icon: <Shield className="w-5 h-5" />,
+    scope: "global",
+  },
+  {
+    name: "Max Mode",
+    command: "/max",
+    description: "Switches to maximum accuracy mode. Unlimited agents, full file reads, thorough validation on every step. No shortcuts.",
+    why: "For critical work where getting it right matters more than speed.",
+    icon: <Zap className="w-5 h-5" />,
+    scope: "global",
+  },
+]
+
+interface CrawlerEntry {
+  name: string
+  description: string
+  icon: React.ReactNode
+  tag: string
+}
+
+const crawlerFeatures: CrawlerEntry[] = [
+  {
+    name: "Parallel Scraping",
+    description: "Scrape 20-50+ URLs simultaneously using MemoryAdaptiveDispatcher. Auto-throttles based on available RAM — no hardcoded limits.",
+    icon: <Zap className="w-5 h-5" />,
+    tag: "arun_many + dispatcher",
+  },
+  {
+    name: "BM25 Content Filtering",
+    description: "Query-relevant extraction that reduces 500KB pages to ~2KB of relevant paragraphs. Zero token cost — runs locally with pure algorithmic text ranking.",
+    icon: <FileSearch className="w-5 h-5" />,
+    tag: "BM25ContentFilter",
+  },
+  {
+    name: "Adaptive Crawling",
+    description: "Auto-stops when information is saturated. Tracks coverage, consistency, and saturation across pages — knows when to keep going and when to stop.",
+    icon: <Radar className="w-5 h-5" />,
+    tag: "AdaptiveCrawler",
+  },
+  {
+    name: "Anti-Bot Detection",
+    description: "3-tier detection for Cloudflare, Akamai, PerimeterX, DataDome, and more. Auto-retries with proxy escalation chains when blocked.",
+    icon: <Shield className="w-5 h-5" />,
+    tag: "v0.8.5 develop branch",
+  },
+  {
+    name: "Stealth Browser",
+    description: "Patchright (stealth Playwright fork) with persistent profile, consent popup removal, shadow DOM flattening, and ad/CSS blocking.",
+    icon: <Globe className="w-5 h-5" />,
+    tag: "BrowserConfig",
+  },
+  {
+    name: "PDF & Virtual Scroll",
+    description: "Parse PDFs directly. Handle Twitter/Instagram-style virtual scroll where content replaces instead of appends. Extract from any page type.",
+    icon: <FileText className="w-5 h-5" />,
+    tag: "PDFCrawlerStrategy + VirtualScrollConfig",
   },
 ]
 
@@ -397,6 +374,71 @@ function ToolCard({ tool, index }: { tool: ToolEntry; index: number }) {
           <span className="opacity-70">INSTALL:</span> {tool.install}
         </p>
       </div>
+    </div>
+  )
+}
+
+const SCOPE_LABELS: Record<SkillScope, { text: string; cls: string }> = {
+  global: { text: "Global", cls: "bg-emerald-500/10 text-emerald-400/80 border-emerald-400/20" },
+  project: { text: "Project", cls: "bg-amber-500/10 text-amber-400/80 border-amber-400/20" },
+}
+
+function SkillCard({ skill, index }: { skill: SkillEntry; index: number }) {
+  const scopeBadge = SCOPE_LABELS[skill.scope]
+
+  return (
+    <div
+      className="tool-card brutalist-card-dark p-6 md:p-8 flex flex-col gap-4"
+      style={{ animationDelay: `${index * 0.05}s` }}
+    >
+      <div className="flex items-start justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-lg bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)]">
+            {skill.icon}
+          </div>
+          <div>
+            <h3 className="font-sans font-bold text-lg">{skill.name}</h3>
+            <span className="font-mono text-xs text-[var(--color-accent)]">{skill.command}</span>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex flex-wrap gap-2">
+        <Badge text={scopeBadge.text} cls={scopeBadge.cls} />
+        <Badge text="Custom" cls="bg-[var(--color-accent)]/15 text-[var(--color-accent)] border-[var(--color-accent)]/30" />
+      </div>
+
+      <p className="font-sans text-sm opacity-70 leading-relaxed">
+        {skill.description}
+      </p>
+
+      <div className="mt-auto pt-3 border-t border-[var(--color-primary)]/5">
+        <p className="font-mono text-xs text-[var(--color-accent)]/80">
+          <span className="opacity-50">WHY:</span> {skill.why}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+function CrawlerCard({ feature, index }: { feature: CrawlerEntry; index: number }) {
+  return (
+    <div
+      className="tool-card brutalist-card-dark p-6 flex flex-col gap-3"
+      style={{ animationDelay: `${index * 0.05}s` }}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-10 h-10 rounded-lg bg-[var(--color-accent)]/10 border border-[var(--color-accent)]/20 flex items-center justify-center text-[var(--color-accent)]">
+          {feature.icon}
+        </div>
+        <div>
+          <h3 className="font-sans font-bold text-base">{feature.name}</h3>
+          <span className="font-mono text-[10px] opacity-40">{feature.tag}</span>
+        </div>
+      </div>
+      <p className="font-sans text-sm opacity-70 leading-relaxed">
+        {feature.description}
+      </p>
     </div>
   )
 }
@@ -498,9 +540,12 @@ export default function ToolkitPage() {
       ref={comp}
       className="relative min-h-screen selection:bg-[var(--color-accent)] selection:text-[var(--color-primary)]"
     >
-      {/* HERO */}
-      <section className="relative w-full pt-40 pb-24 px-8 md:px-16 overflow-hidden">
+      {/* HERO + STATS + LEGEND wrapper */}
+      <div className="relative overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-10 mix-blend-screen bg-[url('/images/texture.png')] bg-cover bg-center" />
+
+      {/* HERO */}
+      <section className="relative w-full pt-40 pb-24 px-8 md:px-16">
         <div className="max-w-5xl mx-auto relative z-10 text-[var(--color-primary)]">
           <div className="toolkit-hero-line font-mono text-sm tracking-widest uppercase opacity-40 mb-6">
             Internal Toolkit
@@ -515,13 +560,13 @@ export default function ToolkitPage() {
           </h1>
           <p className="toolkit-hero-line font-sans text-lg md:text-xl opacity-60 max-w-2xl">
             Every extension, plugin, and MCP server powering the ChimeraWerks
-            development environment. One script installs it all.
+            development environment.
           </p>
         </div>
       </section>
 
       {/* STATS BAR */}
-      <section className="relative w-full px-8 md:px-16 pb-16">
+      <section className="relative z-10 w-full px-8 md:px-16 pb-16">
         <div className="max-w-5xl mx-auto">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-8">
             <div className="brutalist-card-dark p-6 text-center">
@@ -534,18 +579,18 @@ export default function ToolkitPage() {
             </div>
             <div className="brutalist-card-dark p-6 text-center">
               <div className="font-serif italic text-3xl md:text-5xl text-[var(--color-accent)]">
-                {ccdExtensions.length}
-              </div>
-              <div className="font-mono text-xs opacity-50 mt-2 uppercase">
-                CCD Extensions
-              </div>
-            </div>
-            <div className="brutalist-card-dark p-6 text-center">
-              <div className="font-serif italic text-3xl md:text-5xl text-[var(--color-accent)]">
                 {mcpServers.length}
               </div>
               <div className="font-mono text-xs opacity-50 mt-2 uppercase">
                 MCP Servers
+              </div>
+            </div>
+            <div className="brutalist-card-dark p-6 text-center">
+              <div className="font-serif italic text-3xl md:text-5xl text-[var(--color-accent)]">
+                {customSkills.length}
+              </div>
+              <div className="font-mono text-xs opacity-50 mt-2 uppercase">
+                Custom Skills
               </div>
             </div>
             <div className="brutalist-card-dark p-6 text-center">
@@ -561,7 +606,7 @@ export default function ToolkitPage() {
       </section>
 
       {/* LEGEND */}
-      <section className="relative w-full px-8 md:px-16 pb-8">
+      <section className="relative z-10 w-full px-8 md:px-16 pb-8">
         <div className="max-w-5xl mx-auto">
           <div className="brutalist-card-dark p-6">
             <div className="font-mono text-xs text-[var(--color-accent)] mb-4 uppercase tracking-widest">Legend</div>
@@ -584,10 +629,6 @@ export default function ToolkitPage() {
                   <span className="font-sans text-xs opacity-50">Claude Code terminal &amp; VS Code only</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Badge text="CCD" cls={PLATFORM_LABELS.ccd.cls} />
-                  <span className="font-sans text-xs opacity-50">Claude Desktop only (Extensions tab)</span>
-                </div>
-                <div className="flex items-center gap-2">
                   <Badge text="CLI + CCD" cls={PLATFORM_LABELS.both.cls} />
                   <span className="font-sans text-xs opacity-50">Works in both CLI and Claude Desktop</span>
                 </div>
@@ -600,6 +641,7 @@ export default function ToolkitPage() {
           </div>
         </div>
       </section>
+      </div>{/* end HERO + STATS + LEGEND wrapper */}
 
       {/* PLUGINS */}
       <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
@@ -618,31 +660,14 @@ export default function ToolkitPage() {
         </div>
       </section>
 
-      {/* CCD EXTENSIONS */}
-      <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
-        <div className="absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/images/arch_bg.png')] bg-cover bg-center" />
-        <div className="max-w-6xl mx-auto relative z-10">
-          <SectionHeader
-            label="02 / Claude Desktop — Official + Community"
-            title="CCD Extensions."
-            subtitle="Extensions installed via the Claude Desktop Extensions tab. These are separate from CC CLI plugins — CCD has its own marketplace. Includes both Anthropic official tools and community-built integrations."
-          />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            {ccdExtensions.map((tool, i) => (
-              <ToolCard key={tool.tag} tool={tool} index={i} />
-            ))}
-          </div>
-        </div>
-      </section>
-
       {/* MCP SERVERS */}
       <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
         <div className="absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/images/protocol_1_bg.png')] bg-cover bg-center" />
         <div className="max-w-6xl mx-auto relative z-10">
           <SectionHeader
-            label="03 / Model Context Protocol — Community"
+            label="02 / Model Context Protocol"
             title="MCP Servers."
-            subtitle="MCP servers expose external tools to Claude via a standardized protocol. These run as local processes and work in both CC CLI and Claude Desktop, configured in separate JSON files for each platform."
+            subtitle="MCP servers expose external tools to Claude via a standardized protocol. These run as local processes and work in both CC CLI and Claude Desktop."
           />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {mcpServers.map((tool, i) => (
@@ -654,13 +679,14 @@ export default function ToolkitPage() {
 
       {/* PREREQUISITES */}
       <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/images/protocol_1_bg.png')] bg-cover bg-center" />
         <div className="max-w-6xl mx-auto relative z-10">
           <SectionHeader
-            label="04 / Dependencies"
+            label="03 / Dependencies"
             title="Prerequisites."
-            subtitle="System-level tools required by the plugins and MCP servers above. The setup script handles all of these automatically."
+            subtitle="System-level tools required by the plugins and MCP servers above."
           />
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {prerequisites.map((tool, i) => (
               <ToolCard key={tool.tag} tool={tool} index={i} />
             ))}
@@ -668,47 +694,49 @@ export default function ToolkitPage() {
         </div>
       </section>
 
-      {/* INSTALL CTA */}
-      <section className="relative w-full py-32 px-8 md:px-16 border-t border-[var(--color-primary)]/10">
-        <div className="download-cta max-w-4xl mx-auto text-center flex flex-col items-center gap-8">
-          <Wrench className="w-12 h-12 text-[var(--color-accent)] opacity-60" />
-          <h2 className="font-serif italic text-4xl md:text-6xl">
-            One Script. Everything.
-          </h2>
-          <p className="font-sans text-lg opacity-60 max-w-xl">
-            Download the PowerShell setup script. It installs all prerequisites,
-            enables every plugin, and configures MCP servers for both Claude Code
-            CLI and Claude Code Desktop.
-          </p>
-          <div className="flex flex-col sm:flex-row gap-4 items-center">
-            <a
-              href="/setup-claude-extensions.ps1"
-              download
-              className="btn-magnetic px-10 py-5 bg-[var(--color-accent)] text-[var(--color-primary)] font-mono font-bold uppercase rounded-full flex items-center gap-3"
-            >
-              <span>Download Script</span>
-              <Download className="w-5 h-5 relative z-10" />
-            </a>
-          </div>
-          <div className="brutalist-card-dark p-6 text-left w-full max-w-xl mt-4">
-            <div className="font-mono text-xs text-[var(--color-accent)] mb-3 uppercase">
-              Usage
-            </div>
-            <pre className="font-mono text-sm opacity-70 whitespace-pre-wrap leading-relaxed">
-{`# Run in PowerShell (elevated recommended)
-.\\setup-claude-extensions.ps1
-
-# Preview without changes
-.\\setup-claude-extensions.ps1 -DryRun
-
-# Skip specific sections
-.\\setup-claude-extensions.ps1 -SkipPrereqs
-.\\setup-claude-extensions.ps1 -SkipPlugins
-.\\setup-claude-extensions.ps1 -SkipMCP`}
-            </pre>
+      {/* CUSTOM SKILLS */}
+      <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/images/features_bg.png')] bg-cover bg-center" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <SectionHeader
+            label="04 / Slash Commands — Custom Built"
+            title="Skills."
+            subtitle="Custom slash commands built for this workflow. These replace generic always-on plugins with targeted, on-demand tools that only cost tokens when invoked."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {customSkills.map((skill, i) => (
+              <SkillCard key={skill.command} skill={skill} index={i} />
+            ))}
           </div>
         </div>
       </section>
+
+      {/* CRAWL4AI */}
+      <section className="tool-section relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden">
+        <div className="absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/images/arch_bg.png')] bg-cover bg-center" />
+        <div className="max-w-6xl mx-auto relative z-10">
+          <SectionHeader
+            label="05 / Web Intelligence — Crawl4AI"
+            title="Crawler."
+            subtitle="Open-source web crawling engine (v0.8.5 develop branch) powering the /research and /scrape skills. Runs locally with a stealth Chromium browser, persistent profile, and intelligent content filtering."
+          />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {crawlerFeatures.map((feature, i) => (
+              <CrawlerCard key={feature.name} feature={feature} index={i} />
+            ))}
+          </div>
+          <div className="mt-8 brutalist-card-dark p-6">
+            <div className="font-mono text-xs text-[var(--color-accent)] mb-3 uppercase tracking-widest">Stack</div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 font-mono text-sm opacity-60">
+              <div><span className="text-[var(--color-accent)]">Engine:</span> Crawl4AI</div>
+              <div><span className="text-[var(--color-accent)]">Browser:</span> Patchright</div>
+              <div><span className="text-[var(--color-accent)]">Python:</span> conda ai env</div>
+              <div><span className="text-[var(--color-accent)]">Cache:</span> SQLite + disk</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
     </main>
   )
 }

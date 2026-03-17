@@ -6,9 +6,9 @@
 
 .DESCRIPTION
     Installs and configures:
-      - Claude Code CLI plugins (14 plugins)
+      - Claude Code CLI plugins (8 plugins)
       - MCP servers for both CLI and Desktop (everything-search, comfyui)
-      - Prerequisites: uv, semgrep, Voidtools Everything + SDK
+      - Prerequisites: uv, Voidtools Everything + SDK
 
     Run in an elevated PowerShell if you want Everything installed via winget.
     Non-elevated is fine for everything else.
@@ -70,26 +70,6 @@ if (-not $SkipPrereqs) {
         Write-Ok "uv installed"
     }
 
-    # --- semgrep (code security scanner) ---
-    if (Get-Command semgrep -ErrorAction SilentlyContinue) {
-        $semVer = & semgrep --version 2>$null
-        if ($semVer) {
-            Write-Ok "semgrep already installed (v$semVer)"
-        } else {
-            Write-Skip "semgrep found but broken, reinstalling..."
-            if (-not $DryRun) { pip install semgrep --quiet }
-        }
-    } else {
-        Write-Host "   Installing semgrep..." -ForegroundColor White
-        if (-not $DryRun) {
-            pip install semgrep --quiet
-            # Ensure it's on PATH - copy to a PATH location if needed
-            $semPath = (pip show semgrep 2>$null | Select-String "Location").ToString().Split(": ")[1]
-            Write-Host "   Installed to: $semPath" -ForegroundColor Gray
-        }
-        Write-Ok "semgrep installed"
-    }
-
     # --- Voidtools Everything (instant file search) ---
     $everythingRunning = Get-Process "Everything" -ErrorAction SilentlyContinue
     if ($everythingRunning) {
@@ -149,20 +129,13 @@ if (-not $SkipPlugins) {
         # Official plugins
         "pr-review-toolkit@claude-plugins-official"  = $true
         "code-simplifier@claude-plugins-official"    = $true
-        "security-guidance@claude-plugins-official"  = $true
         "claude-md-management@claude-plugins-official" = $true
         "github@claude-plugins-official"             = $true
         "playwright@claude-plugins-official"         = $true
-        "frontend-design@claude-plugins-official"    = $true
-        "coderabbit@claude-plugins-official"         = $true
-        "semgrep@claude-plugins-official"            = $true
-        "firecrawl@claude-plugins-official"          = $true
         "context7@claude-plugins-official"           = $true
         "feature-dev@claude-plugins-official"        = $true
         # Community skill packs
         "document-skills@anthropic-agent-skills"     = $true
-        "example-skills@anthropic-agent-skills"      = $true
-        "claude-api@anthropic-agent-skills"          = $true
     }
 
     $extraMarketplaces = @{
@@ -304,16 +277,12 @@ Next steps:
 Plugins installed (run '/plugins' in Claude Code to manage):
   - pr-review-toolkit    Code review agents
   - code-simplifier      Auto-simplify code
-  - security-guidance    Security best practices
   - claude-md-management CLAUDE.md management
   - github               GitHub integration
   - playwright           Browser automation
-  - frontend-design      UI/UX design
-  - coderabbit           CodeRabbit reviews
-  - semgrep              Code security scanning
-  - firecrawl            Web scraping/research
   - context7             Library documentation
   - feature-dev          Feature development
+  - document-skills      Office docs, PDFs, presentations
 
 MCP servers:
   - everything-search    Instant file search (requires Everything running)
