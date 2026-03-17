@@ -19,6 +19,7 @@ export function Footer() {
               <a href="https://github.com/ChimeraWerks/ChimeraStudio" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent)] transition-colors">GitHub</a>
               <a href="https://github.com/ChimeraWerks/ChimeraStudio/releases" target="_blank" rel="noopener noreferrer" className="hover:text-[var(--color-accent)] transition-colors">Releases</a>
               <a href="/devlog" className="hover:text-[var(--color-accent)] transition-colors">Devlog</a>
+              <a href="/toolkit" className="hover:text-[var(--color-accent)] transition-colors">Toolkit</a>
             </div>
             <div className="flex flex-col gap-4">
               <span className="opacity-40 uppercase mb-2">Legal</span>
