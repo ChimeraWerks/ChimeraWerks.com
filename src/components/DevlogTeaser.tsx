@@ -19,6 +19,7 @@ const DAYS = [
   { day: 9, date: "MAR 15", title: "The One Where It Gets a Face", commits: 1, tag: "website" },
   { day: 10, date: "MAR 16", title: "The Boring Day (That Wasn't)", commits: 2, tag: "cleanup" },
   { day: 11, date: "MAR 17", title: "Browse Mode and the WAV Rabbit Hole", commits: 0, tag: "browse" },
+  { day: 12, date: "MAR 17", title: "Trash API, Mobile Foundation, Trader Tab", commits: 0, tag: "mobile" },
 ]
 
 // Relative bar height based on commit count (max 10)
