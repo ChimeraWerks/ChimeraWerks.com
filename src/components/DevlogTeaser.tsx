@@ -18,8 +18,9 @@ const DAYS = [
   { day: 8, date: "MAR 15", title: "Teaching the App to Talk", commits: 1, tag: "chat" },
   { day: 9, date: "MAR 15", title: "The One Where It Gets a Face", commits: 1, tag: "website" },
   { day: 10, date: "MAR 16", title: "The Boring Day (That Wasn't)", commits: 2, tag: "cleanup" },
-  { day: 11, date: "MAR 17", title: "Browse Mode and the WAV Rabbit Hole", commits: 0, tag: "browse" },
-  { day: 12, date: "MAR 17", title: "Trash API, Mobile Foundation, Trader Tab", commits: 0, tag: "mobile" },
+  { day: 11, date: "MAR 17", title: "Browse Mode, Trash API, Mobile, Trader", commits: 11, tag: "mobile" },
+  { day: 12, date: "MAR 18", title: "Music Gets Serious", commits: 1, tag: "music" },
+  { day: 13, date: "MAR 19", title: "Live Market Data and a Discord Ghost Story", commits: 4, tag: "trader" },
 ]
 
 // Relative bar height based on commit count (max 10)
@@ -111,7 +112,7 @@ export function DevlogTeaser() {
         {/* Desktop: Horizontal journey map */}
         <div className="hidden md:block relative mb-16">
           {/* Row 1: Commit bars */}
-          <div className="grid grid-cols-9 gap-2 mb-3">
+          <div className="grid gap-2 mb-3" style={{ gridTemplateColumns: `repeat(${DAYS.length}, minmax(0, 1fr))` }}>
             {DAYS.map((entry) => (
               <div key={entry.day} className="flex justify-center h-16 items-end">
                 <div className="w-6 bg-[var(--color-primary)]/5 rounded-t-sm h-full relative overflow-hidden">
@@ -136,7 +137,7 @@ export function DevlogTeaser() {
                 strokeOpacity="0.3"
               />
             </svg>
-            <div className="grid grid-cols-9 gap-2 relative z-10">
+            <div className="grid gap-2 relative z-10" style={{ gridTemplateColumns: `repeat(${DAYS.length}, minmax(0, 1fr))` }}>
               {DAYS.map((entry) => (
                 <a
                   key={entry.day}
@@ -154,7 +155,7 @@ export function DevlogTeaser() {
           </div>
 
           {/* Row 3: Labels */}
-          <div className="grid grid-cols-9 gap-2 mt-3">
+          <div className="grid gap-2 mt-3" style={{ gridTemplateColumns: `repeat(${DAYS.length}, minmax(0, 1fr))` }}>
             {DAYS.map((entry) => (
               <a
                 key={entry.day}
