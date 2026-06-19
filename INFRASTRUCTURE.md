@@ -7,7 +7,8 @@ All subdomains, services, and hosted projects on chimerawerks.com.
 | Subdomain | Project | Type | Method | Local Port | Description | Dependencies |
 |-----------|---------|------|--------|------------|-------------|--------------|
 | chimerawerks.com | ChimeraWerks.com | Static site | Cloudflare Pages | — | Company landing page and devlog | — |
-| cli.chimerawerks.com | ChimeraCLI | Backend service | Cloudflare Tunnel | 22100 | Web-based multi-window Claude Code terminal | Glances (22200) |
+| cyberpunk.chimerawerks.com | cyberpunk-chimerawerks | Static site | Cloudflare Pages | — | Cyberpunk TCG investment tracker | — |
+| cli.chimerawerks.com | ChimeraCLI | Backend service | Cloudflare Tunnel | 20230 | Web-based multi-window Claude Code terminal | Glances (22200) |
 
 ## Tunnels
 
@@ -22,7 +23,7 @@ All subdomains, services, and hosted projects on chimerawerks.com.
 |------|---------|-------|
 | 20100 | Chimera Studio (Vite frontend) | Dev server |
 | 21100 | Chimera Studio (FastAPI backend) | API + WebSocket |
-| 22100 | Chimera CLI Portal | API + WebSocket + terminal PTY |
+| 20230 | Chimera CLI Portal | API + WebSocket + terminal PTY |
 | 22200 | Glances | System monitoring dashboard |
 
 ## Notes
