@@ -2,6 +2,7 @@
 import Base from "../layouts/Base.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EcosystemCard from "../components/EcosystemCard.astro";
+import HeroShader from "../components/HeroShader.astro";
 import { ECOSYSTEM } from "../data/ecosystem";
 import "../styles/slice-precision.css";
 
@@ -22,7 +23,11 @@ import "../styles/slice-precision.css";
     <section class="relative isolate flex min-h-dvh flex-col overflow-hidden">
       <!-- Swappable backdrop layer: a canvas replaces this element later. -->
       <div id="hero-canvas-slot" class="blueprint-grid absolute inset-0 -z-10" aria-hidden="true">
+        <HeroShader />
       </div>
+      <script>
+        import "../scripts/hero-3d-loader";
+      </script>
 
       <!-- Drafting furniture: accent hairlines + registration crosses. -->
       <div class="pointer-events-none absolute inset-0 -z-10" aria-hidden="true">

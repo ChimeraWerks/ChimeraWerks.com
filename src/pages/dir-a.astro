@@ -9,6 +9,7 @@ import Base from "../layouts/Base.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EcosystemCard from "../components/EcosystemCard.astro";
 import StatusDot from "../components/StatusDot.astro";
+import HeroShader from "../components/HeroShader.astro";
 import { ECOSYSTEM } from "../data/ecosystem";
 import "../styles/slice-arcane.css";
 
@@ -70,7 +71,11 @@ const BEATS = [
           <div class="ring ring-arc"></div>
           <div class="ring-core"></div>
         </div>
+        <HeroShader />
       </div>
+      <script>
+        import "../scripts/hero-3d-loader";
+      </script>
 
       <div class="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pb-32 pt-24 sm:px-10">
         <p class="hero-kicker rise font-mono" style="--d: 0ms">// many hands make light werk</p>

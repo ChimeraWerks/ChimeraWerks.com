@@ -1,0 +1,45 @@
+---
+import Base from "@/layouts/Base.astro";
+import SectionHeading from "@/components/SectionHeading.astro";
+---
+
+<Base
+  title="Privacy | Chimera Werks"
+  description="Chimera Werks privacy policy. Our tools are local-first; this site does not track you."
+  theme="arcane"
+>
+  <main class="mx-auto max-w-2xl px-6 pt-32 pb-32">
+    <SectionHeading level="h1" kicker="// policy">Privacy</SectionHeading>
+
+    <div class="mt-8 space-y-6 font-body text-ink-2 leading-relaxed">
+      <p>
+        Chimera Werks builds <strong class="text-accent">local-first</strong> tools. They run on
+        your machine, and what happens on your machine stays there.
+      </p>
+      <p>
+        We do not collect, store, transmit, or process personal data, files, metadata, or usage
+        analytics. No tracking pixels, no telemetry, no third-party analytics scripts.
+      </p>
+
+      <h2 class="pt-6 font-display text-2xl text-ink-1">This website</h2>
+      <p>
+        chimerawerks.com is a static site. It does not use cookies, does not collect analytics, and
+        does not track visitors. The only data exchange occurs if you choose to email us via the
+        contact links.
+      </p>
+      <p>
+        The archived previous site at <a href="/archive/v1/" class="text-accent underline underline-offset-4 hover:text-accent-hi">/archive/v1</a>
+        follows the same policy.
+      </p>
+
+      <h2 class="pt-6 font-display text-2xl text-ink-1">Contact</h2>
+      <p>
+        Questions about privacy? Reach out at
+        <a
+          href="mailto:hello@chimerawerks.com"
+          class="text-accent underline underline-offset-4 hover:text-accent-hi">hello@chimerawerks.com</a
+        >.
+      </p>
+    </div>
+  </main>
+</Base>
