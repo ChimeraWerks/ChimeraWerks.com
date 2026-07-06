@@ -24,6 +24,8 @@ const DAYS = [
   { day: 14, date: "MAR 20", title: "The 40B Model That Fits on One GPU", commits: 1, tag: "inference" },
   { day: 15, date: "MAR 21", title: "The Great Reorganization", commits: 0, tag: "cleanup" },
   { day: 17, date: "MAR 22", title: "Terminal Rewrite + Security Panic", commits: 1, tag: "security" },
+  { day: 18, date: "MAR 22", title: "Roleplay, Discord, SecOps Scaffold", commits: 1, tag: "secops" },
+  { day: 19, date: "MAR 22", title: "The Cockpit Actually Flies", commits: 0, tag: "secops" },
 ]
 
 // Relative bar height based on commit count (max 10)
