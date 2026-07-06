@@ -1,0 +1,277 @@
+/*
+ * Slice: COOL-PRECISION (dir-b). Page-scoped styles for src/pages/dir-b.astro.
+ * Everything here is prefixed .sb- (or scoped under .slice-b) so it cannot
+ * leak into the other direction slice. Consumes only semantic theme tokens.
+ */
+
+/* ---------- quality floor ---------- */
+
+.slice-b a:focus-visible,
+.slice-b button:focus-visible {
+  outline: 2px solid var(--accent-2);
+  outline-offset: 3px;
+  border-radius: var(--radius-sm);
+}
+
+/* Hero backdrop slot: fade the drafting grid out toward the fold so content
+   below never fights it. Styled by id so a future canvas swap inherits it. */
+.slice-b #hero-canvas-slot {
+  mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+  -webkit-mask-image: linear-gradient(to bottom, black 0%, black 60%, transparent 100%);
+}
+
+/* ---------- display type ---------- */
+
+.sb-display {
+  font-family: var(--font-display);
+  font-weight: 645;
+  font-size: clamp(3.25rem, 13vw, 8rem);
+  line-height: 0.94;
+  letter-spacing: -0.045em;
+  color: var(--ink-1);
+}
+
+/* ---------- hero entrance: CSS-only stagger ---------- */
+
+@keyframes sb-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Gated on no-preference so reduced-motion users get instant, fully-visible
+   content (the global kill switch zeroes durations but not delays). */
+@media (prefers-reduced-motion: no-preference) {
+  .sb-in {
+    animation: sb-rise 0.7s cubic-bezier(0.16, 0.68, 0.3, 1) both;
+    animation-delay: var(--d, 0s);
+  }
+}
+
+/* ---------- scroll reveal: animation-timeline with hard fallback ---------- */
+
+/* Default: visible, no motion. Enhancement only when both the API exists and
+   the user allows motion. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sb-reveal {
+      animation: sb-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 5% entry 45%;
+    }
+  }
+}
+
+/* ---------- drafting furniture ---------- */
+
+/* Dimension line: tick-ended extension lines flanking a centered label.
+   Each pseudo draws its own end tick + rule with layered gradients. */
+.sb-dim {
+  --dim-c: color-mix(in srgb, var(--accent-2) 60%, var(--line-2));
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  white-space: nowrap;
+}
+.sb-dim::before,
+.sb-dim::after {
+  content: "";
+  flex: 1;
+  height: 9px;
+  min-width: 2rem;
+}
+.sb-dim::before {
+  background:
+    linear-gradient(var(--dim-c), var(--dim-c)) left center / 1px 9px no-repeat,
+    linear-gradient(var(--dim-c), var(--dim-c)) center / 100% 1px no-repeat;
+}
+.sb-dim::after {
+  background:
+    linear-gradient(var(--dim-c), var(--dim-c)) right center / 1px 9px no-repeat,
+    linear-gradient(var(--dim-c), var(--dim-c)) center / 100% 1px no-repeat;
+}
+
+/* Title block, bottom-right of a real drawing sheet. */
+.sb-titleblock {
+  display: grid;
+  grid-template-columns: max-content 1fr;
+  min-width: 15rem;
+  border: 1px solid var(--line-2);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: color-mix(in srgb, var(--bg) 78%, transparent);
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+.sb-titleblock .tb-head {
+  grid-column: 1 / -1;
+  padding: 0.5rem 0.75rem;
+  color: var(--ink-2);
+  border-bottom: 1px solid var(--line-1);
+}
+.sb-titleblock .tb-k,
+.sb-titleblock .tb-v {
+  padding: 0.375rem 0.75rem;
+}
+.sb-titleblock .tb-k {
+  border-right: 1px solid var(--line-1);
+}
+.sb-titleblock .tb-v {
+  color: var(--ink-2);
+}
+.sb-titleblock .tb-k:nth-of-type(n + 2),
+.sb-titleblock .tb-v:nth-of-type(n + 2) {
+  border-top: 1px solid var(--line-1);
+}
+
+/* Registration cross (drawing alignment mark). */
+.sb-cross {
+  position: absolute;
+  width: 13px;
+  height: 13px;
+  pointer-events: none;
+  background:
+    linear-gradient(var(--line-2), var(--line-2)) center / 1px 100% no-repeat,
+    linear-gradient(var(--line-2), var(--line-2)) center / 100% 1px no-repeat;
+}
+
+/* Vertical accent hairline for the hero, faded at both ends. */
+.sb-vline {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 1px;
+  pointer-events: none;
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    color-mix(in srgb, var(--accent-2) 38%, transparent) 30%,
+    color-mix(in srgb, var(--accent) 30%, transparent) 70%,
+    transparent
+  );
+}
+
+/* ---------- figures (flagship schematics) ---------- */
+
+.sb-fig {
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  padding: 1.25rem;
+}
+.sb-fig svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+.sb-figcap {
+  margin-top: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* SVG paint lives here, not in presentation attributes: the SVG attribute
+   grammar does not support var(), so fill="var(--x)" silently breaks. */
+.sb-fig text {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+.sb-fig .sb-node {
+  fill: var(--surface-2);
+  stroke: var(--line-2);
+}
+.sb-fig .sb-node-accent {
+  fill: var(--surface-2);
+  stroke: var(--accent);
+}
+.sb-fig .sb-rule {
+  stroke: var(--line-2);
+}
+.sb-fig .sb-edge {
+  fill: none;
+  stroke: var(--accent-2);
+  stroke-width: 1;
+}
+.sb-fig .sb-dot {
+  fill: var(--accent-2);
+}
+.sb-fig .sb-label {
+  fill: var(--ink-2);
+}
+.sb-fig .sb-label-dim {
+  fill: var(--ink-3);
+}
+.sb-fig .sb-label-hi {
+  fill: var(--accent-hi);
+}
+.sb-fig .sb-bad-fill {
+  fill: var(--bad);
+}
+.sb-fig .sb-bad-stroke {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: 1;
+  stroke-dasharray: 3 4;
+}
+
+/* Signal-flow dash drift along schematic edges. Motion-gated; static dashes
+   remain readable when animation is off. */
+.sb-flow {
+  stroke-dasharray: 4 7;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .sb-flow {
+    animation: sb-dash 3.2s linear infinite;
+  }
+}
+@keyframes sb-dash {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+
+/* DNA spec panel: numbered mono lines via CSS counter. */
+.sb-spec {
+  counter-reset: ln;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+.sb-spec .sb-line {
+  display: flex;
+  gap: 1.25rem;
+  white-space: nowrap;
+}
+.sb-spec .sb-line::before {
+  counter-increment: ln;
+  content: counter(ln, decimal-leading-zero);
+  flex: none;
+  color: var(--ink-3);
+  opacity: 0.65;
+}
+.sb-spec .sb-key {
+  display: inline-block;
+  min-width: 7rem;
+  color: var(--accent-hi);
+}
+.sb-spec .sb-val {
+  color: var(--accent-2);
+}

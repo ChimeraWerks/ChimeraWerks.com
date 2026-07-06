@@ -1,0 +1,34 @@
+---
+import "../styles/fonts.css";
+import "../styles/global.css";
+import "../styles/theme-arcane.css";
+import "../styles/theme-precision.css";
+
+export interface Props {
+  title: string;
+  description: string;
+  /** Art direction under evaluation; the losing value gets deleted later. */
+  theme: "arcane" | "precision";
+}
+
+const { title, description, theme } = Astro.props;
+---
+
+<html lang="en" data-theme={theme}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta name="description" content={description} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="/chimera-logo.png" />
+    <link rel="icon" type="image/png" href="/chimera-logo.png" />
+    <link rel="canonical" href={Astro.url} />
+    <title>{title}</title>
+  </head>
+  <body class="bg-bg text-ink-1 font-body antialiased min-h-dvh">
+    <slot />
+  </body>
+</html>

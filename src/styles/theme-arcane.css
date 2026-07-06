@@ -1,0 +1,51 @@
+/*
+ * Theme A: "arcane" — warm-dark base, iris + amber accents, generous radius.
+ * Populates every semantic token consumed by components (see global.css).
+ * If the other direction wins, delete this file and its <html data-theme>.
+ */
+
+[data-theme="arcane"] {
+  --bg: #0a0908;
+  --surface-1: #141110;
+  --surface-2: #1b1714;
+  --surface-3: #241f1a;
+
+  --line-1: #2b2620;
+  --line-2: #3b352c;
+
+  --ink-1: #e8e1d3;
+  --ink-2: #a59c8b;
+  --ink-3: #6f675b;
+
+  /* iris */
+  --accent: #a78bf0;
+  --accent-hi: #cbb9ff;
+  --accent-dim: #2a2340;
+
+  /* amber */
+  --accent-2: #e0a23a;
+  --accent-2-hi: #f2bf60;
+  --accent-2-dim: #2c2113;
+
+  --good: #5fb46d;
+  --warn: #e3b256;
+  --bad: #e8786d;
+
+  --card-hue-0: #50c9c0;
+  --card-hue-1: #e3b05a;
+  --card-hue-2: #ec7e6a;
+  --card-hue-3: #5aa6f0;
+  --card-hue-4: #9bcb57;
+  --card-hue-5: #e07ab0;
+  --card-hue-6: #a38bf0;
+  --card-hue-7: #e8c167;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+  /* Accent serif for sparing ceremonial use (kickers, drop caps) only. */
+  --font-arcane: "Cinzel", "Times New Roman", serif;
+}

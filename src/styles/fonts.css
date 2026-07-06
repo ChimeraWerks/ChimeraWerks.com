@@ -1,0 +1,12 @@
+/*
+ * Self-hosted fonts via @fontsource (woff2 variable files only, plus static
+ * Cinzel weights for the arcane accent serif). Family names these register:
+ *   "Archivo Variable", "Hanken Grotesk Variable", "JetBrains Mono Variable",
+ *   "Inter Variable", "Cinzel" — theme files must reference these exactly.
+ */
+
+@import "@fontsource-variable/archivo";
+@import "@fontsource-variable/hanken-grotesk";
+@import "@fontsource-variable/jetbrains-mono";
+@import "@fontsource-variable/inter";
+@import "@fontsource/cinzel";
