@@ -4,6 +4,12 @@
  * Relay's operator-console aesthetic loosened for marketing scale: void
  * graphite, parchment ink, iris + amber signature pair, one ceremonial
  * Cinzel word, and a ritual-gauge hero background awaiting its shader.
+ *
+ * Scroll life below the hero is CSS-first: view()/scroll() timelines gated
+ * behind @supports AND prefers-reduced-motion. One tiny IntersectionObserver
+ * script flags one-shot [data-io] elements with .is-seen (console gauge
+ * fill, fig. 3 trace draw, footer rim shimmer). Pre-hidden states only exist
+ * under :root.has-io, so no-JS and reduced-motion render complete + static.
  */
 import Base from "../layouts/Base.astro";
 import SectionHeading from "../components/SectionHeading.astro";
@@ -22,30 +28,47 @@ const HEADLINE = ["Chimera", "Werks"].map((word) =>
 const PERIOD_DELAY = cursor * LETTER_STEP_MS;
 
 /* Generated, illustrative room state for the console composition (decorative,
-   aria-hidden). Persona hues echo the ecosystem card identity system. */
-const LANES = [
+   aria-hidden). Persona hues echo the ecosystem card identity system.
+   `active` marks the breathing lane; `caret` types the handoff. */
+type Lane = {
+  name: string;
+  hue: number;
+  task: string;
+  pct: number;
+  active?: boolean;
+  caret?: boolean;
+};
+const LANES: Lane[] = [
   { name: "oracle", hue: 6, task: "drafting the migration plan", pct: 82 },
   { name: "mason", hue: 0, task: "implementing relay-core #214", pct: 64 },
   { name: "warden", hue: 2, task: "adversarial review, pass two", pct: 47 },
   { name: "courier", hue: 3, task: "syncing artifacts to the room", pct: 91 },
-  { name: "scribe", hue: 1, task: "writing the handoff", pct: 33 },
+  { name: "scribe", hue: 1, task: "writing the handoff", pct: 33, active: true, caret: true },
 ];
 
+/* Problem -> solution beats. Copy depth ported from the precision slice,
+   warmed to this direction's voice; × / → glyphs keep A's mark convention. */
 const BEATS = [
   {
-    problem: "Ten agents means ten terminals and zero peripheral vision.",
+    title: "One console, whole fleet",
+    problem:
+      "Every agent you add is another terminal to babysit, another transcript scrolling somewhere you are not looking.",
     solution:
-      "Relay puts the whole fleet in shared rooms: every agent, every message, every artifact on one screen, live.",
+      "Relay puts the fleet in shared rooms: personas, live transcripts, spawn controls. However many agents are running, you watch one console.",
   },
   {
-    problem: "A single prompt to a single agent does not survive contact with real work.",
+    title: "Orchestration you can diff",
+    problem:
+      "Judge panels, fusion runs, debates: in most shops that logic lives in glue scripts only the author can rerun.",
     solution:
-      "DNA runs compose fusion, debate, and judge panels across Codex, Claude, Hermes, and local models. Declared once, executed anywhere.",
+      "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
   },
   {
-    problem: "And when an agent dies, most consoles hand you a normalized reason code.",
+    title: "Failures keep their trail",
+    problem:
+      "When an agent dies three hops down, most consoles hand you a normalized reason code and eat the stderr.",
     solution:
-      "Relay keeps the raw trail: stderr, RPC hops, exit codes. The real error is one layer down, never gone.",
+      "Relay keeps the raw trail: child stderr, RPC hops, exit codes, secrets redacted. The real error is one layer down, never gone.",
   },
 ];
 ---
@@ -56,6 +79,10 @@ const BEATS = [
   theme="arcane"
 >
   <main>
+    <!-- Scroll-progress hairline: fills with scroll(root); hidden where
+         scroll-driven timelines are unsupported. -->
+    <div class="scroll-progress" aria-hidden="true"></div>
+
     <!-- ============================================================ hero -->
     <section class="hero vignette grain relative isolate flex min-h-dvh flex-col overflow-hidden">
       <div class="hairline-signature absolute inset-x-0 top-0"></div>
@@ -122,9 +149,11 @@ const BEATS = [
     </section>
 
     <!-- ======================================================= ecosystem -->
-    <section id="werks" class="border-t border-line-1">
+    <section id="werks" class="sec-aura grain border-t border-line-1">
       <div class="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-28">
-        <SectionHeading kicker="the werks" heading="Every head of the beast" />
+        <div class="sh-reveal">
+          <SectionHeading kicker="the werks" heading="Every head of the beast" />
+        </div>
         <p class="mt-4 max-w-2xl text-ink-2">
           Every tool ships from the same bench and speaks the same identity system: shared hues,
           shared statuses, shared rooms across the fleet.
@@ -132,13 +161,14 @@ const BEATS = [
 
         <div class="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {
-            ECOSYSTEM.map((app) => (
+            ECOSYSTEM.map((app, i) => (
               <div
                 class:list={[
-                  "eco-cell reveal-view",
+                  "eco-cell",
                   app.flagship && "sm:col-span-2",
                   app.id === "more" && "sm:col-span-2 lg:col-span-3",
                 ]}
+                style={`--rv: ${i % 3}`}
               >
                 <EcosystemCard app={app} />
               </div>
@@ -149,72 +179,197 @@ const BEATS = [
     </section>
 
     <!-- ======================================================== flagship -->
-    <section id="relay" class="border-t border-line-1">
-      <div
-        class="mx-auto grid max-w-6xl gap-14 px-6 py-24 sm:px-10 sm:py-28 lg:grid-cols-[1fr_1.05fr] lg:items-center"
-      >
-        <div>
-          <SectionHeading kicker="flagship werk" heading="Chimera Relay" />
-          <p class="mt-4 text-lg text-ink-2">The console where the swarm reports for duty.</p>
+    <section id="relay" class="sec-aura sec-aura-amber sec-aura-left grain border-t border-line-1">
+      <div class="sec-ring" aria-hidden="true"></div>
+      <div class="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-28">
+        <div class="grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:items-center">
+          <div>
+            <div class="sh-reveal">
+              <SectionHeading kicker="flagship werk" heading="Chimera Relay" />
+            </div>
+            <p class="mt-5 text-lg text-ink-2">The console where the swarm reports for duty.</p>
+            <p class="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-ink-2">
+              Rooms of agents - Codex, Claude, Hermes, local models - run, argue, and get judged
+              behind one pane of glass. Three werks below, one per head.
+            </p>
+          </div>
 
-          <div class="mt-10 flex flex-col gap-8">
-            {
-              BEATS.map((beat) => (
-                <div class="beat">
-                  <p class="beat-problem">
-                    <span class="mark mark-bad">×</span>
-                    <span>{beat.problem}</span>
-                  </p>
-                  <p class="beat-solution">
-                    <span class="mark mark-good">→</span>
-                    <span>{beat.solution}</span>
-                  </p>
-                </div>
-              ))
-            }
+          <div class="console-wrap reveal-view" data-io aria-hidden="true">
+            <div class="console">
+              <div class="console-head">
+                <span>relay · room/night-werks</span>
+                <span class="pill">
+                  <StatusDot status="active" hue="var(--accent-2)" />
+                  live
+                </span>
+              </div>
+              <div>
+                {
+                  LANES.map((lane) => (
+                    <div
+                      class:list={["lane", "spine", lane.active && "lane-active"]}
+                      style={`--hue: var(--card-hue-${lane.hue})`}
+                    >
+                      <div class="lane-top">
+                        <span class="lane-name">{lane.name}</span>
+                        <span class="lane-pct">{lane.pct}%</span>
+                      </div>
+                      <p class="lane-task">
+                        {lane.task}
+                        {lane.caret && <span class="caret"></span>}
+                      </p>
+                      <div class="gauge">
+                        <i style={`--w: ${lane.pct}%`}></i>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+              <div class="console-foot">
+                <span>judge panel · 3 verdicts in</span>
+                <span>dna: fusion-3</span>
+              </div>
+            </div>
           </div>
         </div>
 
-        <div class="console-wrap reveal-view" aria-hidden="true">
-          <div class="console">
-            <div class="console-head">
-              <span>relay · room/night-werks</span>
-              <span class="pill">
-                <StatusDot status="active" hue="var(--accent-2)" />
-                live
-              </span>
+        <div class="mt-20 flex flex-col gap-16 sm:mt-24 sm:gap-20">
+          <!-- Beat 01 · fan-in -->
+          <div class="reveal-view grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">01</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[0].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[0].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[0].solution}</span>
+              </p>
             </div>
-            <div>
-              {
-                LANES.map((lane) => (
-                  <div class="lane spine" style={`--hue: var(--card-hue-${lane.hue})`}>
-                    <div class="lane-top">
-                      <span class="lane-name">{lane.name}</span>
-                      <span class="lane-pct">{lane.pct}%</span>
-                    </div>
-                    <p class="lane-task">{lane.task}</p>
-                    <div class="gauge">
-                      <i style={`--w: ${lane.pct}%`}></i>
-                    </div>
-                  </div>
-                ))
-              }
+            <figure class="af-fig min-w-0">
+              <svg
+                viewBox="0 0 460 280"
+                role="img"
+                aria-label="Schematic: four agent harnesses fanning into a single Relay room"
+              >
+                <rect class="af-node" x="24" y="22" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="46" text-anchor="middle">codex</text>
+                <rect class="af-node" x="24" y="88" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="112" text-anchor="middle">claude</text>
+                <rect class="af-node" x="24" y="154" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="178" text-anchor="middle">hermes</text>
+                <rect class="af-node" x="24" y="220" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="244" text-anchor="middle">local</text>
+
+                <path class="af-edge af-flow" d="M140 42 C 224 42, 224 108, 308 108"></path>
+                <path class="af-edge af-flow" d="M140 108 C 224 108, 224 128, 308 128"></path>
+                <path class="af-edge af-flow" d="M140 174 C 224 174, 224 152, 308 152"></path>
+                <path class="af-edge af-flow" d="M140 240 C 224 240, 224 172, 308 172"></path>
+                <circle class="af-dot" cx="140" cy="42" r="2.5"></circle>
+                <circle class="af-dot" cx="140" cy="108" r="2.5"></circle>
+                <circle class="af-dot" cx="140" cy="174" r="2.5"></circle>
+                <circle class="af-dot" cx="140" cy="240" r="2.5"></circle>
+
+                <rect class="af-node-hi" x="308" y="86" width="128" height="108" rx="12"></rect>
+                <text class="af-label-hi" x="372" y="106" text-anchor="middle">relay · room a</text>
+                <line class="af-rule" x1="324" y1="126" x2="420" y2="126"></line>
+                <line class="af-rule" x1="324" y1="144" x2="404" y2="144"></line>
+                <line class="af-rule" x1="324" y1="162" x2="414" y2="162"></line>
+                <line class="af-rule" x1="324" y1="180" x2="392" y2="180"></line>
+              </svg>
+              <figcaption class="af-figcap">fig. 1 · fan-in: four harnesses, one room</figcaption>
+            </figure>
+          </div>
+
+          <!-- Beat 02 · the DNA spec -->
+          <div class="reveal-view grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat lg:order-2">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">02</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[1].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[1].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[1].solution}</span>
+              </p>
             </div>
-            <div class="console-foot">
-              <span>judge panel · 3 verdicts in</span>
-              <span>dna: fusion-3</span>
+            <figure class="af-fig min-w-0 lg:order-1">
+              <div class="af-spec overflow-x-auto">
+                <span class="af-line"><span><span class="text-ink-1">run</span> "triage-panel" &#123;</span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">pattern</span><span class="af-val">judge-panel</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">candidates</span><span class="af-val">3 × codex</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">judge</span><span class="af-val">1 × claude</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">output</span><span class="af-val">verdict → room</span></span></span>
+                <span class="af-line"><span>&#125;</span></span>
+              </div>
+              <figcaption class="af-figcap">
+                fig. 2 · a dna run: the whole orchestration in six lines
+              </figcaption>
+            </figure>
+          </div>
+
+          <!-- Beat 03 · the preserved trail -->
+          <div class="reveal-view grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">03</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[2].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[2].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[2].solution}</span>
+              </p>
             </div>
+            <figure class="af-fig af-fig3 min-w-0" data-io>
+              <svg
+                viewBox="0 0 460 230"
+                role="img"
+                aria-label="Schematic: a run timeline where the failing event expands into its preserved error trail"
+              >
+                <line class="af-rule af-draw" pathLength="1" x1="24" y1="52" x2="436" y2="52"></line>
+                <line class="af-rule af-fade" style="transition-delay: 0.5s" x1="24" y1="47" x2="24" y2="57"></line>
+                <line class="af-rule af-fade" style="transition-delay: 0.55s" x1="127" y1="47" x2="127" y2="57"></line>
+                <line class="af-rule af-fade" style="transition-delay: 0.6s" x1="230" y1="47" x2="230" y2="57"></line>
+                <line class="af-rule af-fade" style="transition-delay: 0.65s" x1="333" y1="47" x2="333" y2="57"></line>
+                <line class="af-rule af-fade" style="transition-delay: 0.7s" x1="436" y1="47" x2="436" y2="57"></line>
+
+                <circle class="af-dot af-fade" style="transition-delay: 0.15s" cx="70" cy="52" r="3"></circle>
+                <text class="af-label-dim af-fade" style="transition-delay: 0.15s" x="70" y="32" text-anchor="middle">SPAWN</text>
+                <circle class="af-dot af-fade" style="transition-delay: 0.3s" cx="178" cy="52" r="3"></circle>
+                <text class="af-label-dim af-fade" style="transition-delay: 0.3s" x="178" y="32" text-anchor="middle">DISPATCH</text>
+                <circle class="af-dot af-fade" style="transition-delay: 0.45s" cx="286" cy="52" r="3"></circle>
+                <text class="af-label-dim af-fade" style="transition-delay: 0.45s" x="286" y="32" text-anchor="middle">STREAM</text>
+                <circle class="af-bad-fill af-fade af-exit-pulse" style="transition-delay: 0.6s" cx="394" cy="52" r="4"></circle>
+                <text class="af-bad-fill af-fade" style="transition-delay: 0.6s" x="394" y="32" text-anchor="middle">EXIT 127</text>
+
+                <path class="af-bad-stroke af-draw af-draw-2" pathLength="1" d="M394 56 L394 88 L330 88 L330 96"></path>
+
+                <rect class="af-node af-fade" style="transition-delay: 0.95s" x="110" y="96" width="326" height="104" rx="10"></rect>
+                <text class="af-label-dim af-fade" style="transition-delay: 1.05s" x="128" y="124">$ relay-diag last --room a</text>
+                <text class="af-label af-fade" style="transition-delay: 1.15s" x="128" y="148">codex.spawn → exit 127</text>
+                <text class="af-bad-fill af-fade" style="transition-delay: 1.25s" x="128" y="172">stderr: ENOENT ./harness (preserved)</text>
+              </svg>
+              <figcaption class="af-figcap">fig. 3 · the trail survives every hop</figcaption>
+            </figure>
           </div>
         </div>
       </div>
     </section>
 
     <!-- ========================================================= contact -->
-    <section id="contact" class="border-t border-line-1 bg-surface-1">
+    <section id="contact" class="sec-aura sec-aura-amber grain border-t border-line-1 bg-surface-1">
+      <div class="sec-ring sec-ring-amber" aria-hidden="true"></div>
+      <div class="embers" aria-hidden="true"></div>
       <div
         class="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20 sm:flex-row sm:items-end sm:justify-between sm:px-10"
       >
-        <div class="min-w-0">
+        <div class="sh-reveal min-w-0">
           <h2 class="sr-only">Contact</h2>
           <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent">// open a channel</p>
           <a href="mailto:hello@chimerawerks.com" class="contact-mail mt-3">hello@chimerawerks.com</a>
@@ -235,6 +390,29 @@ const BEATS = [
       <span class="text-ink-3">© 2026 Chimera Werks</span>
       <span class="font-mono text-ink-3">many hands · light werk</span>
     </div>
-    <div class="hairline-signature"></div>
+    <div class="hairline-signature rim-shimmer" data-io></div>
   </footer>
+
+  <script>
+    /* One-shot in-view triggers (console gauge fill, fig. 3 trace draw,
+       footer rim shimmer). CSS owns all motion and gating; this only flags
+       visibility state. Without JS, :root.has-io never lands and every
+       pre-hidden state stays visible. */
+    const targets = document.querySelectorAll("[data-io]");
+    if ("IntersectionObserver" in window && targets.length > 0) {
+      document.documentElement.classList.add("has-io");
+      const io = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (entry.isIntersecting) {
+              entry.target.classList.add("is-seen");
+              io.unobserve(entry.target);
+            }
+          }
+        },
+        { threshold: 0.3 },
+      );
+      for (const el of targets) io.observe(el);
+    }
+  </script>
 </Base>

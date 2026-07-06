@@ -6,6 +6,14 @@
  *
  * #hero-canvas-slot is the swappable background layer. A shader canvas can
  * replace its children later; hero content never depends on what is inside.
+ *
+ * Motion contract (repo convention, see .sb-in in slice-precision.css):
+ * - Time-based ambience gates on prefers-reduced-motion: no-preference.
+ * - Scroll-driven effects additionally gate on @supports (animation-timeline).
+ * - One-shot in-view effects key off [data-io].is-seen, flagged by the tiny
+ *   IntersectionObserver script in dir-a.astro. Their pre-hidden states only
+ *   exist under :root.has-io, so no-JS renders everything complete.
+ * All effects animate transform/opacity (plus SVG dashoffset) only.
  */
 
 html {
@@ -16,6 +24,41 @@ html {
   outline: 2px solid var(--accent-hi);
   outline-offset: 3px;
   border-radius: 2px;
+}
+
+/* ------------------------------------------------------ scroll progress -- */
+
+/* Signature hairline that fills left -> right with page scroll. Collapsed
+   (scaleX 0) wherever scroll-driven timelines are unsupported or motion is
+   reduced; the hero's static hairline remains underneath either way. */
+.scroll-progress {
+  position: fixed;
+  inset-inline: 0;
+  top: 0;
+  height: 2px;
+  z-index: 100;
+  pointer-events: none;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform-origin: left;
+  transform: scaleX(0);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: scroll()) {
+    .scroll-progress {
+      animation: progress-fill linear both;
+      animation-timeline: scroll(root);
+    }
+  }
+}
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
 }
 
 /* ---------------------------------------------------------------- hero -- */
@@ -336,24 +379,228 @@ html {
   }
 }
 
+/* ----------------------------------------------------- section ambience -- */
+
+/* Faint corner glow continuing the hero vignette down the page. Decorations
+   sit at z -1 inside an isolated stacking context so they can never paint
+   over text (contact's opaque bg would otherwise swallow them). */
+.sec-aura {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  --aura: var(--accent);
+  --aura-x: 88%;
+  --aura-y: 0%;
+}
+
+.sec-aura::before {
+  content: "";
+  position: absolute;
+  inset: -15%;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    42% 34% at var(--aura-x) var(--aura-y),
+    color-mix(in srgb, var(--aura) 7%, transparent),
+    transparent 70%
+  );
+}
+
+.sec-aura-amber {
+  --aura: var(--accent-2);
+}
+
+.sec-aura-left {
+  --aura-x: 10%;
+  --aura-y: 6%;
+}
+
+/* Slow position parallax on the glow as the section crosses the viewport. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sec-aura::before {
+      animation: aura-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes aura-drift {
+  from {
+    transform: translate3d(1.5%, 2.5%, 0);
+  }
+  to {
+    transform: translate3d(-1.5%, -2.5%, 0);
+  }
+}
+
+/* Fragment of the hero's ritual ring, echoed into section backgrounds.
+   Drifts on its own view() timeline at a different travel than the aura for
+   cheap parallax depth; decorative only, never behind text at readable
+   contrast (z -1, ~quarter-arc mask, low-mix border). */
+.sec-ring {
+  position: absolute;
+  z-index: -1;
+  top: 9rem;
+  right: -14rem;
+  width: 38rem;
+  height: 38rem;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  pointer-events: none;
+  -webkit-mask: conic-gradient(from 210deg, #000 0 80deg, transparent 96deg);
+  mask: conic-gradient(from 210deg, #000 0 80deg, transparent 96deg);
+  opacity: 0.6;
+}
+
+.sec-ring-amber {
+  border-color: color-mix(in srgb, var(--accent-2) 24%, transparent);
+  right: auto;
+  left: -16rem;
+  top: auto;
+  bottom: -20rem;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sec-ring {
+      animation: ring-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes ring-drift {
+  from {
+    transform: translateY(3.5rem) rotate(6deg);
+  }
+  to {
+    transform: translateY(-3.5rem) rotate(-6deg);
+  }
+}
+
+/* ---------------------------------------------------- section headings -- */
+
+.sh-reveal p:first-of-type {
+  position: relative;
+}
+
+/* Kicker underline: static signature stroke by default, draws in where
+   view() timelines exist. */
+.sh-reveal p:first-of-type::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -0.35rem;
+  width: 2.75rem;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  transform-origin: left;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .sh-reveal p:first-of-type::after {
+      animation: kicker-draw linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 40%;
+    }
+
+    .sh-reveal :is(h1, h2, h3) {
+      animation: heading-rise linear both;
+      animation-timeline: view();
+      animation-range: entry 0% entry 35%;
+    }
+  }
+}
+
+@keyframes kicker-draw {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes heading-rise {
+  from {
+    opacity: 0;
+    transform: translateY(0.6rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 /* ------------------------------------------------------ ecosystem grid -- */
 
 .eco-cell article {
+  position: relative;
+  overflow: hidden;
   transition:
     border-color 0.35s ease,
     transform 0.35s ease,
     box-shadow 0.35s ease;
 }
 
+/* Persona top-light: a hue-tinted gradient washing down from the card's
+   top edge on hover. Lives on ::after; ::before is the spine. */
+.eco-cell article::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--hue) 9%, transparent),
+    transparent 46%
+  );
+  transition: opacity 0.35s ease;
+}
+
+.eco-cell article.spine::before {
+  transition:
+    box-shadow 0.35s ease,
+    filter 0.35s ease;
+}
+
 .eco-cell:hover article {
-  transform: translateY(-3px);
+  transform: translateY(-2px);
   border-color: color-mix(in srgb, var(--hue) 40%, var(--line-1));
   box-shadow: 0 18px 48px -24px color-mix(in srgb, var(--hue) 45%, transparent);
 }
 
+.eco-cell:hover article::after {
+  opacity: 1;
+}
+
+.eco-cell:hover article.spine::before {
+  filter: brightness(1.3);
+  box-shadow: 0 0 14px 0 color-mix(in srgb, var(--hue) 65%, transparent);
+}
+
+/* Rise + fade reveal with a per-cell stagger; the markup sets --rv to the
+   cell's position within its grid row. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .eco-cell {
+      animation: reveal-rise linear both;
+      animation-timeline: view();
+      animation-range: entry calc(5% + 8% * var(--rv, 0)) entry calc(45% + 8% * var(--rv, 0));
+    }
+  }
+}
+
 /* ------------------------------------------------------ flagship beats -- */
 
-.beat p {
+/* Only the marked lines get the glyph gutter; index + heading stay blocks. */
+.beat-problem,
+.beat-solution {
   display: grid;
   grid-template-columns: 1.5rem 1fr;
   align-items: baseline;
@@ -384,6 +631,257 @@ html {
 
 .mark-good {
   color: var(--good);
+}
+
+/* ---------------------------------------------------- flagship figures -- */
+
+.af-fig {
+  position: relative;
+  margin: 0 0.8rem 0.8rem 0;
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius);
+  background: var(--surface-1);
+  padding: 1.25rem;
+}
+
+/* Echo card behind the figure, same family as the console's; the margins
+   above reserve the room its offset needs. Drifts on a view() timeline for
+   a subtle parallax layer (z -1 keeps it under the figure surface). */
+.af-fig::before {
+  content: "";
+  position: absolute;
+  inset: 1.25rem -0.8rem -0.8rem 1.25rem;
+  z-index: -1;
+  border: 1px solid var(--line-1);
+  border-radius: var(--radius);
+  background: color-mix(in srgb, var(--surface-1) 55%, transparent);
+  opacity: 0.6;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .af-fig::before,
+    .console-wrap::before {
+      animation: echo-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+
+    /* Deeper travel than the figures = a second parallax rate. */
+    .console-wrap::before {
+      animation-name: echo-drift-deep;
+    }
+  }
+}
+
+@keyframes echo-drift {
+  from {
+    transform: translateY(9px);
+  }
+  to {
+    transform: translateY(-9px);
+  }
+}
+
+@keyframes echo-drift-deep {
+  from {
+    transform: translateY(14px);
+  }
+  to {
+    transform: translateY(-14px);
+  }
+}
+
+.af-fig svg {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+.af-figcap {
+  margin-top: 0.875rem;
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.1em;
+  color: var(--ink-3);
+}
+
+/* SVG paint lives here, not in presentation attributes: the SVG attribute
+   grammar does not support var(), so fill="var(--x)" silently breaks. */
+.af-fig text {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 1px;
+}
+
+.af-fig .af-node {
+  fill: var(--surface-2);
+  stroke: var(--line-2);
+}
+
+.af-fig .af-node-hi {
+  fill: var(--surface-2);
+  stroke: color-mix(in srgb, var(--accent) 75%, var(--line-2));
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent) 30%, transparent));
+}
+
+.af-fig .af-rule {
+  stroke: var(--line-2);
+}
+
+.af-fig .af-edge {
+  fill: none;
+  stroke: color-mix(in srgb, var(--accent) 70%, transparent);
+  stroke-width: 1;
+}
+
+.af-fig .af-dot {
+  fill: var(--accent-2);
+}
+
+.af-fig .af-label {
+  fill: var(--ink-2);
+}
+
+.af-fig .af-label-dim {
+  fill: var(--ink-3);
+}
+
+.af-fig .af-label-hi {
+  fill: var(--accent-hi);
+}
+
+.af-fig .af-bad-fill {
+  fill: var(--bad);
+}
+
+.af-fig .af-bad-stroke {
+  fill: none;
+  stroke: var(--bad);
+  stroke-width: 1;
+}
+
+/* Signal-flow dash drift along fig. 1 edges. Motion-gated; static dashes
+   remain readable when animation is off. */
+.af-flow {
+  stroke-dasharray: 4 7;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .af-flow {
+    animation: af-dash 4.2s linear infinite;
+  }
+}
+
+@keyframes af-dash {
+  to {
+    stroke-dashoffset: -22;
+  }
+}
+
+/* Fig. 3 draws itself on first view (IO one-shot). pathLength="1" normalizes
+   every stroke so dashoffset 1 -> 0 is a full draw. Pre-hidden states exist
+   only under :root.has-io; per-element stagger delays are inline styles. */
+@media (prefers-reduced-motion: no-preference) {
+  .af-fig3 .af-draw {
+    stroke-dasharray: 1;
+    transition: stroke-dashoffset 0.9s cubic-bezier(0.33, 0, 0.2, 1);
+  }
+
+  .af-fig3 .af-draw-2 {
+    transition-delay: 0.6s;
+  }
+
+  .af-fig3 .af-fade {
+    transition: opacity 0.55s ease;
+  }
+
+  :root.has-io .af-fig3[data-io]:not(.is-seen) .af-draw {
+    stroke-dashoffset: 1;
+  }
+
+  :root.has-io .af-fig3[data-io]:not(.is-seen) .af-fade {
+    opacity: 0;
+  }
+
+  /* EXIT 127 heartbeat once the trace is on screen (or immediately when the
+     IO script never ran and there is no draw sequence to wait for). */
+  .af-fig3.is-seen .af-exit-pulse,
+  :root:not(.has-io) .af-exit-pulse {
+    animation: exit-pulse 2.8s ease-in-out 1.4s infinite;
+    transform-box: fill-box;
+    transform-origin: center;
+  }
+}
+
+@keyframes exit-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.55;
+    transform: scale(1.35);
+  }
+}
+
+/* ---------------------------------------------------- dna spec (fig. 2) -- */
+
+/* Numbered mono lines via CSS counter. */
+.af-spec {
+  counter-reset: ln;
+  font-family: var(--font-mono);
+  font-size: 0.8125rem;
+  line-height: 1.9;
+  color: var(--ink-2);
+}
+
+.af-spec .af-line {
+  display: flex;
+  gap: 1.25rem;
+  white-space: nowrap;
+}
+
+.af-spec .af-line::before {
+  counter-increment: ln;
+  content: counter(ln, decimal-leading-zero);
+  flex: none;
+  color: var(--ink-3);
+  opacity: 0.65;
+}
+
+.af-spec .af-key {
+  display: inline-block;
+  min-width: 7rem;
+  color: var(--accent-hi);
+}
+
+.af-spec .af-val {
+  color: var(--accent-2);
+}
+
+/* Block caret parked at the end of the last spec line. */
+.af-spec .af-line:last-child > span::after {
+  content: "";
+  display: inline-block;
+  width: 0.55em;
+  height: 1em;
+  margin-left: 0.3em;
+  vertical-align: -0.15em;
+  background: var(--accent-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .af-spec .af-line:last-child > span::after {
+    animation: caret-blink 1.1s steps(1) infinite;
+  }
+}
+
+@keyframes caret-blink {
+  50% {
+    opacity: 0;
+  }
 }
 
 /* -------------------------------------------------------- console mock -- */
@@ -467,11 +965,84 @@ html {
   height: 100%;
   width: var(--w, 50%);
   border-radius: 999px;
+  transform-origin: left center;
   background: linear-gradient(
     90deg,
     color-mix(in srgb, var(--hue) 55%, transparent),
     var(--hue)
   );
+}
+
+/* Gauges fill (scaleX 0 -> 1, staggered per lane) on first view of the
+   console; IO one-shot, so reloading mid-page still plays it once. */
+@media (prefers-reduced-motion: no-preference) {
+  .console-wrap[data-io] .gauge i {
+    transition: transform 1.1s cubic-bezier(0.22, 0.68, 0.24, 1);
+  }
+
+  .console-wrap[data-io] .lane:nth-child(2) .gauge i {
+    transition-delay: 90ms;
+  }
+  .console-wrap[data-io] .lane:nth-child(3) .gauge i {
+    transition-delay: 180ms;
+  }
+  .console-wrap[data-io] .lane:nth-child(4) .gauge i {
+    transition-delay: 270ms;
+  }
+  .console-wrap[data-io] .lane:nth-child(5) .gauge i {
+    transition-delay: 360ms;
+  }
+
+  :root.has-io .console-wrap[data-io]:not(.is-seen) .gauge i {
+    transform: scaleX(0);
+  }
+}
+
+/* The active persona lane breathes: a slow hue-tinted glow riding an
+   overlay pseudo (opacity only). .spine already makes .lane positioned. */
+.lane-active::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.35;
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--hue) 10%, transparent),
+    transparent 65%
+  );
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lane-active::after {
+    animation: lane-breath 5s ease-in-out infinite;
+  }
+}
+
+@keyframes lane-breath {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* Typing caret on the handoff line. */
+.caret {
+  display: inline-block;
+  width: 0.5em;
+  height: 0.9em;
+  margin-left: 0.25em;
+  vertical-align: -0.08em;
+  background: var(--accent-2);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .caret {
+    animation: caret-blink 1.1s steps(1) infinite;
+  }
 }
 
 .console-foot {
@@ -496,16 +1067,122 @@ html {
   letter-spacing: -0.02em;
   color: var(--ink-1);
   overflow-wrap: anywhere;
-  text-decoration: underline;
-  text-decoration-thickness: 1px;
-  text-underline-offset: 0.18em;
-  text-decoration-color: color-mix(in srgb, var(--accent) 35%, transparent);
+  text-decoration: none;
+  padding-bottom: 0.18em;
+  /* Layer 1: faint resting underline. Layer 2: signature sweep that draws
+     across on hover. */
+  background-image:
+    linear-gradient(
+      90deg,
+      color-mix(in srgb, var(--accent) 35%, transparent),
+      color-mix(in srgb, var(--accent) 35%, transparent)
+    ),
+    linear-gradient(90deg, var(--accent), var(--accent-2));
+  background-repeat: no-repeat;
+  background-position: 0 100%;
+  background-size:
+    100% 1px,
+    0% 2px;
   transition:
     color 0.3s ease,
-    text-decoration-color 0.3s ease;
+    background-size 0.5s cubic-bezier(0.22, 0.68, 0.24, 1);
 }
 
 .contact-mail:hover {
   color: var(--accent-hi);
-  text-decoration-color: var(--accent-2);
+  background-size:
+    100% 1px,
+    100% 2px;
+}
+
+/* Slow amber ember drift behind the contact section. Two tile layers at
+   different speeds; each layer is one tile taller than the section and
+   loops by exactly one tile height, so the wrap is seamless. */
+.embers {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.embers::before,
+.embers::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  --ember: color-mix(in srgb, var(--accent-2) 80%, transparent);
+  --ember-dim: color-mix(in srgb, var(--accent-2) 45%, transparent);
+  background-image:
+    radial-gradient(circle at 21% 16%, var(--ember) 0 1.4px, transparent 2.6px),
+    radial-gradient(circle at 66% 48%, var(--ember-dim) 0 1px, transparent 2px),
+    radial-gradient(circle at 43% 79%, var(--ember) 0 1px, transparent 2px),
+    radial-gradient(circle at 87% 27%, var(--ember-dim) 0 1.3px, transparent 2.4px);
+  opacity: 0.22;
+}
+
+.embers::before {
+  height: calc(100% + 340px);
+  background-size: 260px 340px;
+}
+
+.embers::after {
+  height: calc(100% + 460px);
+  background-size: 360px 460px;
+  opacity: 0.14;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .embers::before {
+    animation: ember-rise-a 38s linear infinite;
+  }
+
+  .embers::after {
+    animation: ember-rise-b 58s linear infinite;
+  }
+}
+
+@keyframes ember-rise-a {
+  to {
+    transform: translateY(-340px);
+  }
+}
+
+@keyframes ember-rise-b {
+  to {
+    transform: translateY(-460px);
+  }
+}
+
+/* Footer signature rim shimmers once when it enters view (IO one-shot). */
+.rim-shimmer {
+  position: relative;
+  overflow: hidden;
+}
+
+.rim-shimmer::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, #fff 85%, var(--accent-2)),
+    transparent
+  );
+  transform: translateX(-101%);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .rim-shimmer.is-seen::after {
+    animation: rim-sweep 1.3s cubic-bezier(0.4, 0, 0.2, 1) 0.15s both;
+  }
+}
+
+@keyframes rim-sweep {
+  to {
+    transform: translateX(101%);
+  }
 }
