@@ -167,8 +167,16 @@ html {
 
 .hero-letter {
   display: inline-block;
-  animation: letter-rise 0.7s cubic-bezier(0.22, 0.68, 0.24, 1) both;
-  animation-delay: var(--d, 0ms);
+}
+
+/* Gated like slice B's .sb-in: the global reduced-motion kill switch zeroes
+   durations but NOT delays, so `both` fill would hold content at opacity 0
+   until each stagger delay expired. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-letter {
+    animation: letter-rise 0.7s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+    animation-delay: var(--d, 0ms);
+  }
 }
 
 .hero-period {
@@ -188,10 +196,13 @@ html {
   }
 }
 
-/* Delayed block reveal for everything under the wordmark. */
-.rise {
-  animation: block-rise 0.8s cubic-bezier(0.22, 0.68, 0.24, 1) both;
-  animation-delay: var(--d, 0ms);
+/* Delayed block reveal for everything under the wordmark.
+   Animation only under no-preference; see .hero-letter note. */
+@media (prefers-reduced-motion: no-preference) {
+  .rise {
+    animation: block-rise 0.8s cubic-bezier(0.22, 0.68, 0.24, 1) both;
+    animation-delay: var(--d, 0ms);
+  }
 }
 
 @keyframes block-rise {

@@ -15,7 +15,8 @@
 
   --ink-1: #e6e8ec;
   --ink-2: #9aa0ab;
-  --ink-3: #62676f;
+  /* 4.5:1 on --bg; the darker #62676f failed AA on small text. */
+  --ink-3: #7d838d;
 
   /* cold violet */
   --accent: #8b8bf0;

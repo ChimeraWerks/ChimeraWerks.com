@@ -180,7 +180,7 @@ import "../styles/slice-precision.css";
                 </div>
               </div>
             </div>
-            <figure class="sb-fig">
+            <figure class="sb-fig min-w-0">
               <svg
                 viewBox="0 0 460 280"
                 role="img"
@@ -243,7 +243,7 @@ import "../styles/slice-precision.css";
                 </div>
               </div>
             </div>
-            <figure class="sb-fig lg:order-1">
+            <figure class="sb-fig min-w-0 lg:order-1">
               <div class="sb-spec overflow-x-auto">
                 <span class="sb-line"><span><span class="text-ink-1">run</span> "triage-panel" &#123;</span></span>
                 <span class="sb-line"><span>&nbsp;&nbsp;<span class="sb-key">pattern</span><span class="sb-val">judge-panel</span></span></span>
@@ -286,7 +286,7 @@ import "../styles/slice-precision.css";
                 </div>
               </div>
             </div>
-            <figure class="sb-fig">
+            <figure class="sb-fig min-w-0">
               <svg
                 viewBox="0 0 460 230"
                 role="img"
@@ -352,13 +352,15 @@ import "../styles/slice-precision.css";
       </div>
     </section>
 
-    <footer class="border-t border-line-1">
-      <div
-        class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-3"
-      >
-        <p>© 2026 Chimera Werks</p>
-        <p>DWG CW-00 · rev 2.0 · end of set</p>
-      </div>
-    </footer>
   </main>
+
+  <!-- Outside <main> so it's exposed as a contentinfo landmark. -->
+  <footer class="slice-b border-t border-line-1">
+    <div
+      class="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-3 px-6 py-8 font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-ink-3"
+    >
+      <p>© 2026 Chimera Werks</p>
+      <p>DWG CW-00 · rev 2.0 · end of set</p>
+    </div>
+  </footer>
 </Base>

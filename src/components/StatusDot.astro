@@ -12,11 +12,12 @@ const { status, hue = "var(--accent)" } = Astro.props;
    filled pulsing circle = active, hollow ring = incubating. */
 ---
 
+<!-- aria-hidden: the visible pill text next to this dot already names the
+     status; labeling the dot too made screen readers announce it twice. -->
 <span
   class:list={["status-dot", status === "active" ? "status-dot-active" : "status-dot-incubating"]}
   style={`--dot-hue: ${hue}`}
-  role="img"
-  aria-label={status === "active" ? "Status: active" : "Status: incubating"}
+  aria-hidden="true"
 ></span>
 
 <style>

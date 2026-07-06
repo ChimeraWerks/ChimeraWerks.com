@@ -15,7 +15,9 @@
 
   --ink-1: #e8e1d3;
   --ink-2: #a59c8b;
-  --ink-3: #6f675b;
+  /* Raised from the Relay console's #6f675b: that value is ~3.6:1 on --bg and
+     fails WCAG AA for the body-size text this site sets in the dim tier. */
+  --ink-3: #837b6d;
 
   /* iris */
   --accent: #a78bf0;
