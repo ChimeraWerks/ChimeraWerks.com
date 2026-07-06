@@ -3,7 +3,12 @@
  * Direction slice A: "warm-arcane evolved".
  * Relay's operator-console aesthetic loosened for marketing scale: void
  * graphite, parchment ink, iris + amber signature pair, one ceremonial
- * Cinzel word, and a ritual-gauge hero background awaiting its shader.
+ * Cinzel word. The DNA helix (Hero3D) is this page's default hero via
+ * data-hero3d="default" on #hero-canvas-slot; the CSS ritual gauge is its
+ * reduced-motion / no-WebGL / ?hero=css fallback. The smoke shader is a
+ * fixed page-wide atmosphere behind everything, so sections below stay
+ * transparent and blend into one continuous space (seams are base-pair
+ * sequence dividers, not borders).
  *
  * Scroll life below the hero is CSS-first: view()/scroll() timelines gated
  * behind @supports AND prefers-reduced-motion. One tiny IntersectionObserver
@@ -11,12 +16,14 @@
  * fill, fig. 3 trace draw, footer rim shimmer). Pre-hidden states only exist
  * under :root.has-io, so no-JS and reduced-motion render complete + static.
  */
+import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
 import SectionHeading from "../components/SectionHeading.astro";
 import EcosystemCard from "../components/EcosystemCard.astro";
 import StatusDot from "../components/StatusDot.astro";
 import HeroShader from "../components/HeroShader.astro";
 import { ECOSYSTEM } from "../data/ecosystem";
+import chimeraPlate from "../assets/chimera-plate.png";
 import "../styles/slice-arcane.css";
 
 /* Per-letter delays for the wordmark's kinetic reveal; CSS reads --d. */
@@ -89,7 +96,7 @@ const BEATS = [
 
       <!-- Swappable background layer: a shader canvas replaces the children
            of this slot later. Keep the id stable. -->
-      <div id="hero-canvas-slot" aria-hidden="true">
+      <div id="hero-canvas-slot" data-hero3d="default" aria-hidden="true">
         <div class="hero-veil"></div>
         <div class="ring-field">
           <div class="ring ring-ticks"></div>
@@ -103,6 +110,12 @@ const BEATS = [
       <script>
         import "../scripts/hero-3d-loader";
       </script>
+
+      <!-- Bottom half of the fold ramp; .sec-fade-top on #werks is the other
+           half. Lives outside #hero-canvas-slot so the 3D loader never hides
+           it (the veil it replaces was a slot child), and before the content
+           so it dims the backdrop, never the text. -->
+      <div class="hero-fade" aria-hidden="true"></div>
 
       <div class="relative mx-auto flex w-full max-w-6xl flex-1 flex-col justify-center px-6 pb-32 pt-24 sm:px-10">
         <p class="hero-kicker rise font-mono" style="--d: 0ms">// many hands make light werk</p>
@@ -131,7 +144,7 @@ const BEATS = [
           Many agents. One <span class="word-arcane">Beast</span>.
         </p>
 
-        <p class="rise mt-5 max-w-xl text-[1.0625rem] leading-relaxed text-ink-2" style="--d: 780ms">
+        <p class="rise mt-5 max-w-prose text-[1.0625rem] leading-relaxed text-ink-2" style="--d: 780ms">
           We build the rooms, the language, and the instruments that let a fleet of coding agents -
           Codex, Claude, Hermes, and stranger things - work a single problem as one animal.
         </p>
@@ -149,12 +162,15 @@ const BEATS = [
     </section>
 
     <!-- ======================================================= ecosystem -->
-    <section id="werks" class="sec-aura grain border-t border-line-1">
+    <section id="werks" class="sec-aura grain">
+      <!-- Top half of the fold ramp: same peak strength as .hero-fade, so the
+           hero boundary is one continuous darkening curve, no seam. -->
+      <div class="sec-fade-top" aria-hidden="true"></div>
       <div class="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-28">
         <div class="sh-reveal">
           <SectionHeading kicker="the werks" heading="Every head of the beast" />
         </div>
-        <p class="mt-4 max-w-2xl text-ink-2">
+        <p class="mt-4 max-w-prose text-ink-2">
           Every tool ships from the same bench and speaks the same identity system: shared hues,
           shared statuses, shared rooms across the fleet.
         </p>
@@ -178,9 +194,51 @@ const BEATS = [
       </div>
     </section>
 
+    <!-- Base-pair seam: harness initials as a sequence. Legend renders once,
+         here; later dividers reorder the same four bases. -->
+    <div class="seq-divider" aria-hidden="true">
+      <div class="seq-row"><i></i><span>C·C·H·L</span><i></i></div>
+      <p class="seq-key">c codex · c claude · h hermes · l local</p>
+    </div>
+
+    <!-- ======================================================== specimen -->
+    <section id="specimen" class="specimen grain">
+      <div class="specimen-art" aria-hidden="true">
+        <Picture
+          src={chimeraPlate}
+          formats={["avif", "webp"]}
+          widths={[852, 1280, 1704]}
+          sizes="100vw"
+          loading="lazy"
+          decoding="async"
+          alt="Antique engraving of the chimera - lion, goat, and serpent - its hindquarters dissolving into an iris and amber DNA double helix"
+        />
+      </div>
+      <div class="relative mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-28">
+        <div class="copy-scrim max-w-md">
+          <div class="sh-reveal">
+            <SectionHeading kicker="specimen 001" heading="The founding chimera" />
+          </div>
+          <p class="mt-4 max-w-prose leading-relaxed text-ink-2">
+            The chimera was never one animal: lion, goat, serpent - three genomes running one
+            body. That is the thesis. Many agents, spliced into a single working creature.
+          </p>
+          <p class="mt-6 font-mono text-xs tracking-[0.1em] text-ink-3">
+            plate i · engraved specimen · strands iris + amber
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <div class="seq-divider" aria-hidden="true">
+      <div class="seq-row"><i></i><span>H·C·L·C</span><i></i></div>
+    </div>
+
     <!-- ======================================================== flagship -->
-    <section id="relay" class="sec-aura sec-aura-amber sec-aura-left grain border-t border-line-1">
-      <div class="sec-ring" aria-hidden="true"></div>
+    <section id="relay" class="sec-aura sec-aura-amber sec-aura-left grain">
+      <svg class="sec-helix" viewBox="0 0 240 720" fill="none" aria-hidden="true">
+        <path d="M120 0 C 210 60 210 180 120 240 C 30 300 30 420 120 480 C 210 540 210 660 120 720"></path>
+      </svg>
       <div class="mx-auto max-w-6xl px-6 py-24 sm:px-10 sm:py-28">
         <div class="grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:items-center">
           <div>
@@ -188,7 +246,7 @@ const BEATS = [
               <SectionHeading kicker="flagship werk" heading="Chimera Relay" />
             </div>
             <p class="mt-5 text-lg text-ink-2">The console where the swarm reports for duty.</p>
-            <p class="mt-3 max-w-xl text-[0.9375rem] leading-relaxed text-ink-2">
+            <p class="mt-3 max-w-prose text-[0.9375rem] leading-relaxed text-ink-2">
               Rooms of agents - Codex, Claude, Hermes, local models - run, argue, and get judged
               behind one pane of glass. Three werks below, one per head.
             </p>
@@ -279,7 +337,7 @@ const BEATS = [
                 <line class="af-rule" x1="324" y1="162" x2="414" y2="162"></line>
                 <line class="af-rule" x1="324" y1="180" x2="392" y2="180"></line>
               </svg>
-              <figcaption class="af-figcap">fig. 1 · fan-in: four harnesses, one room</figcaption>
+              <figcaption class="af-figcap">fig. 1 · fan-in: four strands, one room</figcaption>
             </figure>
           </div>
 
@@ -362,14 +420,20 @@ const BEATS = [
       </div>
     </section>
 
+    <div class="seq-divider" aria-hidden="true">
+      <div class="seq-row"><i></i><span>L·C·C·H</span><i></i></div>
+    </div>
+
     <!-- ========================================================= contact -->
-    <section id="contact" class="sec-aura sec-aura-amber grain border-t border-line-1 bg-surface-1">
-      <div class="sec-ring sec-ring-amber" aria-hidden="true"></div>
+    <section id="contact" class="sec-aura sec-aura-amber grain">
+      <svg class="sec-helix sec-helix-amber" viewBox="0 0 240 720" fill="none" aria-hidden="true">
+        <path d="M120 0 C 210 60 210 180 120 240 C 30 300 30 420 120 480 C 210 540 210 660 120 720"></path>
+      </svg>
       <div class="embers" aria-hidden="true"></div>
       <div
-        class="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20 sm:flex-row sm:items-end sm:justify-between sm:px-10"
+        class="mx-auto flex max-w-6xl flex-col gap-8 px-6 py-20 sm:flex-row sm:items-end sm:justify-between sm:px-10 sm:py-24"
       >
-        <div class="sh-reveal min-w-0">
+        <div class="sh-reveal copy-scrim min-w-0">
           <h2 class="sr-only">Contact</h2>
           <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent">// open a channel</p>
           <a href="mailto:hello@chimerawerks.com" class="contact-mail mt-3">hello@chimerawerks.com</a>
@@ -385,7 +449,7 @@ const BEATS = [
     </section>
   </main>
 
-  <footer class="relative border-t border-line-1">
+  <footer class="footer-seam relative">
     <div class="mx-auto flex max-w-6xl items-center justify-between gap-4 px-6 py-10 text-xs sm:px-10">
       <span class="text-ink-3">© 2026 Chimera Werks</span>
       <span class="font-mono text-ink-3">many hands · light werk</span>

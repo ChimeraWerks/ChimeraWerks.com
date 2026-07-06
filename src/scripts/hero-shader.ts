@@ -1,21 +1,37 @@
 /**
- * Hero shader backdrop: slow domain-warped simplex-fbm "smoke" rendered with
- * OGL onto a canvas that lives inside #hero-canvas-slot. Theme-aware: colors
- * are read once at init from the --bg / --accent / --accent-2 tokens on
- * <html data-theme>, so the same program renders iris+amber on the arcane
- * slice and violet+cyan on the precision slice.
+ * Page-wide smoke atmosphere: slow domain-warped simplex-fbm "smoke" rendered
+ * with OGL onto a position:fixed canvas pinned behind the entire page
+ * (z-index -10 — in front of the body background, behind all content), so the
+ * atmosphere runs seamlessly under every section with no break at the hero
+ * fold. Theme-aware: colors are read once at init from the --bg / --accent /
+ * --accent-2 tokens on <html data-theme>, so the same program renders
+ * iris+amber on the arcane slice and violet+cyan on the precision slice.
  *
- * Fallback contract: the CSS background already inside the slot stays intact
- * for reduced-motion, no-WebGL, and context-loss paths. This module only
- * paints over it (and hides it after the canvas has fully faded in).
+ * Scroll-linked intensity: full smoke strength over the hero viewport, easing
+ * down to a dim floor after one viewport of scroll so content sections stay
+ * readable over the haze (see INTENSITY_FLOOR).
+ *
+ * Fallback contract: reduced-motion, missing WebGL, and context loss remove
+ * the canvas and leave the page's CSS backgrounds untouched. Page mode never
+ * relocates into #hero-canvas-slot and never touches that slot's children —
+ * an optional 3D hero canvas simply layers above this atmosphere.
  */
 import { Mesh, Program, Renderer, Triangle } from "ogl";
 
 type Vec3 = [number, number, number];
 
-const SLOT_ID = "hero-canvas-slot";
 const DPR_CAP = 1.5;
 const FADE_CLASS = "is-live";
+
+/* Post-hero strength: content sections sit over smoke at this fraction of
+   hero strength. Kept at the dark end of the 0.35-0.45 band so the shader's
+   tone ceiling keeps parchment text at 4.5:1 everywhere below the fold. */
+const INTENSITY_FLOOR = 0.38;
+
+/* One fixed canvas per page. The component can be dropped in several places
+   (or the script can re-run); only the first canvas mounts, the rest remove
+   themselves. Without this guard two opaque fullscreen contexts would fight. */
+const MOUNT_FLAG = "data-hero-shader-mounted";
 
 /* Arcane-theme values; only used if a token is missing or unparseable. */
 const FALLBACK: Record<"bg" | "accent" | "accent2", Vec3> = {
@@ -50,6 +66,7 @@ precision mediump float;
 varying vec2 vUv;
 
 uniform float uTime;
+uniform float uIntensity; /* scroll-linked: 1.0 at hero, INTENSITY_FLOOR below */
 uniform vec2 uResolution;
 uniform vec2 uParallax;
 uniform vec3 uBg;
@@ -156,11 +173,13 @@ void main() {
   float wA = exp(-1.9 * dA * dA);
   float wB = exp(-1.6 * dB * dB);
 
+  /* uIntensity scales both accent fields AND the haze so scrolling dims the
+     whole atmosphere uniformly instead of leaving a bright midfield. */
   vec3 col = uBg;
-  col += uAccentA * (sA * wA * 0.20);
-  col += uAccentB * (sB * wB * 0.17);
+  col += uAccentA * (sA * wA * 0.20 * uIntensity);
+  col += uAccentB * (sB * wB * 0.17 * uIntensity);
   /* Faint cross-fading haze so the midfield is not dead black. */
-  col += mix(uAccentA, uAccentB, vUv.x) * (n * 0.03);
+  col += mix(uAccentA, uAccentB, vUv.x) * (n * 0.03 * uIntensity);
 
   /* Soft ceiling: keeps peak luminance low so parchment/white display text
      above never loses contrast. */
@@ -199,29 +218,40 @@ function readThemeColor(styles: CSSStyleDeclaration, token: string, fallback: Ve
 }
 
 /**
- * Entry point. Checks reduced-motion immediately, then defers the WebGL init
- * until the browser is idle so it never competes with first paint.
+ * Entry point. Checks reduced-motion and the single-mount guard immediately,
+ * then defers the WebGL init until the browser is idle so it never competes
+ * with first paint.
  */
 export function mountHeroShader(canvas: HTMLCanvasElement): void {
   if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     canvas.remove();
     return;
   }
+  if (document.documentElement.hasAttribute(MOUNT_FLAG)) {
+    canvas.remove();
+    return;
+  }
+  document.documentElement.setAttribute(MOUNT_FLAG, "");
+  // Init strictly after the load event: shader compilation on a throttled CPU
+  // otherwise lands inside the hero headline's paint window and measurably
+  // delays LCP (observed 148ms -> 1317ms under Lighthouse's Moto G emulation).
+  // The atmosphere is ambience; arriving a beat after the text is the design.
   const start = () => initHeroShader(canvas);
-  if (typeof requestIdleCallback === "function") {
-    requestIdleCallback(start, { timeout: 1500 });
+  const idle = () => {
+    if (typeof requestIdleCallback === "function") {
+      requestIdleCallback(start, { timeout: 2000 });
+    } else {
+      setTimeout(start, 300);
+    }
+  };
+  if (document.readyState === "complete") {
+    idle();
   } else {
-    setTimeout(start, 60);
+    window.addEventListener("load", idle, { once: true });
   }
 }
 
 function initHeroShader(canvas: HTMLCanvasElement): void {
-  const slot = document.getElementById(SLOT_ID);
-  if (!slot) {
-    canvas.remove();
-    return;
-  }
-
   /* Probe the context ourselves: OGL's Renderer console.errors and throws on
      a null context. getContext is idempotent per type, so OGL reuses this
      exact context (and these attributes) when it constructs. */
@@ -243,6 +273,7 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
   let mesh: Mesh;
   const uniforms = {
     uTime: { value: 0 },
+    uIntensity: { value: 1 },
     uResolution: { value: new Float32Array([1, 1]) },
     uParallax: { value: new Float32Array([0, 0]) },
     uBg: { value: new Float32Array(3) },
@@ -276,16 +307,35 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
   }
   const gl = renderer.gl;
 
-  slot.appendChild(canvas);
+  /* Page mode: re-parent to <body> so the fixed, negative-z canvas sits in
+     the root stacking context. Left inside a transformed/filtered ancestor it
+     would be trapped above (or clipped by) that ancestor's content. */
+  document.body.appendChild(canvas);
 
+  /* The canvas is fixed to the viewport, so size from the window — no slot,
+     no ResizeObserver. */
   const resize = () => {
-    renderer.setSize(slot.clientWidth || 1, slot.clientHeight || 1);
+    renderer.setSize(window.innerWidth || 1, window.innerHeight || 1);
     uniforms.uResolution.value[0] = gl.drawingBufferWidth;
     uniforms.uResolution.value[1] = gl.drawingBufferHeight;
+    onScroll(); /* one viewport of scroll just changed length */
   };
+
+  /* Scroll-linked intensity: smoothstep from 1.0 at the top of the page down
+     to INTENSITY_FLOOR after one viewport of scroll. Only scrollY (plus the
+     cached-cheap innerHeight) is read, and only inside the passive listener —
+     the frame loop does no layout reads, it just eases toward the target. */
+  let intensityTarget = 1;
+  const onScroll = () => {
+    const p = Math.min(Math.max(window.scrollY / Math.max(window.innerHeight, 1), 0), 1);
+    const eased = p * p * (3 - 2 * p);
+    intensityTarget = 1 - eased * (1 - INTENSITY_FLOOR);
+  };
+  onScroll();
+  uniforms.uIntensity.value = intensityTarget; /* no flash if loaded mid-page */
   resize();
-  const ro = new ResizeObserver(resize);
-  ro.observe(slot);
+  window.addEventListener("scroll", onScroll, { passive: true });
+  window.addEventListener("resize", resize, { passive: true });
 
   /* Very subtle pointer parallax: eased in the frame loop, never re-renders
      on its own, and cheap enough to leave always-on. */
@@ -299,11 +349,9 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
 
   let raf = 0;
   let running = false;
-  let inView = true;
   let last = 0;
   let elapsed = 0;
   let firstFrame = true;
-  const hiddenSiblings: HTMLElement[] = [];
 
   const frame = (now: number) => {
     raf = requestAnimationFrame(frame);
@@ -316,6 +364,7 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
     uniforms.uParallax.value[0] = eased.x;
     uniforms.uParallax.value[1] = eased.y;
     uniforms.uTime.value = elapsed;
+    uniforms.uIntensity.value += (intensityTarget - uniforms.uIntensity.value) * 0.08;
 
     renderer.render({ scene: mesh });
 
@@ -326,8 +375,10 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
     }
   };
 
+  /* A fixed full-page canvas is always "in view", so IntersectionObserver is
+     meaningless here — pause purely on tab visibility. */
   const syncLoop = () => {
-    const shouldRun = inView && !document.hidden;
+    const shouldRun = !document.hidden;
     if (shouldRun && !running) {
       running = true;
       last = performance.now();
@@ -337,39 +388,19 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
       cancelAnimationFrame(raf);
     }
   };
-
-  const io = new IntersectionObserver((entries) => {
-    const latest = entries[entries.length - 1];
-    inView = latest ? latest.isIntersecting : true;
-    syncLoop();
-  });
-  io.observe(canvas);
   document.addEventListener("visibilitychange", syncLoop);
   syncLoop();
 
-  /* Once fully faded in, the canvas is opaque: hide the CSS background
-     siblings (arcane's animated rings) so they stop costing paint. */
-  canvas.addEventListener("transitionend", (e) => {
-    if (e.propertyName !== "opacity" || !canvas.classList.contains(FADE_CLASS)) return;
-    for (const el of Array.from(slot.children)) {
-      if (el !== canvas && el instanceof HTMLElement && el.style.visibility !== "hidden") {
-        el.style.visibility = "hidden";
-        hiddenSiblings.push(el);
-      }
-    }
-  });
-
-  /* On context loss, hand the hero back to the CSS background for good. */
+  /* On context loss, hand the page back to the CSS backgrounds for good. */
   canvas.addEventListener(
     "webglcontextlost",
     () => {
       running = false;
       cancelAnimationFrame(raf);
-      io.disconnect();
-      ro.disconnect();
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", syncLoop);
-      for (const el of hiddenSiblings) el.style.visibility = "";
       canvas.remove();
     },
     { once: true },

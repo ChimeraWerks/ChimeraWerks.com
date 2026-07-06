@@ -4,8 +4,12 @@
  * Unlayered on purpose: these rules must win over Tailwind's layered
  * utilities where both apply.
  *
- * #hero-canvas-slot is the swappable background layer. A shader canvas can
- * replace its children later; hero content never depends on what is inside.
+ * #hero-canvas-slot is the swappable background layer. The DNA helix mounts
+ * into it by default (data-hero3d="default", see hero-3d-loader.ts); the CSS
+ * ring/veil children are the reduced-motion / no-WebGL fallback. The smoke
+ * atmosphere is NOT in the slot anymore — it is a fixed page-wide canvas on
+ * <body> (z -10), which is why sections below stay transparent and text
+ * blocks that need help use .copy-scrim instead of opaque backgrounds.
  *
  * Motion contract (repo convention, see .sb-in in slice-precision.css):
  * - Time-based ambience gates on prefers-reduced-motion: no-preference.
@@ -312,6 +316,203 @@ html {
   }
 }
 
+/* ----------------------------------------------------------- fold ramp -- */
+
+/* Hero bottom fades 0 -> 55% --bg; #werks' .sec-fade-top fades 55% -> 0.
+   Together they make the min-h-dvh boundary one continuous darkening curve
+   over the fixed page atmosphere. The two peak strengths must match or the
+   seam this replaces comes back as a luminance step. */
+.hero-fade {
+  position: absolute;
+  inset-inline: 0;
+  bottom: 0;
+  height: clamp(12rem, 28vh, 18rem);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    color-mix(in srgb, var(--bg) 55%, transparent)
+  );
+}
+
+.sec-fade-top {
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  z-index: -1;
+  height: clamp(10rem, 24vh, 16rem);
+  pointer-events: none;
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--bg) 55%, transparent),
+    transparent
+  );
+}
+
+/* ------------------------------------------------------- seam dividers -- */
+
+/* Section seams: instead of border-t slabs, a base-pair sequence (harness
+   initials) interrupting a very low-opacity violet-to-amber hairline. */
+.seq-divider {
+  margin-inline: auto;
+  max-width: 72rem;
+  padding-inline: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.625rem;
+}
+
+@media (min-width: 640px) {
+  .seq-divider {
+    padding-inline: 2.5rem;
+  }
+}
+
+.seq-row {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.seq-row span {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.4em;
+  margin-right: -0.4em; /* optical: cancel the trailing tracking space */
+  color: var(--ink-3);
+}
+
+.seq-row i {
+  flex: 1;
+  height: 1px;
+  opacity: 0.22;
+}
+
+/* Left run carries the iris end of the signature, right run the amber end,
+   so the pair reads as one hairline passing behind the sequence. */
+.seq-row i:first-child {
+  background: linear-gradient(90deg, transparent, var(--accent));
+}
+
+.seq-row i:last-child {
+  background: linear-gradient(90deg, var(--accent-2), transparent);
+}
+
+.seq-key {
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  /* ink-3 is tuned to exactly 4.5:1 on --bg; stacking opacity on it breaks AA. */
+  color: var(--ink-3);
+}
+
+/* ------------------------------------------------------ readability scrim -- */
+
+/* Local darkening pool behind a text block sitting directly on the fixed
+   atmosphere (or the specimen plate). A radial color-mix of --bg, never an
+   opaque slab: the smoke must stay legible through its edges. */
+.copy-scrim {
+  position: relative;
+}
+
+.copy-scrim::before {
+  content: "";
+  position: absolute;
+  inset: -2.5rem -3.5rem;
+  z-index: -1;
+  pointer-events: none;
+  background: radial-gradient(
+    120% 120% at 50% 50%,
+    color-mix(in srgb, var(--bg) 62%, transparent) 35%,
+    transparent 100%
+  );
+}
+
+/* ------------------------------------------------------ specimen plate -- */
+
+/* Interstitial band between ecosystem and flagship. The engraving is a
+   full-bleed backdrop: object-position keeps the creature right of the copy,
+   and a single elliptical mask feathers all four edges into the void so the
+   plate reads as engraved into the page, not pasted onto it. */
+.specimen {
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: clamp(26rem, 55vh, 36rem);
+}
+
+.specimen-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.specimen-art picture,
+.specimen-art img {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.specimen-art img {
+  object-fit: cover;
+  object-position: 72% 38%;
+  opacity: 0.9;
+  /* Ellipse ry ~64% of band height so the engraving feathers out BEFORE the
+     section's top/bottom edges; taller radii leave the artwork hard-cropped
+     at the band boundary (goat horns sliced mid-line). */
+  -webkit-mask-image: radial-gradient(92% 64% at 66% 46%, #000 44%, transparent 84%);
+  mask-image: radial-gradient(92% 64% at 66% 46%, #000 44%, transparent 84%);
+}
+
+/* Stacked layout: the plate becomes pure atmosphere behind the copy, which
+   keeps its own scrim. */
+@media (max-width: 767px) {
+  .specimen-art img {
+    opacity: 0.45;
+    object-position: 66% 42%;
+  }
+}
+
+/* Slow drift on the plate for parallax depth, same gates as every other
+   scroll-linked effect on this page. transform only; the mask rides along. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .specimen-art img {
+      animation: plate-drift linear both;
+      animation-timeline: view();
+      animation-range: cover 0% cover 100%;
+    }
+  }
+}
+
+@keyframes plate-drift {
+  from {
+    transform: translateY(2.5%) scale(1.06);
+  }
+  to {
+    transform: translateY(-2.5%) scale(1.06);
+  }
+}
+
+/* --------------------------------------------------------- footer seam -- */
+
+.footer-seam::before {
+  content: "";
+  position: absolute;
+  inset-inline: 0;
+  top: 0;
+  height: 1px;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+  opacity: 0.18;
+}
+
 /* ------------------------------------------------------------- buttons -- */
 
 .btn {
@@ -435,36 +636,41 @@ html {
   }
 }
 
-/* Fragment of the hero's ritual ring, echoed into section backgrounds.
-   Drifts on its own view() timeline at a different travel than the aura for
-   cheap parallax depth; decorative only, never behind text at readable
-   contrast (z -1, ~quarter-arc mask, low-mix border). */
-.sec-ring {
+/* Faint helix-curve fragment (single serpentine path) echoing the DNA hero
+   into section backgrounds. Drifts on its own view() timeline at a different
+   travel than the aura for cheap parallax depth; decorative only, never
+   behind text at readable contrast (z -1, low-mix stroke). */
+.sec-helix {
   position: absolute;
   z-index: -1;
-  top: 9rem;
-  right: -14rem;
-  width: 38rem;
-  height: 38rem;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--accent) 26%, transparent);
+  top: 7rem;
+  right: -5rem;
+  width: 14rem;
+  height: 42rem;
   pointer-events: none;
-  -webkit-mask: conic-gradient(from 210deg, #000 0 80deg, transparent 96deg);
-  mask: conic-gradient(from 210deg, #000 0 80deg, transparent 96deg);
-  opacity: 0.6;
+  opacity: 0.55;
 }
 
-.sec-ring-amber {
-  border-color: color-mix(in srgb, var(--accent-2) 24%, transparent);
+.sec-helix path {
+  stroke: color-mix(in srgb, var(--accent) 32%, transparent);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+}
+
+.sec-helix-amber {
   right: auto;
-  left: -16rem;
+  left: -6rem;
   top: auto;
-  bottom: -20rem;
+  bottom: -12rem;
+}
+
+.sec-helix-amber path {
+  stroke: color-mix(in srgb, var(--accent-2) 30%, transparent);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
-    .sec-ring {
+    .sec-helix {
       animation: ring-drift linear both;
       animation-timeline: view();
       animation-range: cover 0% cover 100%;
@@ -1064,6 +1270,7 @@ html {
   font-family: var(--font-display);
   font-size: clamp(1.4rem, 4.2vw, 2.75rem);
   font-weight: 650;
+  line-height: 1.15; /* display tier: 1.1-1.3, was inheriting body 1.5 */
   letter-spacing: -0.02em;
   color: var(--ink-1);
   overflow-wrap: anywhere;

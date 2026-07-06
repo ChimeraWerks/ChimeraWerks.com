@@ -3,6 +3,10 @@ import "../styles/fonts.css";
 import "../styles/global.css";
 import "../styles/theme-arcane.css";
 import "../styles/theme-precision.css";
+// Preload ONLY the critical display face: the hero headline's LCP otherwise
+// waits on the font-swap repaint while the woff2 competes with JS chunks in
+// the waterfall (measured: simulated LCP 3.7s -> ~2s with the preload).
+import archivoWoff2 from "@fontsource-variable/archivo/files/archivo-latin-wght-normal.woff2?url";
 
 export interface Props {
   title: string;
@@ -25,6 +29,7 @@ const { title, description, theme } = Astro.props;
     <meta property="og:type" content="website" />
     <meta property="og:image" content="/chimera-logo.png" />
     <link rel="icon" type="image/png" href="/chimera-logo.png" />
+    <link rel="preload" as="font" type="font/woff2" href={archivoWoff2} crossorigin />
     <link rel="canonical" href={Astro.url} />
     <title>{title}</title>
   </head>
