@@ -33,8 +33,9 @@ Redesign the live site with a fresh creative eye so it flows like a top-tier Sil
 # Validation
 - npm run build green; npm test (AGENTS.md gate) passes.
 - Full-scroll walkthroughs in Camoufox in both themes, including theme-switch-at-page-bottom (the reflow bug repro) - all pass locally.
-- NOT yet verified at save time: production deploy (CI runs on push to main; verify https://chimerawerks.com serves the new site and curl -sI https://chimerawerks.com/devlog/day-19 returns a 301 to /archive/v1/devlog/day-19).
-- Field CWV (p75) only checkable post-deploy via PageSpeed/CrUX.
+- Production VERIFIED live: https://chimerawerks.com serves the kinetic cut (title "Many agents, one beast"), /devlog/day-19 301s to /archive/v1/devlog/day-19, /archive/v1/ returns 200.
+- CI required two fixes to go green: node 24 in deploy.yml (Astro 7 engines) and @emnapi devDep pins (Windows npm drops optional-wasm peer deps from the lock). Both documented in AGENTS.md.
+- Field CWV (p75) still only checkable via PageSpeed/CrUX after traffic accrues.
 
 # Risks / open questions
 - Three scars that will bite a redesign: (1) fixed alpha-WebGL canvas at negative z-index inverts colors in Firefox - keep canvas z>=0 with content lifted above; (2) any post-measure reflow (lazy images, theme/font swap) strands scrubbed reveals - kinetic.ts already queues ScrollTrigger.refresh for known sources, add new sources to it; (3) codex-oauth image backend rejects transparent backgrounds - generate on black + mix-blend-mode: screen.
@@ -48,7 +49,7 @@ Redesign the live site with a fresh creative eye so it flows like a top-tier Sil
 - frontend-design skill for aesthetic direction
 
 # Next action
-Verify the production deploy landed (curl https://chimerawerks.com for the new title + the /devlog/day-19 301), then do a structured critique pass of the live site against 3-5 best-in-class Silicon Valley product sites (Linear, Vercel, Stripe tier) to name concretely what "doesn't flow" - then redesign from that critique, not from scratch.
+Do a structured critique pass of the live site (https://chimerawerks.com) against 3-5 best-in-class Silicon Valley product sites (Linear, Vercel, Stripe tier) to name concretely what "doesn't flow" - then redesign from that critique, not from scratch.
 
 # Artifact links
 - Live: https://chimerawerks.com · review alias: https://rebuild-preview.chimerawerks-com.pages.dev

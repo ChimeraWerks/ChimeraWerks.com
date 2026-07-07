@@ -22,6 +22,9 @@ Keep `npm run build` green for any change — CI deploys its `out/` on push to `
   never be edited; Astro's default `dist/` would deploy nothing. Check: `npm run build` then `ls out/`.
 - **Static output, no server at runtime.** Every route is prerendered; request-time server code silently
   no-ops in production.
+- **Keep `@emnapi/core`/`@emnapi/runtime` pinned in devDependencies.** npm on Windows omits peer deps of
+  not-installed optional wasm packages from the lock, which broke `npm ci` on the Linux deploy runner
+  (2026-07). The devDep pins force hoisted lock entries. Check: the CI `npm ci` step is green.
 - **Theme tokens are the only styling contract.** Components consume semantic tokens (`--bg`, `--ink-*`,
   `--accent*`, `--surface-*`) defined per `[data-theme]` in `src/styles/theme-*.css`; hard-coding a hex in
   a component breaks the other theme silently. Fontsource variable packages register names with a
@@ -31,7 +34,9 @@ Keep `npm run build` green for any change — CI deploys its `out/` on push to `
 
 - **Never touch deploy/auth config or secrets.** `.github/workflows/deploy.yml`, the Cloudflare Pages project
   name `chimerawerks-com`, GitHub secrets `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`, and
-  `~/.cloudflared/cert.pem` are load-bearing and out of scope for content or instruction edits.
+  `~/.cloudflared/cert.pem` are load-bearing and out of scope for content or instruction edits. Sole
+  precedented exception: the workflow's `node-version` may move when the toolchain demands it (bumped to 24
+  for Astro 7 after the node-20 deploy failed, 2026-07).
 - **`public/archive/v1/` is a frozen snapshot — never edit it in place.** It is the Chimera Studio era site
   built from tag `v1-chimera-studio` with `basePath: "/archive/v1"`; regenerate only from that tag (worktree,
   patch raw hrefs + CSS `url()` refs, rebuild, recopy). `.gitattributes` exempts it from EOL conversion to
