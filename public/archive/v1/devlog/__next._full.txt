@@ -1,0 +1,330 @@
+1:"$Sreact.fragment"
+2:I[45678,["/archive/v1/_next/static/chunks/58c1695255bc1795.js","/archive/v1/_next/static/chunks/da5bb0cb802fa7be.js"],"Navbar"]
+3:I[39756,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"default"]
+4:I[37457,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"default"]
+c:I[68027,[],"default"]
+:HL["/archive/v1/_next/static/chunks/eb2f43bb4a989970.css","style"]
+:HL["/archive/v1/_next/static/media/0c89a48fa5027cee-s.p.4564287c.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/archive/v1/_next/static/media/0c8f209abc35ee02-s.p.a4b9a15b.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/archive/v1/_next/static/media/8d05cfa5faa8406c-s.p.4adea45d.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+:HL["/archive/v1/_next/static/media/dc0d9adbac686440-s.p.3b382e45.woff2","font",{"crossOrigin":"","type":"font/woff2"}]
+0:{"P":null,"b":"lp369tLrw8o7KHqANEpYc","c":["","devlog"],"q":"","i":false,"f":[[["",{"children":["devlog",{"children":["__PAGE__",{}]}]},"$undefined","$undefined",true],[["$","$1","c",{"children":[[["$","link","0",{"rel":"stylesheet","href":"/archive/v1/_next/static/chunks/eb2f43bb4a989970.css","precedence":"next","crossOrigin":"$undefined","nonce":"$undefined"}],["$","script","script-0",{"src":"/archive/v1/_next/static/chunks/58c1695255bc1795.js","async":true,"nonce":"$undefined"}],["$","script","script-1",{"src":"/archive/v1/_next/static/chunks/da5bb0cb802fa7be.js","async":true,"nonce":"$undefined"}]],["$","html",null,{"lang":"en","children":["$","body",null,{"className":"space_grotesk_195182e4-module__TxbuIq__variable dm_serif_display_24a50ffc-module__A1eQha__variable space_mono_24005416-module__PitrNW__variable antialiased selection:bg-accent selection:text-white bg-[var(--color-foreground)]","children":[["$","$L2",null,{}],["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":[[["$","title",null,{"children":"404: This page could not be found."}],["$","div",null,{"style":{"fontFamily":"system-ui,\"Segoe UI\",Roboto,Helvetica,Arial,sans-serif,\"Apple Color Emoji\",\"Segoe UI Emoji\"","height":"100vh","textAlign":"center","display":"flex","flexDirection":"column","alignItems":"center","justifyContent":"center"},"children":["$","div",null,{"children":[["$","style",null,{"dangerouslySetInnerHTML":{"__html":"body{color:#000;background:#fff;margin:0}.next-error-h1{border-right:1px solid rgba(0,0,0,.3)}@media (prefers-color-scheme:dark){body{color:#fff;background:#000}.next-error-h1{border-right:1px solid rgba(255,255,255,.3)}}"}}],["$","h1",null,{"className":"next-error-h1","style":{"display":"inline-block","margin":"0 20px 0 0","padding":"0 23px 0 0","fontSize":24,"fontWeight":500,"verticalAlign":"top","lineHeight":"49px"},"children":404}],["$","div",null,{"style":{"display":"inline-block"},"children":["$","h2",null,{"style":{"fontSize":14,"fontWeight":400,"lineHeight":"49px","margin":0},"children":"This page could not be found."}]}]]}]}]],[]],"forbidden":"$undefined","unauthorized":"$undefined"}],["$","footer",null,{"className":"w-full bg-[var(--color-foreground)] text-[var(--color-primary)] px-8 md:px-16 pt-32 pb-16 relative z-10 border-t border-[var(--color-primary)]/10","children":["$","div",null,{"className":"max-w-7xl mx-auto","children":[["$","div",null,{"className":"flex flex-col md:flex-row justify-between items-start gap-16","children":[["$","div",null,{"className":"max-w-sm","children":[["$","h2",null,{"className":"font-mono font-bold text-3xl mb-4 text-[var(--color-accent)]","children":"Chimera_Studio"}],["$","p",null,{"className":"font-sans opacity-60 mb-8 text-lg","children":"Your local-first intelligence hub for ComfyUI outputs and AI music generation."}],["$","div",null,{"className":"flex items-center gap-3 font-mono text-sm px-4 py-2 border border-[var(--color-primary)]/20 rounded-full inline-flex","children":[["$","span",null,{"className":"w-2 h-2 rounded-full bg-green-500 animate-pulse"}],"System Operational"]}]]}],["$","div",null,{"className":"grid grid-cols-2 gap-16 font-mono text-sm","children":[["$","div",null,{"className":"flex flex-col gap-4","children":[["$","span",null,{"className":"opacity-40 uppercase mb-2","children":"Platform"}],["$","a",null,{"href":"https://github.com/ChimeraWerks/ChimeraStudio","target":"_blank","rel":"noopener noreferrer","className":"hover:text-[var(--color-accent)] transition-colors","children":"Documentation"}],["$","a",null,{"href":"https://github.com/ChimeraWerks/ChimeraStudio","target":"_blank","rel":"noopener noreferrer","className":"hover:text-[var(--color-accent)] transition-colors","children":"GitHub"}],["$","a",null,{"href":"https://github.com/ChimeraWerks/ChimeraStudio/releases","target":"_blank","rel":"noopener noreferrer","className":"hover:text-[var(--color-accent)] transition-colors","children":"Releases"}],["$","a",null,{"href":"/archive/v1/devlog","className":"hover:text-[var(--color-accent)] transition-colors","children":"Devlog"}],["$","a",null,{"href":"/archive/v1/toolkit","className":"hover:text-[var(--color-accent)] transition-colors","children":"Toolkit"}]]}],"$L5"]}]]}],"$L6"]}]}],"$L7","$L8"]}]}]]}],{"children":["$L9",{"children":["$La",{},null,false,false]},null,false,false]},null,false,false],"$Lb",false]],"m":"$undefined","G":["$c",[]],"S":true}
+d:I[67484,["/archive/v1/_next/static/chunks/58c1695255bc1795.js","/archive/v1/_next/static/chunks/da5bb0cb802fa7be.js","/archive/v1/_next/static/chunks/b18fd4dae68b9706.js"],"DevlogTimeline"]
+21:I[97367,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"ViewportBoundary"]
+23:I[97367,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"MetadataBoundary"]
+24:"$Sreact.suspense"
+5:["$","div",null,{"className":"flex flex-col gap-4","children":[["$","span",null,{"className":"opacity-40 uppercase mb-2","children":"Legal"}],["$","a",null,{"href":"/archive/v1/privacy","className":"hover:text-[var(--color-accent)] transition-colors","children":"Privacy"}],["$","a",null,{"href":"https://github.com/ChimeraWerks/ChimeraStudio/blob/main/LICENSE","target":"_blank","rel":"noopener noreferrer","className":"hover:text-[var(--color-accent)] transition-colors","children":"License"}]]}]
+6:["$","div",null,{"className":"mt-32 border-t border-[var(--color-primary)]/10 pt-8 flex justify-between font-mono text-xs opacity-30 uppercase","children":[["$","span",null,{"children":"© 2026 Chimera Werks"}],["$","span",null,{"children":"Local Database Authorized"}]]}]
+7:["$","div",null,{"style":{"position":"fixed","bottom":0,"left":0,"right":0,"zIndex":9999,"background":"#111","color":"#bbb","borderTop":"1px solid #333","padding":"8px 16px","fontSize":"13px","lineHeight":1.4,"textAlign":"center","fontFamily":"var(--font-mono), monospace"},"children":["Archived snapshot of the Chimera Studio era site (March 2026) -"," ",["$","a",null,{"href":"/","style":{"color":"#e8e4dc","textDecoration":"underline"},"children":"chimerawerks.com"}]]}]
+8:["$","div",null,{"style":{"height":"40px"},"aria-hidden":"true"}]
+9:["$","$1","c",{"children":[null,["$","$L3",null,{"parallelRouterKey":"children","error":"$undefined","errorStyles":"$undefined","errorScripts":"$undefined","template":["$","$L4",null,{}],"templateStyles":"$undefined","templateScripts":"$undefined","notFound":"$undefined","forbidden":"$undefined","unauthorized":"$undefined"}]]}]
+e:T73e,
+So I had this folder with like 3,000+ images and videos just... sitting there. Every time I wanted to find something specific — "which workflow used that LoRA at 0.8 with DPM++ 2M?" — I'd end up opening files one by one. Scrolling through thumbnails for 20 minutes hoping I'd recognize the right one.
+
+I kept thinking "there has to be a better way" and honestly... there wasn't. I looked at everything. Eagle, Allusion, digiKam, XnView, Hydrus — none of them understood ComfyUI's embedded workflow data. The metadata is right there *inside* the files, locked away because nobody wrote a proper parser for it.
+
+So I just started building.
+
+- Wrote the backend in Python — FastAPI, SQLAlchemy, SQLite. Nothing fancy, just solid
+- Built extractors that can crack open PNGs, MP4s, and WebPs to pull out their hidden metadata
+- The big one: a ComfyUI workflow parser. ComfyUI doesn't store metadata in a nice flat format — it stores the entire node graph. So I had to write something that could walk the graph, understand 60+ different node types, and decompose all of that into clean searchable fields
+- Threw together a React frontend with a virtualized thumbnail grid because... 3,000+ items, you need virtualization or your browser just dies
+- Added 18 different filter parameters. Model, LoRA, sampler, scheduler, prompt search, seed, resolution, date range... the works
+- Saved searches, keyboard shortcuts, settings that persist
+
+Pointed it at my output folder. 3,272 files ingested. 689 came back with fully parsed ComfyUI metadata — prompts, models, samplers, LoRA weights, all of it. Searchable. Filterable.
+
+I couldn't stop adding features. By the end of the night I had scan completion summaries, orphan cleanup for deleted files, incremental scanning so re-scans are fast... I think I committed four times that day.
+f:T64f,
+The basic filters worked but they felt dumb. You'd select a model and then the LoRA dropdown would still show every LoRA in the database, even ones that were never used with that model. That drove me crazy.
+
+So I built cascading filters — when you pick a model, every other filter narrows down to only show values that actually exist with that selection. It sounds simple but the implementation required rethinking how every filter query works. Each category has to exclude *itself* when computing what's available in the other categories, otherwise you get circular dependencies.
+
+Also got nerdsniped by the port situation. I have multiple apps across the ChimeraWerks ecosystem and they were all fighting over random ports. Ended up designing a whole port convention — `2XYZZ` scheme where X identifies the app, Y identifies the layer, ZZ is the instance. Maybe overkill for a solo dev, but I like things organized.
+
+Other stuff that landed:
+- Subfolder browsing with a tree UI — can drill into nested output folders
+- Date range filters
+- Model name dedup (you'd be surprised how many ways the same model can show up depending on whether the path used forward or back slashes)
+- A shared video element that gets reparented between the info panel and the modal — one `<video>` DOM node, seamless playback, no gap
+- Video settings: autoplay, loop, volume, spacebar play/pause
+
+The video thing was satisfying. Click a video in the grid, it shows in the side panel. Open the modal, the exact same video element moves over — no reload, no sync issues. Close the modal, it goes back. Smooth.
+10:T670,
+Ten commits. This was the day everything came together and also the day I probably should have slept more.
+
+Started with thumbnails — the old ones were tiny and blurry, so I rebuilt the whole pipeline. 800px high-quality thumbnails, parallel generation so it doesn't take forever. Then added a file watcher so the app notices new files automatically instead of needing manual rescans.
+
+Multi-select with Ctrl+click and Shift+click. Discrete thumbnail sizes instead of a janky continuous slider. Global Ctrl+wheel to resize from anywhere. First-run empty state so new users don't just see a blank screen — it actually opens a folder picker and starts scanning for you.
+
+Then came the parsers. The original ComfyUI parser was solid but I had users with A1111, InvokeAI, and NovelAI outputs too. Built dedicated parsers for each format. The node registry hit 80+ types.
+
+**The big merge:** I'd been building a music generation app separately (ChimeraMusic — AI audio via Suno) and realized it shared the same backend architecture. Same port convention, same settings pattern, same UI framework. So I merged them. Vault for images/video, Music for audio, all under one roof.
+
+And then... the rebrand. ChimeraVault → **Chimera Studio**. Vault and Music became section names. Updated every user-facing string, browser title, localStorage key, env var, and package name. It felt right.
+
+Also squeezed in Civitai integration — hash your model files, look them up on Civitai's API, get back the official model name, architecture, version. And dropped in the ChimeraWerks logo everywhere. GPL-3.0 license.
+
+Ten commits. I'm tired.
+11:T506,
+Needed the Music section to actually feel finished instead of "it works if you squint."
+
+Added settings persistence so your audio directory and download preferences survive a server restart (you'd think that'd be day-one stuff but no, it was living in memory). WAV downloads with MP3 fallback. Live streaming playback so you can hear songs as they're being generated — there's this pulsing LIVE indicator that's honestly kind of satisfying to watch.
+
+The fun part: mapped Suno's internal model IDs to human names. Nobody wants to see "chirp-crow" in their filter dropdown — it's "V5 (Crow)." Removed the Status filter entirely because every song is always "complete" by the time it's in our library. Useless filter.
+
+Then I set up the Cloudflare tunnel. `--tunnel` flag on the launcher, cloudflared named tunnel, 16 workers. Now I can access the app from anywhere at `studio.chimerawerks.com`. Had to fight with regex anchoring in the cloudflared config — learned that lesson the hard way when requests were matching the wrong routes.
+
+Favorites for both Vault and Music. Better default settings (panels open by default, reasonable volume, 1000 items per page). Caching headers on thumbnails. The kind of polish that makes the difference between "prototype" and "app."
+12:T4d4,
+Some days are about flashy features. This was about making the thing actually deployable and secure.
+
+Clipboard copy — highlight a prompt, copy it. Click a field, copy it. Select an image, copy it to clipboard as PNG. Sounds simple, took more code than you'd think (Canvas API → PNG → Clipboard API for images). Bulk tagging with autocomplete. Shadow metadata so users can override parsed fields without touching the original data.
+
+Then the big one: authentication. JWT with bcrypt, httpOnly cookies, role-based access control. Admin, editor, viewer roles with per-user permission overrides. User management UI. This was... a lot. But if the app is going to be accessible over a tunnel, it needs auth. No shortcuts.
+
+Built `ctl.py` — a standalone process controller that can stop, start, restart, and monitor the entire stack. Uses port scanning to find processes, works even after crashes. Admin buttons in Settings so you can restart the server from the UI. Added Claude Code skills so I can say `/restart` during development instead of manually killing processes.
+
+Seven commits that day including some annoying logo fixes. Turns out when you use a 64px favicon as your 288px hero image... it's blurry. Who knew.
+13:T50e,
+This is where it gets interesting. Everything up to now was about *organizing* AI content. Now the app itself is becoming AI-powered.
+
+Built ChimeraCore — the inference engine. It runs AI models in a separate subprocess so if something crashes (and GPU stuff crashes), it doesn't take down the whole server. Kill the process and VRAM is guaranteed freed. The worker talks to the main server over a JSON line protocol on stdin/stdout.
+
+The implementation was tricky:
+- Auto-detects your GPU and picks the right precision (bf16 on newer cards, fp16 otherwise)
+- Tries multiple attention acceleration backends and falls back gracefully
+- Optional compile mode for long-running workers
+- Warms up the GPU with dummy passes before the first real request (cold GPUs are slow)
+- Auto-unloads models when idle so your VRAM isn't held hostage
+- If it crashes, it restarts itself with backoff so it doesn't spam restart attempts
+
+Also built a hardware profiler that detects everything about your system — OS, CPU, GPU, RAM, Python version, installed AI packages, ComfyUI install location, the works. Served it through an API and added a UI panel in Settings.
+
+And a CLI test tool so I can benchmark captioning speeds without starting the whole web server. Very useful for profiling.
+14:T4eb,
+Applied yesterday's research. Started building the conversational AI layer.
+
+**Chimera Chat** — talk to the app in natural language. "Find landscape photos made with Flux, sort newest first." The backend parses that, calls the right tools, and returns results. SSE streaming so responses come in token-by-token like you'd expect. Ten server-side tools covering search, filtering, tagging, navigation, settings — basically anything you can do through the UI, Chat can do for you.
+
+Set up the shared models path system — one directory for all AI models, 28 subfolders following ComfyUI conventions, auto-generates the config file ComfyUI needs to find them, redirects HuggingFace downloads to land in the right place. Configurable from Settings.
+
+Scaffolded the Vision section too — not functional yet, but the UI bones are there. Grid, filters, info panel, stores, API client. Ready for when ChimeraVision comes online.
+
+The inference worker now supports multiple model architectures — Qwen, Gemma, Florence. Loading any of them through the same clean interface.
+
+This is the part where the app stops being "just a media browser" and starts becoming something bigger. A platform. Maybe that's ambitious, but... that's kind of the point.
+15:Taa8,
+So I've been building this thing for eight days and it has... no website. No public presence at all. There's a GitHub repo with a README, and if you know the tunnel URL you can poke around the live demo, but there's nothing that says "hey, this exists, here's what it does."
+
+That felt wrong. Especially since the devlog — the thing you're reading right now — is honestly one of the most interesting parts of the project. Eight days of building in public, raw commits, real decisions. That's a story worth telling properly, not just burying in a markdown file on GitHub.
+
+So I built chimerawerks.com.
+
+Next.js 16, React 19, Tailwind v4, GSAP for the animations. Went with a brutalist dark aesthetic — `#111111` background, off-white text, red accents. Three font families: Space Grotesk for UI, DM Serif Display for those big italic headlines, Space Mono for anything that should feel technical. The kind of design where the typography does the heavy lifting.
+
+The fun part was the animations. GSAP ScrollTrigger everywhere — the navbar morphs from transparent to frosted glass on scroll, the feature cards stagger in, the protocol section has these full-viewport cards that pin and blur as the next one slides over them. There's a card shuffler animation, a terminal typewriter effect, an animated cursor clicking a calendar. Probably overkill for a landing page but... I wanted it to feel alive.
+
+Then came the devlog integration. I split all eight days of this file into individual markdown files with YAML frontmatter, built a content pipeline that reads them at build time, and created a full timeline experience at `/devlog`. Red spine line, numbered day circles, commit badges that link back to GitHub. Each day gets its own page with a unique background image, custom markdown rendering, reading time estimates, prev/next navigation.
+
+On the landing page there's this interactive journey map — a horizontal timeline with commit intensity bars above each day. Day 3's bar towers over the rest because... ten commits. The bars animate up, the circles pop in with a bounce, and there's an SVG line that draws itself as you scroll. On mobile it collapses into a vertical compact timeline.
+
+Also set up Cloudflare Pages for deployment — `npm run build` outputs static HTML, wrangler pushes it to the edge, custom domain configured via the API. Added a GitHub Action so every push to main auto-deploys. The site was live before I finished writing this entry.
+
+There's something satisfying about a project that finally has a front door. The app was always the priority, but now there's somewhere to point people. And the devlog isn't just documentation anymore — it's a feature of the website.
+16:Tf98,
+This was supposed to be a one-feature day. "Add a Browse mode so users can see their full Suno library without syncing everything first." Simple concept. It was not a one-feature day.
+
+## Browse Mode
+
+Built the whole thing — workspace picker that shows all your Suno projects, click one to browse its songs remotely, stream audio directly from Suno's CDN without downloading, grab individual songs or bulk sync everything. List view, grid view, info panel with all the metadata. It's a proper two-pane browser for your remote music library.
+
+That part went fine. The frustrating part was everything after.
+
+Download buttons silently failing. Three bugs stacked on top of each other — the backend returning "already exists" for synced songs with no audio files, the feed API 404'ing because workspace endpoints don't return clips, and WAV conversion returning empty bodies that my JSON parser choked on. Three bugs. One silent failure.
+
+Then WAV downloads. Suno doesn't just give you a WAV file — you trigger a conversion, then poll the CDN every few seconds until it shows up. About 30 seconds per song. Someone tries to download 100 songs as WAV, that's 50 minutes. Had to add rate limiting, time estimates, a confirmation dialog for bulk downloads.
+
+## Reverse-Engineering Suno's Trash API
+
+Then scope explosion. The Sync button on workspace cards was navigating instead of syncing. Fixed that. Then realized we need Sync All. And Download All. With WAV/MP3 toggle. And progress tracking.
+
+The delete feature is where it got interesting. Three tiers of destruction: wipe local data, also delete downloaded files, also trash everything on Suno. That third option required reverse-engineering — Suno doesn't have a documented delete API. First attempt: intercept `window.fetch`. Didn't work — they bundle their own copy that bypasses patches. Second attempt: `performance.getEntriesByType('resource')`. That worked — shows every HTTP request regardless of how it was initiated. Found `POST /api/gen/trash`. Fetched their JavaScript bundle for the request body format: `{trash: boolean, clip_ids: string[]}`. Songs go to a 30-day trash before permanent deletion.
+
+Wired up batch trash in chunks of 50, a checkbox in the delete modal that says "Also trash all N songs on Suno" with a note about the 30-day recovery window. Type DELETE to confirm.
+
+## Mobile Foundation
+
+Then the day took a completely different turn. I opened the app on my phone. It was unusable. Desktop layout shrunk into a mess of overlapping panels and truncated headers.
+
+So I built a mobile foundation layer from scratch. Four new components — a responsive hook that detects mobile at 768px, a bottom tab bar with permission-filtered navigation, a compact header with action icon slots, and a full-screen overlay that replaces sidebar panels. Went through every tab layout and added the mobile fork. Desktop code doesn't change at all. Side panels become overlay triggers. Footers hide. Resize handles disappear. The Music player needed the most work — shrunk it, hid the volume slider (phones have hardware buttons), made the breadcrumb bar scrollable.
+
+## Trader Tab
+
+And then I added the Trader tab. Fifth section. Emerald green accent. Wired the ChimeraTrader backend into the launcher, added TradingView lightweight-charts with candlestick rendering, real-time quotes, a settings modal, and header polish. Built trading safety layers — paper mode as default, a live confirmation gate, and an emergency kill switch (cancel all orders, halt trading, Ctrl+Shift+X).
+
+Documented everything — desktop UI conventions, mobile architecture, eleven rules for building new mobile features. Future me can add a new tab and get the mobile layout right on the first try.
+
+Eleven commits. The app went from "desktop media browser" to a mobile-responsive platform with five sections and a built-in trading terminal. The scope keeps growing but the architecture keeps holding.
+17:T83d,
+The Music section went from "plays songs from Suno" to an actual music production workspace today.
+
+## Personas
+
+Added a persona system. You define a persona — a name, a description, some style notes — and it shapes how the AI generates music for you. Think of it like presets for your creative identity. Switch between personas depending on what you're working on. The UI lets you create, edit, and switch between them inline.
+
+## Generation Indicators
+
+When you kick off a song generation, you used to just... wait. Now there are proper indicators — you can see what's generating, what stage it's at, and when it lands. Small thing but it makes the whole workflow feel alive instead of "did it crash or is it working?"
+
+## Sync Optimization
+
+Rewrote how music syncs between the local library and Suno's API. The old approach was doing way too many redundant requests. Now it diffs properly, only pulls what's changed, and handles edge cases like songs that exist remotely but got deleted locally. The kind of optimization that's invisible until you have 500+ songs and syncing takes 30 seconds instead of 5 minutes.
+
+## Star Ratings and Timestamped Lyrics
+
+Two features that sound simple but required more backend work than expected. Star ratings persist per-song and show in the grid view. Timestamped lyrics sync with playback — the current line highlights as the song plays. Had to parse Suno's lyric format and build a scroll-following component that stays smooth even at fast tempos.
+
+## Billing Display
+
+Added a billing panel that shows your Suno credit usage. How many credits you've burned, what's left, cost per generation. Useful for keeping tabs on spend without switching to the Suno dashboard.
+
+## Suno API Domain Migration
+
+Suno moved their API endpoints to a new domain. Every API call in the codebase needed updating. Not glamorous work, but the kind of thing that breaks everything silently if you don't catch it.
+
+One commit, but it was a big one. The Music section is starting to feel like a real tool rather than a wrapper around someone else's API.
+18:T83d,
+The Trader tab stopped using fake data today.
+
+## Webull Live Market Data
+
+Wired up real market data from Webull's SDK. This was the part where the Trader tab went from "cool prototype with static charts" to "holy crap, those are real prices moving in real time." Had to fix the SDK's auth flow — their token refresh was silently failing, so after an hour the data stream would just stop. Traced it to a session cookie that wasn't being persisted between restarts. Now it reconnects cleanly.
+
+The price chart updates live now. Candlesticks forming in real time. Quote data streaming into the detail panel. It's the kind of thing that makes you sit there and just... watch it for a while.
+
+Also wrote up an API reference doc for the Webull integration, because future-me debugging auth issues at 2am will need it.
+
+## Documentation Catch-Up
+
+Updated the LDD (living design document) with the full Trader subsystem architecture — Webull integration details, safety layers, charting stack. Updated the README too — added Trader features, Discord bot info, new stack additions, and revised the project structure section. The kind of documentation work that's boring to do but saves hours when you're onboarding your own brain six months from now.
+
+## The Discord Ghost
+
+This one was weird. The Discord bot was registering slash commands twice — once globally and once per-guild. Which meant every command showed up as a duplicate in the command list. Users would see two `/play` commands and have to guess which one worked. (Both did, technically, but the global ones took up to an hour to propagate while the guild ones were instant.)
+
+The fix was simple once I found it: clear global commands before syncing guild-specific ones. But tracking down *why* it was happening took longer than the fix. Discord's command registration API is one of those things that works fine until it doesn't, and when it doesn't, the error messages are spectacularly unhelpful.
+
+Four commits. The Trader tab is starting to feel real, the docs are caught up, and the Discord bot stopped seeing double.
+19:T838,
+Today was one of those days where you start with "let's load this quantized model" and end up building an entire UI architecture. But it all connected.
+
+Remember the ChimeraQuant NVFP4 quantization pipeline from yesterday? Today I wrote the inference side — the part that actually loads those quantized weights and runs them at hardware FP4 speed. Built a custom module that replaces every quantized linear layer in the model with a version that quantizes activations on-the-fly and dispatches to Blackwell's FP4 tensor cores. 600 layers replaced, 1008 regular tensors loaded. The whole 40B model loads in about 14 seconds and fits in 25.6 GB of VRAM on the 5090.
+
+Then I tried to actually chat with it and... yeah. That's when the scope expanded.
+
+The existing chat was Vault-only, hidden in a right panel. I wanted something that works everywhere — every tab, same session, persistent. So I built a global console panel at the bottom of the screen. Like VS Code's terminal but for AI. Four views: local LLM chat, Claude Code terminal, split view (both side by side), and an activity feed. It sticks to the bottom, resizes with a drag handle, and persists when you switch tabs.
+
+The Claude Code terminal piece was fun — a PTY manager that spawns shell processes, bridges them over WebSocket to xterm.js in the browser. Research I'd done earlier from five open-source CC embedding repos paid off. Knew exactly which gotchas to avoid.
+
+Also built an OpenAI-compatible API at `/v1/chat/completions`. Any tool that speaks OpenAI format can now hit our local LLM as a drop-in replacement. No API keys, no per-token billing, just your own GPU.
+
+And here's the game changer: the reverse tunnel. The cloudflared tunnel means that endpoint isn't just local. Remote machines, cloud workers, CI pipelines — anything that can make an HTTP request can use our 40B model sitting in VRAM at home. Your own private inference API, accessible from anywhere, running on hardware you own. No rate limits, no usage caps, no vendor lock-in.
+
+Fifteen days in and Chimera Studio has its own brain now.
+1a:T77b,
+No features today. Zero. The entire session was housekeeping — and honestly, it was overdue.
+
+Started by asking a simple question: "do we have a central location for all our docs?" The answer was... kind of? Half the documentation was scattered across random folders. Spent the first chunk just indexing everything and moving misplaced files into proper locations.
+
+Then the root directory. Databases sitting right there at root — 70MB of SQLite files, three empty stale DBs from old naming experiments, config files everywhere, random screenshots. Created dedicated directories for configs, tests, scratch files. Moved databases into per-section data folders.
+
+The frontend was next. The shared components folder had 24 files — but 15 of them were only used by one section. Created a dedicated vault section folder and moved everything into it. Now the shared directory has 8 files and every single one is actually used by multiple sections.
+
+Then came the naming conversation. "Forge" doesn't mean anything to a normal person. Changed it to "Models." "Breach" became "SecOps." Centralized all display names so future renames are literally one line.
+
+The big one: restructured the entire backend into per-section vertical slices. Each section's code now lives in its own directory instead of everything dumped into one flat folder with 26 files. Moved ~35 Python files, rewired every import. The goal — every section should be extractable as its own standalone app someday.
+
+Wrote a smoke test that hits every API endpoint. 12/12 passing before the restructure, 12/12 after. No broken routes.
+
+167 files changed. No new features. But the codebase went from "works but messy" to "architected for the next year." Every section is its own vertical slice. Every doc is indexed. Every rename is one line.
+
+Tomorrow I build features again. Today was about building the foundation to build on.
+1b:Tb59,
+Two sessions today. The first one was the terminal rewrite from hell. The second one was me realizing my entire app was exposed to the internet with... let's say, some gaps.
+
+The terminal story first. Went in thinking "quick session, add some xterm addons." Eight hours later I'm debugging why every other character shows up as a white rectangle. Every typed character followed by a corrupted escape sequence.
+
+Turns out I'd added a "reconnect to existing session" feature that was too smart for its own good. Two browser tabs open, both finding the same PTY session, both opening WebSockets, both creating separate read loops on the same pipe. Two concurrent reads, each grabbing random chunks. Escape sequences torn in half.
+
+Before I found that, I blamed the WebGL renderer, the Canvas renderer (which doesn't exist in xterm v6 — they removed it entirely), the Vite cache, the output buffer, the addons... ripped everything out one by one for over an hour. The fix was one line. Remove reconnect, always create new sessions.
+
+Then multi-tab just worked. Tab bar, create/close/rename, independent PTY sessions per tab. Seven bugs in one session, each fix creating the next. But by the end: production-grade multi-tab terminal.
+
+Then the second session happened.
+
+I'd just added a functional CLI terminal and a daytrader tab to an app that's exposed on the internet through a Cloudflare tunnel. And I had this moment of "wait... how secure is this actually?"
+
+The first audit found real problems. The terminal WebSocket was essentially unauthenticated — Starlette's BaseHTTPMiddleware just doesn't intercept WebSocket connections. Nobody tells you this. The Trader backend was wide open — zero auth, Swagger docs enabled, CORS set to wildcard. Accessible through the tunnel. And the main app's Swagger docs were enabled too — a complete blueprint of every endpoint, just sitting there for anyone.
+
+The fix session was intense but clean. Built WebSocket auth helpers. Added a `terminal.access` permission gated on all terminal routes. Built JWT verification for the Trader using stdlib-only HMAC. Locked CORS to explicit origins. Added login rate limiting. Disabled Swagger everywhere. Went through and added permission checks to 35+ endpoints that were relying on just the cookie check.
+
+The attack chain to reach the terminal is now four layers deep. The permission editor in the Accounts tab went from a flat checkbox list to 8 organized categories with 17 permissions.
+
+It's the kind of work that doesn't feel like progress because nothing looks different in the UI. But the difference between "my app is on the internet" and "my app is secure on the internet" is everything. Especially when that app has a terminal that can run arbitrary commands on my PC.
+
+Seventeen days in. 160+ API endpoints and every single one checks who you are and what you're allowed to do.
+1c:Tf69,
+This session started with "how does Anthropic's Discord plugin work" and ended twelve hours later with a fully operational Discord server, a Python port of their entire channel bridge, a persona framework, and an architectural plan for monetizing private AI roleplay rooms. The scope creep was... aggressive.
+
+The port itself was maybe 300 lines of Python. The hard part was Windows. `asyncio.connect_read_pipe` on stdin doesn't work on the ProactorEventLoop — just throws `OSError: [WinError 6] The handle is invalid`. Needed a thread-based stdin reader instead. One of those things that works perfectly on every OS except the one you're actually using.
+
+Then the batch file saga. Should be simple, right? Just the launch script with extra flags. Except `--channels` needs `--dangerously-load-development-channels` because custom MCP servers aren't on the approved allowlist. And that flag needs an argument. And there's an interactive prompt you have to press 1 on. And the plugin system doesn't trust local marketplaces for channels. Six versions of that batch file before it worked.
+
+But then — it worked. DM'd the bot on Discord, watched the message appear in my Claude Code session, Claude responded, reply showed up in Discord. That moment was genuinely cool. A bridge between two worlds.
+
+Then things got interesting.
+
+The persona research went deep. Not just "make Claude talk differently" but actually engineering human-like AI characters. SOUL.md, SoulSpec, PersonaNexus, Anthropic's own soul document — there's a whole ecosystem of persona definition frameworks out there. SoulSpec's file structure maps almost perfectly to what I needed. And after all that research, the config addition ended up being three lines. Three. But precisely the right three lines.
+
+Then I pivoted to the server itself. Installed a discord-admin MCP — 139 Discord admin tools accessible from Claude Code via natural language. "Create a role called Insider with deep purple color." "Create a category called THE PARLOR." Just talking to Claude and watching my Discord server materialize in real time. Eight categories, 25 channels, 6 roles, full permission hierarchy, embedded welcome messages, a verify reaction that auto-assigns the Member role. Never touched the Discord UI once.
+
+The architecture came together around a metaphor I couldn't shake: a brothel inside a Discord server. A professional company hub on the surface, with a hidden trapdoor to a private space full of AI-powered rooms. Each room has a persona waiting. Each customer gets their own private thread — invisible to everyone else. The parlor is the lobby you discover when you're granted Insider access. The rooms behind it are individually gated.
+
+Session isolation was the hardest design problem. The channel bridge is single-session — all messages share one context. Customer 1 trying to seduce Ava while Customer 2 is fighting trolls with her... that would not work. The solution: one Claude CLI process per active thread. Idle sessions get reaped, resumed on return via `--resume`. Conversation history logged to SQLite for re-injection when context gets compressed. Plus a full bot operations database — registry, session lifecycle, logging, analytics, timed access for monetization. It's basically the backend for running AI personas as a service.
+
+Oh, and somewhere in the middle of all this, the SecOps cockpit got scaffolded too. Different session, same commit. API endpoints for engagements, hooks, VPN. A flow engine that runs declarative YAML-based pentesting workflows. FlowTreePanel, StepCard, the whole frontend skeleton.
+
+63 files changed. 12,537 lines added. Eight research documents. One Discord server built from scratch. One channel bridge ported from TypeScript to Python. One SecOps cockpit scaffolded.
+
+I'm building a product. I didn't realize that until about hour eight of this session, but... I'm building a product.
+1d:T904,
+So yesterday I scaffolded the SecOps cockpit. Flow tree, step cards, simulation data. It looked nice but it didn't... do anything. Today I made it real.
+
+The core idea is stupid simple: you click a button in the cockpit, and Claude Code runs the command in a terminal. That's it. But making "that's it" actually work required wiring up PTY sessions, prompt injection, CC hooks, event feeds, auto-completion, context chaining... turns out "simple" had about eight layers.
+
+First problem: getting the prompt into CC. Wrote it to the PTY stdin and... nothing happened. CC showed the text but didn't process it. Turns out terminal emulators want `\r` for Enter. Not `\n`. Not `\r\n`. Just `\r`. One character difference, two hours of debugging.
+
+Then the conda thing. CC decided to activate conda inside every Bash command even though conda was already active in the terminal. Because I had "Activate: `conda activate ai`" in the project instructions. CC was following instructions I wrote. Removed two lines, problem solved. Sometimes the bug is in the docs.
+
+Then I built the event feed wrong. Made it a syslog — tiny timestamped text lines. There was a 650-line UI research document with Palantir and Bloomberg design patterns sitting in the docs folder that I didn't read. Built the whole thing from scratch instead. Had to redo it.
+
+Then the black screen saga. Partial code revert, stale browser cache, wrong tab in the screenshot tool, Zustand store mismatch... a perfect storm of cascading debugging failures. Lost all my work, rebuilt from scratch.
+
+But the rebuild went clean. The cockpit actually works now. Click "Detect WAF" and CC runs wafw00f. Watch it happen in real-time. Events appear in the feed. Step auto-completes. Findings extracted. Next step gets prior context. It's real.
+
+VPN indicator in the header shows Mullvad status. Context panel has tabs for Findings, Docs, and Tools. Steps can be re-run. Prior engagement data persists. Back button to switch targets.
+
+Still needs the full UI overhaul — the research doc describes a military command center aesthetic that I haven't achieved yet. And the flow tree is still static. But the bones work. The cockpit flies.
+
+Didn't commit today. Everything is live but uncommitted. Next session starts with a clean commit.
+a:["$","$1","c",{"children":[["$","main",null,{"className":"relative min-h-screen bg-[var(--color-foreground)] text-[var(--color-primary)] selection:bg-[var(--color-accent)] selection:text-[var(--color-primary)]","children":[["$","section",null,{"className":"relative w-full pt-40 pb-24 px-8 md:px-16 overflow-hidden","children":[["$","div",null,{"className":"absolute inset-0 z-0 bg-cover bg-center opacity-15 mix-blend-screen","style":{"backgroundImage":"url('/archive/v1/images/arch_bg.png')"}}],["$","div",null,{"className":"absolute inset-0 z-0 bg-gradient-to-b from-[var(--color-foreground)]/30 via-transparent to-[var(--color-foreground)]"}],["$","div",null,{"className":"max-w-4xl mx-auto relative z-10","children":[["$","p",null,{"className":"font-mono text-[var(--color-accent)] text-sm tracking-widest uppercase mb-4","children":"Development Journal"}],["$","h1",null,{"className":"font-serif italic text-6xl md:text-[8rem] leading-[0.85] mb-8","children":"Devlog."}],["$","div",null,{"className":"flex flex-wrap items-center gap-6","children":[["$","p",null,{"className":"font-mono text-sm opacity-50","children":[18," days · 1 developer · ",51," commits"]}],["$","div",null,{"className":"flex items-center gap-2 font-mono text-xs px-3 py-1.5 border border-[var(--color-primary)]/20 rounded-full","children":[["$","span",null,{"className":"w-1.5 h-1.5 rounded-full bg-[var(--color-accent)] animate-pulse"}],"Active Development"]}]]}]]}]]}],["$","section",null,{"className":"relative w-full py-16 px-8 md:px-16 overflow-hidden","children":[["$","div",null,{"className":"absolute inset-0 z-0 opacity-[0.08] mix-blend-screen bg-[url('/archive/v1/images/texture.png')] bg-cover bg-center"}],["$","div",null,{"className":"max-w-4xl mx-auto relative z-10","children":[["$","div",null,{"className":"mb-12 font-mono text-sm tracking-widest uppercase border-b border-[var(--color-primary)]/10 pb-4 flex justify-between items-end","children":[["$","span",null,{"children":"Sprint Timeline"}],["$","span",null,{"className":"opacity-30","children":"MAR 08 — PRESENT"}]]}],["$","$Ld",null,{"days":[{"day":1,"date":"2026-03-08","title":"There Has to Be a Better Way","commitCount":4,"commits":["f1f5270","397c928","485bccb","fa93d91"],"content":"$e","preview":"So I had this folder with like 3,000+ images and videos just... sitting there. Every time I wanted to find something specific — \"which workflow used that LoRA at 0.8 with DPM++ 2M?\" — I'd end up openi"},{"day":2,"date":"2026-03-09","title":"Making Filters Actually Smart","commitCount":4,"commits":["9aa9251","9ccbb52","b07334e","869e00e"],"content":"$f","preview":"The basic filters worked but they felt dumb. You'd select a model and then the LoRA dropdown would still show every LoRA in the database, even ones that were never used with that model. That drove me "},{"day":3,"date":"2026-03-10","title":"The Marathon Day","commitCount":10,"commits":["72655a3","c83ed08","a1546fd","f7b9d00","3c05826","14c8c67","b23e77a","fa8ec8c","fb36fae","e2f3f0e"],"content":"$10","preview":"Ten commits. This was the day everything came together and also the day I probably should have slept more.\r"},{"day":4,"date":"2026-03-11","title":"Music Gets Real + Going Remote","commitCount":2,"commits":["3093dcc","5977e27"],"content":"$11","preview":"Needed the Music section to actually feel finished instead of \"it works if you squint.\"\r"},{"day":5,"date":"2026-03-12","title":"The Infrastructure Day","commitCount":7,"commits":["f78ad7c","50f6f50","2bb60a0","dc8f95e","20e435f","7170552","190daa0"],"content":"$12","preview":"Some days are about flashy features. This was about making the thing actually deployable and secure.\r"},{"day":6,"date":"2026-03-13","title":"ChimeraCore — Giving the App a Brain","commitCount":1,"commits":["bd0dbef"],"content":"$13","preview":"This is where it gets interesting. Everything up to now was about *organizing* AI content. Now the app itself is becoming AI-powered.\r"},{"day":7,"date":"2026-03-14","title":"The Thinking Day","commitCount":0,"commits":[],"content":"\r\nNo commits today. And that's fine.\r\n\r\nSpent the day deep-diving into vision-language models. If ChimeraCore is the engine, ChimeraVision is what gives it eyes. I need the app to actually *understand* what's in the images, not just what the prompts say.\r\n\r\nResearched Qwen VL models, Florence-2, CLIP embeddings, vector storage options. Benchmarked VRAM requirements across different quantization levels. Looked at what competitors are doing (spoiler: not much, and not well).\r\n\r\nProduced a full research document covering model selection, architecture design, and implementation planning. Research days don't have commits but they have just as much value. Maybe more — building the wrong thing fast is worse than building the right thing after thinking about it.\r\n","preview":"No commits today. And that's fine.\r"},{"day":8,"date":"2026-03-15","title":"Teaching the App to Talk","commitCount":1,"commits":["52ee5f6"],"content":"$14","preview":"Applied yesterday's research. Started building the conversational AI layer.\r"},{"day":9,"date":"2026-03-15","title":"The One Where It Gets a Face","commitCount":1,"commits":["b912d12"],"content":"$15","preview":"So I've been building this thing for eight days and it has... no website. No public presence at all. There's a GitHub repo with a README, and if you know the tunnel URL you can poke around the live de"},{"day":10,"date":"2026-03-16","title":"The Boring Day (That Wasn't)","commitCount":2,"commits":["d2d3d69","9ba5a1e"],"content":"\r\nEvery project hits a point where you look at your codebase and go \"okay, this is getting messy.\" Day 10 was that day.\r\n\r\nI had the same CollapsibleSection pattern copy-pasted across like six different panels. Same resize handle component duplicated in three sections. Format constants defined in six different files. It works, but it's the kind of tech debt that compounds fast.\r\n\r\nSo I cleaned house. Built a proper shared CollapsibleSection component with persistent collapse state — click a section closed, refresh, it stays closed. Applied it everywhere. Extracted all the duplicated code into shared modules. Deleted the copies.\r\n\r\nAlso modernized all the Python typing. `Optional[str]` → `str | None`. It's 2026, we can use the modern syntax.\r\n\r\nNot a flashy day. No screenshots, no \"look what I built.\" But the codebase went from \"it works if you don't look too closely\" to \"yeah, this is actually organized.\" The kind of work that makes tomorrow's feature easier to build.\r\n\r\nTwo commits. Clean ones.\r\n","preview":"Every project hits a point where you look at your codebase and go \"okay, this is getting messy.\" Day 10 was that day.\r"},{"day":11,"date":"2026-03-17","title":"Browse Mode, Suno Trash API, Mobile Foundation, Trader Tab","commitCount":11,"commits":["faa57e7","c5f8d21","d41a1d0","69a8046","7419921","dd31f2d","cb616f3","673d59d","038104d","6b9f90d","d772aad"],"content":"$16","preview":"This was supposed to be a one-feature day. \"Add a Browse mode so users can see their full Suno library without syncing everything first.\" Simple concept. It was not a one-feature day.\r"},{"day":12,"date":"2026-03-18","title":"Music Gets Serious — Personas, Stars, Lyrics, and Billing","commitCount":1,"commits":["6fef36a"],"content":"$17","preview":"The Music section went from \"plays songs from Suno\" to an actual music production workspace today.\r"},{"day":13,"date":"2026-03-19","title":"Live Market Data and a Discord Ghost Story","commitCount":4,"commits":["b5ff56f","bace758","2c23f87","7a39dab"],"content":"$18","preview":"The Trader tab stopped using fake data today.\r"},{"day":14,"date":"2026-03-20","title":"The 40B Model That Fits on One GPU","commitCount":1,"commits":["203c487"],"content":"$19","preview":"Today was one of those days where you start with \"let's load this quantized model\" and end up building an entire UI architecture. But it all connected.\r"},{"day":15,"date":"2026-03-21","title":"The Great Reorganization","commitCount":0,"commits":[],"content":"$1a","preview":"No features today. Zero. The entire session was housekeeping — and honestly, it was overdue.\r"},{"day":17,"date":"2026-03-22","title":"The Session That Wouldn't End, and Then the Security Panic","commitCount":1,"commits":["75d6c21"],"content":"$1b","preview":"Two sessions today. The first one was the terminal rewrite from hell. The second one was me realizing my entire app was exposed to the internet with... let's say, some gaps.\r"},{"day":18,"date":"2026-03-22","title":"Roleplay, Discord, SecOps Scaffold","commitCount":1,"commits":["2da570c"],"content":"$1c","preview":"This session started with \"how does Anthropic's Discord plugin work\" and ended twelve hours later with a fully operational Discord server, a Python port of their entire channel bridge, a persona frame"},{"day":19,"date":"2026-03-22","title":"The One Where the Cockpit Actually Flies","commitCount":0,"commits":[],"content":"$1d","preview":"So yesterday I scaffolded the SecOps cockpit. Flow tree, step cards, simulation data. It looked nice but it didn't... do anything. Today I made it real.\r"}]}]]}]]}],"$L1e"]}],["$L1f"],"$L20"]}]
+b:["$","$1","h",{"children":[null,["$","$L21",null,{"children":"$L22"}],["$","div",null,{"hidden":true,"children":["$","$L23",null,{"children":["$","$24",null,{"name":"Next.Metadata","children":"$L25"}]}]}],["$","meta",null,{"name":"next-size-adjust","content":""}]]}]
+26:I[97367,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"OutletBoundary"]
+1e:["$","section",null,{"className":"relative w-full py-24 px-8 md:px-16 border-t border-[var(--color-primary)]/10 overflow-hidden","children":[["$","div",null,{"className":"absolute inset-0 z-0 bg-cover bg-center opacity-[0.06] mix-blend-screen","style":{"backgroundImage":"url('/archive/v1/images/protocol_3_bg.png')"}}],["$","div",null,{"className":"max-w-4xl mx-auto relative z-10","children":[["$","div",null,{"className":"mb-12 font-mono text-sm tracking-widest uppercase border-b border-[var(--color-primary)]/10 pb-4","children":"Roadmap"}],["$","div",null,{"className":"relative pl-12 md:pl-16","children":[["$","div",null,{"className":"absolute left-[18px] md:left-[26px] top-0 bottom-0 w-px border-l border-dashed border-[var(--color-primary)]/20"}],["$","div",null,{"className":"mb-8","children":[["$","div",null,{"className":"absolute left-2.5 md:left-[14px] w-7 h-7 md:w-7 md:h-7 rounded-full border-2 border-dashed border-[var(--color-primary)]/30 flex items-center justify-center","children":["$","span",null,{"className":"font-mono text-[10px] opacity-30","children":"?"}]}],["$","p",null,{"className":"font-serif italic text-3xl md:text-4xl mb-8 opacity-60","children":"What's Coming"}]]}],["$","div",null,{"className":"flex flex-col gap-6","children":[["$","div","0",{"className":"font-sans text-base opacity-40 pl-1 leading-relaxed","children":"Chat frontend — the backend API works but there's no UI for it yet"}],["$","div","1",{"className":"font-sans text-base opacity-40 pl-1 leading-relaxed","children":"ChimeraVision — AI-powered image understanding and semantic search"}],["$","div","2",{"className":"font-sans text-base opacity-40 pl-1 leading-relaxed","children":"Side-by-side comparison for parameter diffing"}],["$","div","3",{"className":"font-sans text-base opacity-40 pl-1 leading-relaxed","children":"Rating system with ELO arena (pit your images against each other)"}],["$","div","4",{"className":"font-sans text-base opacity-40 pl-1 leading-relaxed","children":"Auto-tagging with content analysis"}]]}]]}]]}]]}]
+1f:["$","script","script-0",{"src":"/archive/v1/_next/static/chunks/b18fd4dae68b9706.js","async":true,"nonce":"$undefined"}]
+20:["$","$L26",null,{"children":["$","$24",null,{"name":"Next.MetadataOutlet","children":"$@27"}]}]
+22:[["$","meta","0",{"charSet":"utf-8"}],["$","meta","1",{"name":"viewport","content":"width=device-width, initial-scale=1"}]]
+28:I[27201,["/archive/v1/_next/static/chunks/2f236954d6a65e12.js"],"IconMark"]
+25:[["$","title","0",{"children":"Devlog | Chimera Studio"}],["$","meta","1",{"name":"description","content":"8 days. One developer. 35 commits. The behind-the-scenes story of building Chimera Studio from scratch."}],["$","meta","2",{"name":"robots","content":"index, follow"}],["$","meta","3",{"property":"og:title","content":"Chimera Studio | Total Metadata Mastery"}],["$","meta","4",{"property":"og:description","content":"Your local-first intelligence hub for ComfyUI outputs and AI music generation."}],["$","meta","5",{"property":"og:url","content":"https://chimerawerks.com"}],["$","meta","6",{"property":"og:site_name","content":"Chimera Studio"}],["$","meta","7",{"property":"og:locale","content":"en_US"}],["$","meta","8",{"property":"og:type","content":"website"}],["$","meta","9",{"name":"twitter:card","content":"summary_large_image"}],["$","meta","10",{"name":"twitter:title","content":"Chimera Studio | Total Metadata Mastery"}],["$","meta","11",{"name":"twitter:description","content":"Your local-first intelligence hub for ComfyUI outputs and AI music generation."}],["$","link","12",{"rel":"icon","href":"/archive/v1/favicon.ico?favicon.0b3bf435.ico","sizes":"256x256","type":"image/x-icon"}],["$","$L28","13",{}]]
+27:null

@@ -1,0 +1,49 @@
+---
+import type { AppStatus } from "../data/ecosystem";
+
+interface Props {
+  status: AppStatus;
+  /** CSS color for the dot; defaults to the theme accent. */
+  hue?: string;
+}
+
+const { status, hue = "var(--accent)" } = Astro.props;
+/* Shape + hue encode status so it survives color-blindness and grayscale:
+   filled pulsing circle = active, hollow ring = incubating. */
+---
+
+<!-- aria-hidden: the visible pill text next to this dot already names the
+     status; labeling the dot too made screen readers announce it twice. -->
+<span
+  class:list={["status-dot", status === "active" ? "status-dot-active" : "status-dot-incubating"]}
+  style={`--dot-hue: ${hue}`}
+  aria-hidden="true"
+></span>
+
+<style>
+  .status-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 999px;
+    flex: none;
+  }
+  .status-dot-active {
+    background: var(--dot-hue);
+    animation: dot-pulse 2.4s ease-in-out infinite;
+  }
+  .status-dot-incubating {
+    background: transparent;
+    border: 1.5px solid var(--dot-hue);
+    opacity: 0.75;
+  }
+  @keyframes dot-pulse {
+    0%,
+    100% {
+      box-shadow: 0 0 0 0 color-mix(in srgb, var(--dot-hue) 45%, transparent);
+    }
+    50% {
+      box-shadow: 0 0 0 4px color-mix(in srgb, var(--dot-hue) 0%, transparent);
+    }
+  }
+</style>

@@ -1,0 +1,3 @@
+/devlog /archive/v1/devlog/ 301
+/devlog/* /archive/v1/devlog/:splat 301
+/toolkit /archive/v1/toolkit/ 301

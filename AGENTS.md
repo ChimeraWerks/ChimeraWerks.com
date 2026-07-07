@@ -1,15 +1,15 @@
 # ChimeraWerks.com — Agent Guide
 
-Company landing page and devlog for Chimera Studio. Static Next.js site (`output: "export"`),
-deployed to Cloudflare Pages. Canonical and owned.
+Chimera Werks umbrella site: the ecosystem landing page (flagship Chimera Relay) plus the frozen
+Chimera Studio era archive. Static Astro site, deployed to Cloudflare Pages. Canonical and owned.
 
 ## Build / test / run
 
 ```bash
 npm install
-npm run dev      # Next dev server (defaults to :3000; no port is set in config — see Ports below)
-npm run build    # static export to out/ — this is what CI deploys; keep it green
-npm run lint     # eslint (currently reports pre-existing content errors — see Scars)
+npm run dev      # Astro dev server (defaults to :4321; no port is set in config — see Ports below)
+npm run build    # astro build → out/ — this is what CI deploys; keep it green
+npm run preview  # serves the built out/ (archive pages only work here, not in dev)
 npm test         # instruction-architecture gate (node scripts/check-agents-md.mjs)
 ```
 
@@ -18,29 +18,30 @@ Keep `npm run build` green for any change — CI deploys its `out/` on push to `
 
 ## Scars + hard rules
 
-- **`npm run lint` exits non-zero today** on pre-existing content errors (`@next/next/no-html-link-for-pages`
-  in Navbar/Footer/DevlogTeaser). The site intentionally uses raw `<a>` for the fixed nav and footer links,
-  which the Next lint rule rejects. So the gate CANNOT hang off `lint`; it lives in a separate `npm test`.
-  Check before assuming a red `lint` is your regression: `npm run lint` and diff against this known set.
-- **Static export, no server at runtime.** `output: "export"` means every route is prerendered at build;
-  there is no Node runtime in production. Anything relying on request-time server code (API routes, dynamic
-  server rendering, middleware) silently no-ops in the deployed `out/`. Check: `npm run build` must succeed
-  and `[day]` routes must appear under "SSG" in its output.
+- **`outDir: "out"` in `astro.config.mjs` is load-bearing.** The deploy workflow ships `out/` and must
+  never be edited; Astro's default `dist/` would deploy nothing. Check: `npm run build` then `ls out/`.
+- **Static output, no server at runtime.** Every route is prerendered; request-time server code silently
+  no-ops in production.
+- **Theme tokens are the only styling contract.** Components consume semantic tokens (`--bg`, `--ink-*`,
+  `--accent*`, `--surface-*`) defined per `[data-theme]` in `src/styles/theme-*.css`; hard-coding a hex in
+  a component breaks the other theme silently. Fontsource variable packages register names with a
+  " Variable" suffix ("Archivo Variable") — see the coupling note in `src/styles/fonts.css`.
 
 ## Boundaries
 
 - **Never touch deploy/auth config or secrets.** `.github/workflows/deploy.yml`, the Cloudflare Pages project
   name `chimerawerks-com`, GitHub secrets `CLOUDFLARE_API_TOKEN`/`CLOUDFLARE_ACCOUNT_ID`, and
   `~/.cloudflared/cert.pem` are load-bearing and out of scope for content or instruction edits.
-- **A new devlog day touches three coupled locations or it deploys broken:** a new `day-N` markdown file under
-  `content/devlog/` (with valid frontmatter), the `DAYS` array + `grid-cols-N` in
-  `src/components/DevlogTeaser.tsx`, and a URL in `public/sitemap.xml`. Miss one and the teaser or sitemap
-  silently drifts from the actual pages. Keep the sibling ChimeraStudio chronicle and devlog files in sync with
-  the same entry.
+- **`public/archive/v1/` is a frozen snapshot — never edit it in place.** It is the Chimera Studio era site
+  built from tag `v1-chimera-studio` with `basePath: "/archive/v1"`; regenerate only from that tag (worktree,
+  patch raw hrefs + CSS `url()` refs, rebuild, recopy). `.gitattributes` exempts it from EOL conversion to
+  keep it byte-exact.
+- **`public/_redirects` must ship in `out/`.** It preserves inbound `/devlog/*` and `/toolkit` links into the
+  archive (301s). Cloudflare-only behavior: it cannot be tested locally, verify post-deploy with a curl.
 
 ## Ports
 
-No port is set in `next.config.ts` or `package.json`, so `npm run dev` binds Next's default (`:3000`).
+No port is set in config, so `npm run dev` binds Astro's default (`:4321`).
 The chimera-ports registry assigns this app `20000`; read it from `PORT`/config, never hard-code it.
 Registry + Caddy host: `CHIMERA-PORTS.md`. Subdomains/tunnels: `INFRASTRUCTURE.md`.
 

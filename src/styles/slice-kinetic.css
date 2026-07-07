@@ -1,0 +1,397 @@
+/*
+ * Kinetic slice (dir-c): the KPR-grammar cut. One continuous world — the
+ * page-fixed helix + smoke are the scene, chapters are camera stops. All
+ * motion here is GSAP-owned (see scripts/kinetic.ts); this file deliberately
+ * defines NO scroll/entry animations of its own so the two systems never
+ * fight. Static layout must read complete without JS: nothing is pre-hidden
+ * in CSS, and the loader dismisses itself (see .k-loader).
+ *
+ * Reuses slice-arcane.css for component chrome (console, figures, buttons,
+ * grain) but never its animated classes (.rise, .hero-letter, .reveal-view,
+ * .sh-reveal, .specimen-art) — those carry CSS timelines that would double
+ * with the GSAP scrub.
+ */
+
+/* ---------------------------------------------------------------- loader --- */
+
+.k-loader {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: clamp(20px, 4vw, 48px);
+  background: var(--bg);
+  /* No-JS safety valve: if kinetic.ts never runs, the overlay folds away on
+     its own instead of trapping the reader. JS removes the node before this
+     fires on the happy path. */
+  animation: k-loader-dismiss 0.6s ease 3.2s forwards;
+}
+
+html.kinetic .k-loader {
+  animation: none;
+}
+
+@keyframes k-loader-dismiss {
+  to {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .k-loader {
+    display: none;
+  }
+}
+
+.k-boot-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.k-boot-line {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.k-boot-line em {
+  font-style: normal;
+  color: var(--accent-2);
+}
+
+.k-boot-pct {
+  align-self: flex-end;
+  font-family: var(--font-display);
+  font-size: clamp(4rem, 14vw, 11rem);
+  font-weight: 750;
+  line-height: 0.85;
+  letter-spacing: -0.02em;
+  color: var(--ink-1);
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------- hud --- */
+
+.k-frame {
+  position: fixed;
+  inset: 10px;
+  z-index: 40;
+  border: 1px solid color-mix(in srgb, var(--line-1) 70%, transparent);
+  pointer-events: none;
+}
+
+.k-hud-top {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  right: 10px;
+  z-index: 41;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px clamp(16px, 3vw, 32px);
+  border-bottom: 1px solid color-mix(in srgb, var(--line-1) 70%, transparent);
+  background: color-mix(in srgb, var(--bg) 55%, transparent);
+  backdrop-filter: blur(10px);
+}
+
+.k-brand {
+  font-family: var(--font-display);
+  font-weight: 750;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: var(--ink-1);
+  text-decoration: none;
+}
+
+.k-brand i {
+  font-style: normal;
+  color: var(--accent-2);
+}
+
+.k-hud-nav {
+  display: flex;
+  gap: clamp(14px, 2.5vw, 30px);
+}
+
+.k-hud-nav a {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  text-decoration: none;
+  transition: color 160ms ease;
+}
+
+.k-hud-nav a:hover,
+.k-hud-nav a:focus-visible {
+  color: var(--ink-1);
+}
+
+.k-rail {
+  position: fixed;
+  left: clamp(18px, 3vw, 40px);
+  top: 50%;
+  translate: 0 -50%;
+  z-index: 41;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  pointer-events: none;
+}
+
+.k-rail-glyph {
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  color: var(--ink-3);
+}
+
+.k-rail-track {
+  position: relative;
+  width: 1px;
+  height: 26vh;
+  background: color-mix(in srgb, var(--line-2) 80%, transparent);
+  overflow: hidden;
+}
+
+#k-rail-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--accent);
+  transform: scaleY(0);
+  transform-origin: top;
+}
+
+.k-ch {
+  position: fixed;
+  left: 10px;
+  bottom: 10px;
+  z-index: 41;
+  padding: 12px clamp(16px, 3vw, 32px);
+  pointer-events: none;
+  font-family: var(--font-mono);
+}
+
+#k-ch-num {
+  display: block;
+  font-size: 1.5rem;
+  letter-spacing: 0.08em;
+  color: var(--ink-1);
+}
+
+#k-ch-name {
+  display: block;
+  margin-top: 2px;
+  font-size: 0.625rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+/* Rail + counter crowd small screens; the frame and top bar carry the HUD. */
+@media (max-width: 760px) {
+  .k-rail,
+  .k-ch {
+    display: none;
+  }
+}
+
+/* ------------------------------------------------------------ type scale --- */
+
+.k-display {
+  font-family: var(--font-display);
+  font-weight: 780;
+  text-transform: uppercase;
+  line-height: 0.9;
+  letter-spacing: -0.025em;
+  color: var(--ink-1);
+}
+
+.k-display-hero {
+  font-size: clamp(3.4rem, 13vw, 13rem);
+  /* Trespass: the wordmark starts before the margin like KPR's cropped
+     KEEP/PRO — the section's overflow clip does the cutting, so the lines
+     must never soft-wrap. */
+  margin-left: -0.045em;
+  white-space: nowrap;
+}
+
+.k-display-hero [data-k-hero-split] {
+  display: block;
+}
+
+.k-display-hero .k-line2 {
+  margin-left: clamp(1.5rem, 9vw, 9rem);
+}
+
+.k-display-hero .k-period {
+  color: var(--accent-2);
+}
+
+.k-display-ch {
+  font-size: clamp(2.6rem, 7.5vw, 6.5rem);
+}
+
+.k-microtag {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 0.625rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+}
+
+.k-microtag::before {
+  content: "";
+  width: 5px;
+  height: 5px;
+  background: var(--accent);
+  translate: 0 -1px;
+}
+
+.k-kicker {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+/* SplitText mask wrappers clip exactly to the line box; give descenders and
+   the up-rotated entry pose a little slack. */
+.k-split-line {
+  padding-bottom: 0.08em;
+}
+
+/* -------------------------------------------------------------- chapters --- */
+
+/* Content rides above the page-mode helix canvas (fixed, z 0). The canvas
+   must not sit at negative z — see the compositing scar in Hero3D.tsx. */
+main {
+  position: relative;
+  z-index: 1;
+}
+
+.k-chapter {
+  position: relative;
+  overflow: clip;
+}
+
+.k-hero {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  min-height: 100dvh;
+  padding: clamp(90px, 14vh, 160px) 0 clamp(70px, 10vh, 120px);
+}
+
+/* Statement chapter: tall track, sticky stage. The extra height is the film
+   strip the scrub plays through; position:sticky keeps the stage pinned with
+   zero JS involved, so no-JS still renders a coherent full-screen scene. */
+.k-statement {
+  min-height: 230vh;
+}
+
+.k-statement-stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  min-height: 100dvh;
+  overflow: clip;
+}
+
+.k-statement-art {
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  opacity: 0.5;
+}
+
+.k-statement-art img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: 72% center;
+}
+
+.k-statement-scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    linear-gradient(to right, color-mix(in srgb, var(--bg) 88%, transparent) 22%, transparent 65%),
+    linear-gradient(to top, color-mix(in srgb, var(--bg) 92%, transparent), transparent 40%);
+}
+
+.k-section-pad {
+  padding-top: clamp(90px, 16vh, 180px);
+  padding-bottom: clamp(90px, 16vh, 180px);
+}
+
+/* Genome triptych: three engraved plates in a row, cropped square-ish. */
+.k-triptych {
+  display: grid;
+  gap: 16px;
+}
+
+@media (min-width: 1024px) {
+  .k-triptych {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.k-plate img {
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+  border: 1px solid color-mix(in srgb, var(--line-1) 80%, transparent);
+}
+
+/* Full-bleed engraved chapter backdrop; faint by construction, dimmed
+   further so copy always wins. Edge mask melts the plate into the page so
+   section boundaries never show a seam. */
+.k-chapter-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  opacity: 0.55;
+  pointer-events: none;
+  mask-image: radial-gradient(120% 90% at 70% 50%, black 40%, transparent 78%);
+}
+
+.k-chapter-bg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.k-contact-mail {
+  display: inline-block;
+  font-family: var(--font-display);
+  font-weight: 760;
+  font-size: clamp(1.6rem, 5.2vw, 4.5rem);
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+  color: var(--ink-1);
+  text-decoration: none;
+  border-bottom: 2px solid var(--accent);
+  transition: color 180ms ease, border-color 180ms ease;
+  overflow-wrap: anywhere;
+}
+
+.k-contact-mail:hover,
+.k-contact-mail:focus-visible {
+  color: var(--accent-hi);
+  border-color: var(--accent-hi);
+}

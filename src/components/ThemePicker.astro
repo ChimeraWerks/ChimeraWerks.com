@@ -1,0 +1,111 @@
+---
+/*
+ * Floating live theme switcher: swaps <html data-theme> so every token-driven
+ * style re-resolves in place, then fires THEME_CHANGE_EVENT for the canvas
+ * layers. Each chip carries data-theme of the palette it selects, so its
+ * swatch and type render in that palette regardless of the active theme.
+ */
+import { THEMES } from "../data/themes";
+---
+
+<nav class="theme-picker" aria-label="Color theme">
+  {
+    THEMES.map((t) => (
+      <button
+        type="button"
+        class="theme-chip"
+        data-set-theme={t.id}
+        data-theme={t.id}
+        aria-pressed="false"
+      >
+        <span class="chip-swatch" aria-hidden="true" />
+        <span>{t.label}</span>
+      </button>
+    ))
+  }
+</nav>
+
+<script>
+  import { THEME_CHANGE_EVENT } from "../data/themes";
+
+  const root = document.documentElement;
+  const chips = Array.from(
+    document.querySelectorAll<HTMLButtonElement>("[data-set-theme]"),
+  );
+
+  const sync = (): void => {
+    for (const chip of chips) {
+      chip.setAttribute(
+        "aria-pressed",
+        String(chip.dataset.setTheme === root.dataset.theme),
+      );
+    }
+  };
+
+  for (const chip of chips) {
+    chip.addEventListener("click", () => {
+      const id = chip.dataset.setTheme;
+      if (!id || root.dataset.theme === id) return;
+      root.dataset.theme = id;
+      sync();
+      window.dispatchEvent(
+        new CustomEvent(THEME_CHANGE_EVENT, { detail: { theme: id } }),
+      );
+    });
+  }
+  sync();
+</script>
+
+<style>
+  .theme-picker {
+    position: fixed;
+    right: 16px;
+    bottom: 16px;
+    z-index: 60;
+    display: flex;
+    gap: 6px;
+    padding: 6px;
+    background: color-mix(in srgb, var(--surface-1) 82%, transparent);
+    border: 1px solid var(--line-1);
+    border-radius: var(--radius);
+    backdrop-filter: blur(8px);
+  }
+
+  .theme-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border: 1px solid var(--line-2);
+    border-radius: var(--radius-sm);
+    background: var(--surface-2);
+    color: var(--ink-2);
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .theme-chip:hover {
+    color: var(--ink-1);
+    border-color: var(--accent-hi);
+  }
+
+  .theme-chip[aria-pressed="true"] {
+    color: var(--ink-1);
+    border-color: var(--accent);
+    background: var(--accent-dim);
+  }
+
+  .chip-swatch {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: linear-gradient(
+      135deg,
+      var(--accent) 0 50%,
+      var(--accent-2) 50% 100%
+    );
+  }
+</style>

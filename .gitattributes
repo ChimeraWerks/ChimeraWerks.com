@@ -1,0 +1,2 @@
+# frozen archive: serve byte-exact, no EOL conversion
+public/archive/** -text

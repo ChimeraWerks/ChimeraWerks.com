@@ -1,0 +1,18 @@
+---
+interface Props {
+  /** Short mono eyebrow line, e.g. "the ecosystem". */
+  kicker: string;
+  heading: string;
+  /** Heading level for document outline; visual style is fixed. */
+  level?: "h1" | "h2" | "h3";
+}
+
+const { kicker, heading, level: Tag = "h2" } = Astro.props;
+---
+
+<div class="flex flex-col gap-2">
+  <p class="font-mono text-xs uppercase tracking-[0.18em] text-accent">{kicker}</p>
+  <Tag class="font-display text-3xl font-semibold text-ink-1 [text-wrap:balance] sm:text-4xl">
+    {heading}
+  </Tag>
+</div>

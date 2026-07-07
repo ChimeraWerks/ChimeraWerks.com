@@ -1,0 +1,193 @@
+@import "tailwindcss";
+
+/*
+ * Token architecture, two layers:
+ *
+ * 1. Semantic tokens (--bg, --surface-*, --ink-*, --accent...) are the ONLY
+ *    variables components consume. They are declared per-theme in
+ *    theme-arcane.css / theme-precision.css under [data-theme="..."].
+ * 2. @theme inline maps semantics into Tailwind utility names so components
+ *    write `bg-surface-1 text-ink-2 border-line-1` and re-skin for free when
+ *    the losing theme is deleted.
+ *
+ * :root carries a fallback so a page missing data-theme fails visible-dark,
+ * not white-flash.
+ */
+
+:root {
+  color-scheme: dark;
+
+  /* Fallback set (arcane values); real values come from [data-theme]. */
+  --bg: #0a0908;
+  --surface-1: #141110;
+  --surface-2: #1b1714;
+  --surface-3: #241f1a;
+  --line-1: #2b2620;
+  --line-2: #3b352c;
+  --ink-1: #e8e1d3;
+  --ink-2: #a59c8b;
+  --ink-3: #6f675b;
+  --accent: #a78bf0;
+  --accent-hi: #cbb9ff;
+  --accent-dim: #2a2340;
+  --accent-2: #e0a23a;
+  --accent-2-hi: #f2bf60;
+  --accent-2-dim: #2c2113;
+  --good: #5fb46d;
+  --warn: #e3b256;
+  --bad: #e8786d;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --font-body: "Hanken Grotesk Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, monospace;
+  --card-hue-0: #50c9c0;
+  --card-hue-1: #e3b05a;
+  --card-hue-2: #ec7e6a;
+  --card-hue-3: #5aa6f0;
+  --card-hue-4: #9bcb57;
+  --card-hue-5: #e07ab0;
+  --card-hue-6: #a38bf0;
+  --card-hue-7: #e8c167;
+}
+
+@theme inline {
+  /* Colors: bg-*, text-*, border-*, etc. */
+  --color-bg: var(--bg);
+  --color-surface-1: var(--surface-1);
+  --color-surface-2: var(--surface-2);
+  --color-surface-3: var(--surface-3);
+  --color-line-1: var(--line-1);
+  --color-line-2: var(--line-2);
+  --color-ink-1: var(--ink-1);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-accent: var(--accent);
+  --color-accent-hi: var(--accent-hi);
+  --color-accent-dim: var(--accent-dim);
+  --color-accent-2: var(--accent-2);
+  --color-accent-2-hi: var(--accent-2-hi);
+  --color-accent-2-dim: var(--accent-2-dim);
+  --color-good: var(--good);
+  --color-warn: var(--warn);
+  --color-bad: var(--bad);
+  --color-card-hue-0: var(--card-hue-0);
+  --color-card-hue-1: var(--card-hue-1);
+  --color-card-hue-2: var(--card-hue-2);
+  --color-card-hue-3: var(--card-hue-3);
+  --color-card-hue-4: var(--card-hue-4);
+  --color-card-hue-5: var(--card-hue-5);
+  --color-card-hue-6: var(--card-hue-6);
+  --color-card-hue-7: var(--card-hue-7);
+
+  /* rounded-theme / rounded-theme-sm */
+  --radius-theme: var(--radius);
+  --radius-theme-sm: var(--radius-sm);
+
+  /* font-display / font-body / font-mono */
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-mono: var(--font-mono);
+}
+
+html {
+  background: var(--bg);
+  color: var(--ink-1);
+  font-family: var(--font-body);
+}
+
+/* ---------- Signature utilities (shared by both art directions) ---------- */
+
+/* Film-grain overlay. Apply to a positioned section; sits above content but
+   is pointer-transparent. */
+.grain {
+  position: relative;
+}
+.grain::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.04;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+/* Horizontal accent -> accent-2 gradient bar, the brand hairline. */
+.hairline-signature {
+  height: 2px;
+  border: 0;
+  background: linear-gradient(90deg, var(--accent), var(--accent-2));
+}
+
+/* Two corner glows in the theme accents. Apply to a positioned container. */
+.vignette {
+  position: relative;
+}
+.vignette::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      600px 400px at 0% 0%,
+      color-mix(in srgb, var(--accent) 8%, transparent),
+      transparent 70%
+    ),
+    radial-gradient(
+      600px 400px at 100% 100%,
+      color-mix(in srgb, var(--accent-2) 7%, transparent),
+      transparent 70%
+    );
+}
+
+/* 2px left identity bar; caller sets --hue (usually a --card-hue-N). */
+.spine {
+  position: relative;
+}
+.spine::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--hue, var(--accent));
+  border-radius: 999px;
+}
+
+/* Small badge chip. */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.125rem 0.625rem;
+  border-radius: 999px;
+  border: 1px solid var(--line-2);
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+/* Default branded focus ring for pages that don't load a slice stylesheet
+   (privacy, 404). Slice stylesheets may override with their own rings. */
+:focus-visible {
+  outline: 2px solid var(--accent-hi);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

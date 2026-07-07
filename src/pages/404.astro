@@ -1,0 +1,28 @@
+---
+import Base from "@/layouts/Base.astro";
+---
+
+<Base
+  title="404 | Chimera Werks"
+  description="This page does not exist."
+  theme="arcane"
+>
+  <main class="vignette grain flex min-h-screen flex-col items-center justify-center px-6 text-center">
+    <p class="font-mono text-sm tracking-widest text-accent-2">// signal lost</p>
+    <h1 class="mt-4 font-display text-7xl font-bold text-ink-1 md:text-9xl">404</h1>
+    <p class="mt-6 max-w-md font-body text-ink-2">
+      No room answers at this address. The page may have moved when the site was rebuilt - the old
+      Chimera Studio site lives on in the archive.
+    </p>
+    <div class="mt-10 flex flex-wrap items-center justify-center gap-4 font-mono text-sm">
+      <a
+        href="/"
+        class="pill border border-line-2 bg-accent-dim px-5 py-2 text-accent-hi hover:border-accent">back to the werks</a
+      >
+      <a
+        href="/archive/v1/"
+        class="pill border border-line-1 px-5 py-2 text-ink-2 hover:border-line-2 hover:text-ink-1">site archive: v1</a
+      >
+    </div>
+  </main>
+</Base>

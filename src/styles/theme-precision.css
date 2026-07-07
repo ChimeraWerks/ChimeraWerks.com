@@ -1,0 +1,59 @@
+/*
+ * Theme B: "precision" — cool near-black engineering dark, cold violet + cyan,
+ * tight radius, Inter everywhere. Same semantic contract as theme-arcane.css.
+ * If the other direction wins, delete this file and its <html data-theme>.
+ */
+
+[data-theme="precision"] {
+  --bg: #08090b;
+  --surface-1: #0e1013;
+  --surface-2: #14161b;
+  --surface-3: #1a1d23;
+
+  --line-1: #23262d;
+  --line-2: #30343d;
+
+  --ink-1: #e6e8ec;
+  --ink-2: #9aa0ab;
+  /* 4.5:1 on --bg; the darker #62676f failed AA on small text. */
+  --ink-3: #7d838d;
+
+  /* cold violet */
+  --accent: #8b8bf0;
+  --accent-hi: #b3b3fa;
+  --accent-dim: #202037;
+
+  /* cyan */
+  --accent-2: #5ac8e8;
+  --accent-2-hi: #8fdcf2;
+  --accent-2-dim: #12262e;
+
+  --good: #56c288;
+  --warn: #d9b458;
+  --bad: #e8707a;
+
+  /* Cooler, slightly desaturated hue ramp to keep the clinical read. */
+  --card-hue-0: #4cc4cf;
+  --card-hue-1: #c9ad5e;
+  --card-hue-2: #e07f80;
+  --card-hue-3: #5f9df0;
+  --card-hue-4: #82c46a;
+  --card-hue-5: #c583d9;
+  --card-hue-6: #8b8bf0;
+  --card-hue-7: #d1bc72;
+
+  --radius: 8px;
+  --radius-sm: 6px;
+
+  --font-display: "Inter Variable", system-ui, sans-serif;
+  --font-body: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+}
+
+/* Faint 1px drafting grid; precision-only signature texture. */
+[data-theme="precision"] .blueprint-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--line-1) 55%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--line-1) 55%, transparent) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
