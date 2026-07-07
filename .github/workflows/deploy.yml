@@ -15,7 +15,9 @@ jobs:
 
       - uses: actions/setup-node@v4
         with:
-          node-version: 20
+          # Astro 7 requires node >=22.12, and the lockfile is written by
+          # npm 11 (node 24) locally - older npm mis-reads its nesting.
+          node-version: 24
           cache: npm
 
       - run: npm ci
