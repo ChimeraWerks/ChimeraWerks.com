@@ -4,12 +4,16 @@
 //   - A slot carrying data-hero3d="default" mounts with no ?hero param, so the
 //     helix is that page's default hero. Any explicit ?hero value other than
 //     "3d" (shader, css) still suppresses it for side-by-side judging.
+//   - data-hero3d="page" mounts the same way as "default" but in page mode:
+//     the host is fixed to <body> and the helix travels with scroll (dir-c).
 export async function maybeMountHero3D(): Promise<void> {
   const slot = document.getElementById("hero-canvas-slot");
   if (!slot) return;
 
+  const pageMode = slot.dataset.hero3d === "page";
   const param = new URLSearchParams(location.search).get("hero");
-  const isDefault = param === null && slot.dataset.hero3d === "default";
+  const isDefault =
+    param === null && (slot.dataset.hero3d === "default" || pageMode);
   if (param !== "3d" && !isDefault) return;
 
   // Hero3D gates on these internally too, but by then the slot's CSS
@@ -49,7 +53,12 @@ export async function maybeMountHero3D(): Promise<void> {
 
   const host = document.createElement("div");
   host.setAttribute("aria-hidden", "true");
-  host.style.cssText = "position:absolute;inset:0;overflow:hidden;pointer-events:none;";
+  // Page mode: the host is a fixed full-viewport layer on <body> (the Hero3D
+  // container inside it carries the z-index), so the helix persists across
+  // every chapter instead of scrolling away with the hero section.
+  host.style.cssText = pageMode
+    ? "position:fixed;inset:0;overflow:hidden;pointer-events:none;"
+    : "position:absolute;inset:0;overflow:hidden;pointer-events:none;";
   // The slot's CSS decorations (arcane rings/veil) would double up behind the
   // 3D scene; hide them while the canvas owns the backdrop. The blueprint
   // grid on slice B lives on the slot itself, so it stays. The page-wide
@@ -61,8 +70,10 @@ export async function maybeMountHero3D(): Promise<void> {
     if (child.matches("canvas.hero-shader-canvas")) continue;
     (child as HTMLElement).style.visibility = "hidden";
   }
-  slot.appendChild(host);
-  createRoot(host).render(createElement(Hero3D));
+  (pageMode ? document.body : slot).appendChild(host);
+  createRoot(host).render(
+    createElement(Hero3D, pageMode ? { mode: "page" } : undefined),
+  );
 }
 
 maybeMountHero3D();

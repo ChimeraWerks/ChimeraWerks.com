@@ -37,6 +37,8 @@ import {
 import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
+import { THEME_CHANGE_EVENT } from "../data/themes";
+
 /* ------------------------------------------------------------- theme --- */
 
 const HUE_COUNT = 8;
@@ -614,9 +616,232 @@ function ChimeraForm({ colors }: { colors: ThemeColors }): ReactElement {
         </group>
         {/* Halo drifts independently of the spin, around the tilted axis. */}
         <Halo colors={colors} />
+        {/* The three working strands orbit the shared body. */}
+        <AgentMoons colors={colors} />
       </group>
     </group>
   );
+}
+
+/* ----------------------------------------------------------- agent moons --- */
+
+/*
+ * Three cores orbiting the helix — the working strands themselves. Quiet
+ * alias, consistent with the specimen plates: amber=lion/Claude,
+ * teal=goat/Codex, blue=serpent/Gemini. Each gets a faint orbit ring so the
+ * scene reads as a construction diagram, matching the engraved plates.
+ */
+interface MoonSpec {
+  radius: number;
+  speed: number;
+  phase: number;
+  inclination: number;
+  size: number;
+}
+
+const MOONS: readonly MoonSpec[] = [
+  { radius: 2.3, speed: 0.21, phase: 0.4, inclination: 0.42, size: 0.17 }, // claude
+  { radius: 2.9, speed: 0.16, phase: 2.6, inclination: -0.3, size: 0.15 }, // codex
+  { radius: 3.5, speed: 0.12, phase: 4.7, inclination: 0.18, size: 0.13 }, // gemini
+];
+
+function AgentMoon({
+  spec,
+  bg,
+  tint,
+}: {
+  spec: MoonSpec;
+  bg: THREE.Color;
+  tint: THREE.Color;
+}): ReactElement {
+  const moonRef = useRef<THREE.Mesh>(null);
+  const time = useRef(Math.random() * 200);
+
+  const material = useMemo(() => createFresnelMaterial(bg, tint), [bg, tint]);
+  useEffect(() => () => material.dispose(), [material]);
+
+  useFrame((_, rawDelta) => {
+    const moon = moonRef.current;
+    if (!moon) return;
+    const dt = Math.min(rawDelta, 1 / 30);
+    time.current += dt;
+    const a = time.current * spec.speed * Math.PI * 2 + spec.phase;
+    moon.position.set(Math.cos(a) * spec.radius, 0, Math.sin(a) * spec.radius);
+  });
+
+  return (
+    <group rotation={[spec.inclination, 0, spec.inclination * 0.6]}>
+      {/* Orbit ring: a hairline construction circle, engraved-plate style. */}
+      <mesh rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[spec.radius, 0.006, 6, 160]} />
+        <meshBasicMaterial color={tint} transparent opacity={0.14} depthWrite={false} />
+      </mesh>
+      <mesh ref={moonRef}>
+        <sphereGeometry args={[spec.size, 24, 24]} />
+        <primitive object={material} attach="material" />
+      </mesh>
+    </group>
+  );
+}
+
+function AgentMoons({ colors }: { colors: ThemeColors }): ReactElement {
+  const tints = [
+    colors.accent2, // lion / claude — amber
+    colors.hues[0] ?? colors.accent, // goat / codex — teal
+    colors.hues[3] ?? colors.accent, // serpent / gemini — blue
+  ];
+  return (
+    <>
+      {MOONS.map((spec, i) => (
+        <AgentMoon key={i} spec={spec} bg={colors.bg} tint={tints[i] as THREE.Color} />
+      ))}
+    </>
+  );
+}
+
+/* ------------------------------------------------------------ drift field --- */
+
+const DRIFT_COUNT = 170;
+
+/*
+ * Page-mode ambience: a deep field of slow-drifting motes spanning the whole
+ * viewport and z-depth, so no chapter is ever a flat void and section
+ * boundaries have no visible seam. Scroll adds depth-scaled parallax.
+ */
+function DriftField({ colors }: { colors: ThemeColors }): ReactElement {
+  const meshRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const tint = useMemo(() => new THREE.Color(), []);
+  const time = useRef(0);
+
+  const seeds = useMemo(() => {
+    const arr = new Float32Array(DRIFT_COUNT * 4); /* x, y, z, speed */
+    for (let i = 0; i < DRIFT_COUNT; i++) {
+      arr[i * 4] = (Math.random() - 0.5) * 30;
+      arr[i * 4 + 1] = (Math.random() - 0.5) * 18;
+      arr[i * 4 + 2] = -2 - Math.random() * 11;
+      arr[i * 4 + 3] = 0.05 + Math.random() * 0.12;
+    }
+    return arr;
+  }, []);
+
+  useLayoutEffect(() => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    for (let i = 0; i < DRIFT_COUNT; i++) {
+      tint
+        .copy(
+          (colors.hues[i % HUE_COUNT] ?? colors.accent) as THREE.Color,
+        )
+        .multiplyScalar(0.5 + (i % 5) * 0.1);
+      mesh.setColorAt(i, tint);
+    }
+    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
+  }, [colors, tint]);
+
+  useFrame((_, rawDelta) => {
+    const mesh = meshRef.current;
+    if (!mesh) return;
+    const dt = Math.min(rawDelta, 1 / 30);
+    time.current += dt;
+    const scroll = typeof window === "undefined" ? 0 : window.scrollY;
+    for (let i = 0; i < DRIFT_COUNT; i++) {
+      const x = seeds[i * 4] as number;
+      const y0 = seeds[i * 4 + 1] as number;
+      const z = seeds[i * 4 + 2] as number;
+      const speed = seeds[i * 4 + 3] as number;
+      /* Deeper motes parallax less — depth reads through the scroll. */
+      const parallax = scroll * 0.0012 * (1 + z / 13);
+      const y = ((y0 + time.current * speed + parallax + 9) % 18) - 9;
+      dummy.position.set(x, y, z);
+      dummy.rotation.set(time.current * speed, time.current * speed * 0.7, 0);
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    }
+    mesh.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <instancedMesh ref={meshRef} args={[undefined, undefined, DRIFT_COUNT]} frustumCulled={false}>
+      <octahedronGeometry args={[0.05]} />
+      <meshBasicMaterial transparent opacity={0.5} depthWrite={false} />
+    </instancedMesh>
+  );
+}
+
+/* ------------------------------------------------------- page-mode rig --- */
+
+/*
+ * Scroll choreography for mode="page": the helix is the page's protagonist,
+ * traveling between keyframed poses as the reader scrolls. Positions are
+ * offsets multiplied onto ChimeraForm's own layout, so the wide/narrow
+ * composition logic keeps working underneath. Progress is scrubbed (scroll
+ * position, not time), so scrolling backward reverses the travel.
+ */
+interface PagePose {
+  /** Page scroll progress 0..1 where this pose is fully reached. */
+  p: number;
+  x: number;
+  y: number;
+  s: number;
+  /** Extra lean in the screen plane, radians. */
+  r: number;
+}
+
+const PAGE_POSES: readonly PagePose[] = [
+  { p: 0.0, x: 0, y: 0, s: 1, r: 0 }, // hero: home position
+  { p: 0.24, x: -8.5, y: 0.4, s: 1.3, r: 0.3 }, // specimen: crosses to the left, closer
+  { p: 0.5, x: -2.5, y: 1.6, s: 0.55, r: -0.18 }, // werks: recedes while cards take stage
+  { p: 0.78, x: -9.5, y: -0.4, s: 0.95, r: 0.22 }, // relay: left of the console column
+  { p: 1.0, x: -1.5, y: 0.2, s: 1.5, r: -0.1 }, // contact: returns large, center
+];
+
+function pagePoseAt(progress: number, out: { x: number; y: number; s: number; r: number }): void {
+  const last = PAGE_POSES[PAGE_POSES.length - 1] as PagePose;
+  let a = PAGE_POSES[0] as PagePose;
+  let b = last;
+  for (let i = 1; i < PAGE_POSES.length; i++) {
+    const candidate = PAGE_POSES[i] as PagePose;
+    if (progress <= candidate.p) {
+      a = PAGE_POSES[i - 1] as PagePose;
+      b = candidate;
+      break;
+    }
+    a = candidate;
+    b = last;
+  }
+  const span = b.p - a.p;
+  const t = span > 0 ? Math.min(Math.max((progress - a.p) / span, 0), 1) : 1;
+  const e = t * t * (3 - 2 * t); /* smoothstep between poses */
+  out.x = a.x + (b.x - a.x) * e;
+  out.y = a.y + (b.y - a.y) * e;
+  out.s = a.s + (b.s - a.s) * e;
+  out.r = a.r + (b.r - a.r) * e;
+}
+
+function PageScrollRig({ children }: { children: ReactNode }): ReactElement {
+  const groupRef = useRef<THREE.Group>(null);
+  const pose = useRef({ x: 0, y: 0, s: 1, r: 0 });
+
+  useFrame((_, rawDelta) => {
+    const group = groupRef.current;
+    if (!group) return;
+    const dt = Math.min(rawDelta, 1 / 30);
+    const doc = document.documentElement;
+    const track = doc.scrollHeight - window.innerHeight;
+    const progress = track > 0 ? Math.min(Math.max(window.scrollY / track, 0), 1) : 0;
+    pagePoseAt(progress, pose.current);
+    /* Damp toward the pose: the helix glides after the scroll the same way
+       the lerped page scroll glides after the wheel. */
+    const k = 3;
+    group.position.x = THREE.MathUtils.damp(group.position.x, pose.current.x, k, dt);
+    group.position.y = THREE.MathUtils.damp(group.position.y, pose.current.y, k, dt);
+    const s = THREE.MathUtils.damp(group.scale.x, pose.current.s, k, dt);
+    group.scale.setScalar(s);
+    group.rotation.z = THREE.MathUtils.damp(group.rotation.z, pose.current.r, k, dt);
+  });
+
+  return <group ref={groupRef}>{children}</group>;
 }
 
 /* -------------------------------------------------------------- camera --- */
@@ -664,7 +889,16 @@ function FirstFrame({ onFrame }: { onFrame: () => void }): null {
 
 /* ---------------------------------------------------------------- root --- */
 
-export default function Hero3D(): ReactElement | null {
+export interface Hero3DProps {
+  /**
+   * "hero" (default): absolute canvas filling #hero-canvas-slot.
+   * "page": fixed full-viewport canvas behind all content (above the smoke,
+   * below text) whose helix travels between PAGE_POSES as the page scrolls.
+   */
+  mode?: "hero" | "page";
+}
+
+export default function Hero3D({ mode = "hero" }: Hero3DProps): ReactElement | null {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const pointer = useRef({ x: 0, y: 0 });
 
@@ -684,7 +918,16 @@ export default function Hero3D(): ReactElement | null {
       window.matchMedia(`(min-width: ${WIDE_MIN_WIDTH_PX}px)`).matches,
   );
 
-  const colors = useMemo(readThemeColors, []);
+  /* State, not a one-shot memo: the theme picker swaps <html data-theme>
+     live, and every material/instance color hangs off `colors` deps. A
+     switch rebuilds rung data and both strand materials — acceptable for an
+     explicit, rare user action. */
+  const [colors, setColors] = useState(readThemeColors);
+  useEffect(() => {
+    const onThemeChange = (): void => setColors(readThemeColors());
+    window.addEventListener(THEME_CHANGE_EVENT, onThemeChange);
+    return () => window.removeEventListener(THEME_CHANGE_EVENT, onThemeChange);
+  }, []);
   const handleFirstFrame = useCallback(() => setShown(true), []);
 
   /* Honor a mid-session switch to reduced motion, not just the mount value. */
@@ -739,8 +982,13 @@ export default function Hero3D(): ReactElement | null {
 
   const active = inView && pageVisible;
   const containerStyle: CSSProperties = {
-    position: "absolute",
+    position: mode === "page" ? "fixed" : "absolute",
     inset: 0,
+    /* Page mode: above the body smoke canvas (-10), below <main> (z 1, see
+       slice-kinetic.css). NOT negative: Firefox miscomposites a fixed
+       alpha-WebGL layer at negative z and inverts the surfaces above it
+       (cards rendered parchment-on-dark; bisected via ?hero=css/shader). */
+    zIndex: mode === "page" ? 0 : undefined,
     pointerEvents: "none",
     opacity: shown ? (wide ? 1 : NARROW_OPACITY) : 0,
     transition: "opacity 600ms ease",
@@ -770,7 +1018,16 @@ export default function Hero3D(): ReactElement | null {
         >
           {/* Linear fog toward --bg sinks far drifters into the page. */}
           <fog attach="fog" args={[colors.bg, 7, 16]} />
-          <ChimeraForm colors={colors} />
+          {mode === "page" ? (
+            <>
+              <DriftField colors={colors} />
+              <PageScrollRig>
+                <ChimeraForm colors={colors} />
+              </PageScrollRig>
+            </>
+          ) : (
+            <ChimeraForm colors={colors} />
+          )}
           <CameraRig pointer={pointer} />
           <FirstFrame onFrame={handleFirstFrame} />
         </Canvas>

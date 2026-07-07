@@ -1,15 +1,488 @@
 ---
+/**
+ * The landing page — "the kinetic cut," promoted from direction slice C
+ * after the 2026-07 review (slices A/B deleted; their token themes live on
+ * in the theme picker).
+ * One continuous world: the page-fixed helix (Hero3D mode="page") and the
+ * smoke atmosphere are the scene; numbered chapters are camera stops. All
+ * motion is GSAP-owned and scrubbed (scripts/kinetic.ts): lerped smooth
+ * scroll, masked type reveals, a boot loader that hands off into the hero,
+ * and a persistent HUD frame with a chapter counter.
+ *
+ * Reuses slice-arcane.css component chrome but none of its animated classes
+ * (see the header of slice-kinetic.css for the boundary).
+ */
+import { Picture } from "astro:assets";
 import Base from "../layouts/Base.astro";
+import EcosystemCard from "../components/EcosystemCard.astro";
+import StatusDot from "../components/StatusDot.astro";
+import HeroShader from "../components/HeroShader.astro";
+import { ECOSYSTEM } from "../data/ecosystem";
+import type { ImageMetadata } from "astro";
+import chimeraPlate from "../assets/chimera-plate.png";
+import plateLion from "../assets/kinetic/plate-lion.png";
+import plateGoat from "../assets/kinetic/plate-goat.png";
+import plateSerpent from "../assets/kinetic/plate-serpent.png";
+import backdropRooms from "../assets/kinetic/backdrop-rooms.png";
+import backdropSignal from "../assets/kinetic/backdrop-signal.png";
+import emblemRelay from "../assets/kinetic/emblem-relay.png";
+import emblemDna from "../assets/kinetic/emblem-dna.png";
+import emblemLibrary from "../assets/kinetic/emblem-library.png";
+import emblemBrowser from "../assets/kinetic/emblem-browser.png";
+import emblemImagelab from "../assets/kinetic/emblem-imagelab.png";
+import emblemMore from "../assets/kinetic/emblem-more.png";
+import "../styles/slice-arcane.css";
+import "../styles/slice-kinetic.css";
+
+/* Engraved seals per werk; generated in the chimera-plate style (imagelab). */
+const EMBLEMS: Record<string, ImageMetadata> = {
+  relay: emblemRelay,
+  dna: emblemDna,
+  library: emblemLibrary,
+  browser: emblemBrowser,
+  imagelab: emblemImagelab,
+  more: emblemMore,
+};
+
+/* The three strands of the working chimera. The animals are quiet aliases:
+   lion=Claude, goat=Codex, serpent=Gemini — stated in the tags, never
+   belabored in the copy. */
+const GENOMES = [
+  {
+    plate: plateLion,
+    tag: "strand i · lion — claude · reasons & reviews",
+    alt: "Engraved lion head specimen plate — the Claude strand",
+  },
+  {
+    plate: plateGoat,
+    tag: "strand ii · goat — codex · builds & ships",
+    alt: "Engraved goat head specimen plate — the Codex strand",
+  },
+  {
+    plate: plateSerpent,
+    tag: "strand iii · serpent — gemini · scouts & sweeps",
+    alt: "Engraved coiled serpent specimen plate — the Gemini strand",
+  },
+];
+
+type Lane = {
+  name: string;
+  hue: number;
+  task: string;
+  pct: number;
+  active?: boolean;
+  caret?: boolean;
+};
+const LANES: Lane[] = [
+  { name: "oracle", hue: 6, task: "drafting the migration plan", pct: 82 },
+  { name: "mason", hue: 0, task: "implementing relay-core #214", pct: 64 },
+  { name: "warden", hue: 2, task: "adversarial review, pass two", pct: 47 },
+  { name: "courier", hue: 3, task: "syncing artifacts to the room", pct: 91 },
+  { name: "scribe", hue: 1, task: "writing the handoff", pct: 33, active: true, caret: true },
+];
+
+const BEATS = [
+  {
+    title: "One console, whole fleet",
+    problem:
+      "Every agent you add is another terminal to babysit, another transcript scrolling somewhere you are not looking.",
+    solution:
+      "Relay puts the fleet in shared rooms: personas, live transcripts, spawn controls. However many agents are running, you watch one console.",
+  },
+  {
+    title: "Orchestration you can diff",
+    problem:
+      "Judge panels, fusion runs, debates: in most shops that logic lives in glue scripts only the author can rerun.",
+    solution:
+      "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
+  },
+  {
+    title: "Failures keep their trail",
+    problem:
+      "When an agent dies three hops down, most consoles hand you a normalized reason code and eat the stderr.",
+    solution:
+      "Relay keeps the raw trail: child stderr, RPC hops, exit codes, secrets redacted. The real error is one layer down, never gone.",
+  },
+];
 ---
 
 <Base
-  title="Chimera Werks"
-  description="Chimera Werks — agent tooling, orchestration, and the werks behind them."
+  title="Chimera Werks · Many agents, one beast"
+  description="Chimera Werks builds multi-agent tooling: Chimera Relay, DNA, Library, Browser, and Image Lab. Fleets of coding agents, run as one."
   theme="arcane"
 >
-  <main class="mx-auto flex min-h-dvh max-w-3xl items-center px-6">
-    <p class="text-ink-2">
-      Theming foundation in place. The real landing page arrives with the direction slices.
-    </p>
+  <!-- ============================================================ loader -->
+  <div class="k-loader" id="k-loader" aria-hidden="true">
+    <div class="k-boot-lines">
+      <p class="k-boot-line">chimera werks · boot sequence</p>
+      <p class="k-boot-line">strand a · codex <em>— ok</em></p>
+      <p class="k-boot-line">strand b · claude <em>— ok</em></p>
+      <p class="k-boot-line">splice · relay rooms <em>— ok</em></p>
+    </div>
+    <p class="k-boot-pct"><span id="k-boot-pct">000</span></p>
+  </div>
+
+  <!-- =============================================================== hud -->
+  <div class="k-frame" aria-hidden="true"></div>
+  <header class="k-hud-top">
+    <a class="k-brand" href="/">CW<i>.</i></a>
+    <nav class="k-hud-nav" aria-label="Chapters">
+      <a href="#specimen">specimen</a>
+      <a href="#werks">werks</a>
+      <a href="#relay">relay</a>
+      <a href="#contact">contact</a>
+    </nav>
+  </header>
+  <div class="k-rail" aria-hidden="true">
+    <span class="k-rail-glyph">+</span>
+    <span class="k-rail-track"><span id="k-rail-fill"></span></span>
+  </div>
+  <div class="k-ch" aria-hidden="true">
+    <span id="k-ch-num">001</span>
+    <span id="k-ch-name">the beast</span>
+  </div>
+
+  <main>
+    <!-- ==================================================== ch 001 · hero -->
+    <section class="k-chapter k-hero grain" data-chapter="001" data-chapter-name="the beast">
+      <!-- Page-mode helix: the loader script mounts the canvas fixed on
+           <body>; the smoke atmosphere parks here before re-parenting. -->
+      <div id="hero-canvas-slot" data-hero3d="page" aria-hidden="true">
+        <HeroShader />
+      </div>
+      <script>
+        import "../scripts/hero-3d-loader";
+        import "../scripts/kinetic";
+      </script>
+
+      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
+        <p class="k-kicker" data-k-hero-rise>// many hands make light werk</p>
+        <h1 class="k-display k-display-hero mt-6">
+          <span class="sr-only">Chimera Werks</span>
+          <span aria-hidden="true">
+            <span class="block" data-k-hero-split>Chimera</span>
+            <span class="k-line2" data-k-hero-split>Werks<span class="k-period">.</span></span>
+          </span>
+        </h1>
+        <div class="mt-10 flex flex-wrap items-end justify-between gap-8">
+          <div class="max-w-md">
+            <p class="text-lg text-ink-2" data-k-hero-rise>
+              Many agents. One <span class="word-arcane">Beast</span>. The rooms, the language,
+              and the instruments that let a fleet of coding agents work as one animal.
+            </p>
+            <div class="mt-8 flex flex-wrap items-center gap-4" data-k-hero-rise>
+              <a href="#werks" class="btn btn-primary">Survey the werks</a>
+              <a href="mailto:hello@chimerawerks.com" class="btn btn-ghost">hello@chimerawerks.com</a>
+            </div>
+          </div>
+          <p class="k-microtag" data-k-hero-rise>run 001 · 3 agents in room · handoff clean</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- =============================================== ch 002 · statement -->
+    <section
+      id="specimen"
+      class="k-chapter k-statement"
+      data-chapter="002"
+      data-chapter-name="the specimen"
+    >
+      <div class="k-statement-stage grain">
+        <div class="k-statement-art" aria-hidden="true">
+          <Picture
+            src={chimeraPlate}
+            formats={["avif", "webp"]}
+            widths={[852, 1280, 1704]}
+            sizes="100vw"
+            loading="lazy"
+            decoding="async"
+            alt=""
+          />
+        </div>
+        <div class="k-statement-scrim" aria-hidden="true"></div>
+        <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-14">
+          <p class="k-microtag">run 001 · one room · three minds</p>
+          <h2 class="k-display k-display-ch mt-6 max-w-4xl" data-k-split>
+            One drafts. One builds. One hunts the edge cases. Same room, same problem.
+          </h2>
+          <p class="mt-8 max-w-md leading-relaxed text-ink-2" data-k="rise">
+            That is the workflow: agents spawn into shared rooms, split the work by what each
+            does best, argue in judge panels, and hand off with the trail intact.
+          </p>
+          <p class="mt-6 font-mono text-xs tracking-[0.1em] text-ink-3" data-k="rise">
+            lion · goat · serpent — three strands, one working body
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- The three genomes: one engraved plate per strand. Own flow block so
+         it never scrolls over the sticky statement stage above. -->
+    <div class="k-chapter relative py-24">
+      <div class="k-triptych mx-auto w-full max-w-6xl px-6 sm:px-14">
+        {
+          GENOMES.map((g) => (
+            <figure class="k-plate" data-k="rise">
+              <Picture
+                src={g.plate}
+                formats={["avif", "webp"]}
+                widths={[520, 1040]}
+                sizes="(min-width: 1024px) 30vw, 90vw"
+                loading="lazy"
+                decoding="async"
+                alt={g.alt}
+              />
+              <figcaption class="k-microtag mt-3">{g.tag}</figcaption>
+            </figure>
+          ))
+        }
+      </div>
+    </div>
+
+    <!-- =================================================== ch 003 · werks -->
+    <section
+      id="werks"
+      class="k-chapter k-section-pad grain"
+      data-chapter="003"
+      data-chapter-name="the werks"
+    >
+      <div class="mx-auto w-full max-w-6xl px-6 sm:px-14">
+        <p class="k-microtag">the werks · shared identity system</p>
+        <h2 class="k-display k-display-ch mt-6" data-k-split>Every head of the beast.</h2>
+        <p class="mt-6 max-w-prose text-ink-2" data-k="rise">
+          Every tool ships from the same bench: shared hues, shared statuses, shared rooms
+          across the fleet.
+        </p>
+        <div class="mt-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {
+            ECOSYSTEM.map((app) => (
+              <div
+                class:list={[
+                  app.flagship && "sm:col-span-2",
+                  app.id === "more" && "sm:col-span-2 lg:col-span-3",
+                ]}
+                data-k="rise"
+              >
+                <EcosystemCard app={app} emblem={EMBLEMS[app.id]} />
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <!-- =================================================== ch 004 · relay -->
+    <section
+      id="relay"
+      class="k-chapter k-section-pad grain"
+      data-chapter="004"
+      data-chapter-name="the flagship"
+    >
+      <div class="k-chapter-bg" aria-hidden="true">
+        <Picture
+          src={backdropRooms}
+          formats={["avif", "webp"]}
+          widths={[1280, 1920]}
+          sizes="100vw"
+          loading="lazy"
+          decoding="async"
+          alt=""
+        />
+      </div>
+      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
+        <p class="k-microtag">flagship werk · chimera relay</p>
+        <h2 class="k-display k-display-ch mt-6" data-k-split>Where the swarm reports for duty.</h2>
+
+        <div class="mt-14 grid gap-14 lg:grid-cols-[1fr_1.05fr] lg:items-center">
+          <p class="max-w-prose text-lg leading-relaxed text-ink-2" data-k="rise">
+            Rooms of agents — Codex, Claude, Hermes, local models — run, argue, and get judged
+            behind one pane of glass. Three werks below, one per head.
+          </p>
+          <div class="console-wrap" data-k="drift" aria-hidden="true">
+            <div class="console">
+              <div class="console-head">
+                <span>relay · room/night-werks</span>
+                <span class="pill">
+                  <StatusDot status="active" hue="var(--accent-2)" />
+                  live
+                </span>
+              </div>
+              <div>
+                {
+                  LANES.map((lane) => (
+                    <div
+                      class:list={["lane", "spine", lane.active && "lane-active"]}
+                      style={`--hue: var(--card-hue-${lane.hue})`}
+                    >
+                      <div class="lane-top">
+                        <span class="lane-name">{lane.name}</span>
+                        <span class="lane-pct">{lane.pct}%</span>
+                      </div>
+                      <p class="lane-task">
+                        {lane.task}
+                        {lane.caret && <span class="caret"></span>}
+                      </p>
+                      <div class="gauge">
+                        <i style={`--w: ${lane.pct}%`}></i>
+                      </div>
+                    </div>
+                  ))
+                }
+              </div>
+              <div class="console-foot">
+                <span>judge panel · 3 verdicts in</span>
+                <span>dna: fusion-3</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-24 flex flex-col gap-20 sm:mt-28">
+          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat" data-k="rise">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">01</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[0].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[0].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[0].solution}</span>
+              </p>
+            </div>
+            <figure class="af-fig min-w-0" data-k="drift">
+              <svg
+                viewBox="0 0 460 280"
+                role="img"
+                aria-label="Schematic: four agent harnesses fanning into a single Relay room"
+              >
+                <rect class="af-node" x="24" y="22" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="46" text-anchor="middle">codex</text>
+                <rect class="af-node" x="24" y="88" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="112" text-anchor="middle">claude</text>
+                <rect class="af-node" x="24" y="154" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="178" text-anchor="middle">hermes</text>
+                <rect class="af-node" x="24" y="220" width="116" height="40" rx="10"></rect>
+                <text class="af-label" x="82" y="244" text-anchor="middle">local</text>
+                <path class="af-edge" d="M140 42 C 224 42, 224 108, 308 108"></path>
+                <path class="af-edge" d="M140 108 C 224 108, 224 128, 308 128"></path>
+                <path class="af-edge" d="M140 174 C 224 174, 224 152, 308 152"></path>
+                <path class="af-edge" d="M140 240 C 224 240, 224 172, 308 172"></path>
+                <rect class="af-node-hi" x="308" y="86" width="128" height="108" rx="12"></rect>
+                <text class="af-label-hi" x="372" y="106" text-anchor="middle">relay · room a</text>
+                <line class="af-rule" x1="324" y1="126" x2="420" y2="126"></line>
+                <line class="af-rule" x1="324" y1="144" x2="404" y2="144"></line>
+                <line class="af-rule" x1="324" y1="162" x2="414" y2="162"></line>
+                <line class="af-rule" x1="324" y1="180" x2="392" y2="180"></line>
+              </svg>
+              <figcaption class="af-figcap">fig. 1 · fan-in: four strands, one room</figcaption>
+            </figure>
+          </div>
+
+          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat lg:order-2" data-k="rise">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">02</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[1].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[1].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[1].solution}</span>
+              </p>
+            </div>
+            <figure class="af-fig min-w-0 lg:order-1" data-k="drift">
+              <div class="af-spec overflow-x-auto">
+                <span class="af-line"><span><span class="text-ink-1">run</span> "triage-panel" &#123;</span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">pattern</span><span class="af-val">judge-panel</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">candidates</span><span class="af-val">3 × codex</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">judge</span><span class="af-val">1 × claude</span></span></span>
+                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">output</span><span class="af-val">verdict → room</span></span></span>
+                <span class="af-line"><span>&#125;</span></span>
+              </div>
+              <figcaption class="af-figcap">
+                fig. 2 · a dna run: the whole orchestration in six lines
+              </figcaption>
+            </figure>
+          </div>
+
+          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
+            <div class="beat" data-k="rise">
+              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">03</p>
+              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[2].title}</h3>
+              <p class="beat-problem mt-5">
+                <span class="mark mark-bad">×</span>
+                <span>{BEATS[2].problem}</span>
+              </p>
+              <p class="beat-solution">
+                <span class="mark mark-good">→</span>
+                <span>{BEATS[2].solution}</span>
+              </p>
+            </div>
+            <figure class="af-fig min-w-0" data-k="drift">
+              <svg
+                viewBox="0 0 460 230"
+                role="img"
+                aria-label="Schematic: a run timeline where the failing event expands into its preserved error trail"
+              >
+                <line class="af-rule" x1="24" y1="52" x2="436" y2="52"></line>
+                <circle class="af-dot" cx="70" cy="52" r="3"></circle>
+                <text class="af-label-dim" x="70" y="32" text-anchor="middle">SPAWN</text>
+                <circle class="af-dot" cx="178" cy="52" r="3"></circle>
+                <text class="af-label-dim" x="178" y="32" text-anchor="middle">DISPATCH</text>
+                <circle class="af-dot" cx="286" cy="52" r="3"></circle>
+                <text class="af-label-dim" x="286" y="32" text-anchor="middle">STREAM</text>
+                <circle class="af-bad-fill" cx="394" cy="52" r="4"></circle>
+                <text class="af-bad-fill" x="394" y="32" text-anchor="middle">EXIT 127</text>
+                <path class="af-bad-stroke" d="M394 56 L394 88 L330 88 L330 96"></path>
+                <rect class="af-node" x="110" y="96" width="326" height="104" rx="10"></rect>
+                <text class="af-label-dim" x="128" y="124">$ relay-diag last --room a</text>
+                <text class="af-label" x="128" y="148">codex.spawn → exit 127</text>
+                <text class="af-bad-fill" x="128" y="172">stderr: ENOENT ./harness (preserved)</text>
+              </svg>
+              <figcaption class="af-figcap">fig. 3 · the trail survives every hop</figcaption>
+            </figure>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ================================================= ch 005 · contact -->
+    <section
+      id="contact"
+      class="k-chapter k-section-pad grain"
+      data-chapter="005"
+      data-chapter-name="open a channel"
+    >
+      <div class="k-chapter-bg" aria-hidden="true">
+        <Picture
+          src={backdropSignal}
+          formats={["avif", "webp"]}
+          widths={[1280, 1920]}
+          sizes="100vw"
+          loading="lazy"
+          decoding="async"
+          alt=""
+        />
+      </div>
+      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
+        <p class="k-microtag">contact · one inbox, a human answers</p>
+        <h2 class="k-display k-display-ch mt-6" data-k-split>Open a channel.</h2>
+        <p class="mt-10" data-k="rise">
+          <a href="mailto:hello@chimerawerks.com" class="k-contact-mail">hello@chimerawerks.com</a>
+        </p>
+        <div class="mt-16 flex flex-wrap items-center justify-between gap-6" data-k="rise">
+          <span class="text-xs text-ink-3">© 2026 Chimera Werks</span>
+          <a
+            href="/archive/v1/"
+            class="font-mono text-xs text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors hover:text-ink-1"
+          >
+            Site archive: v1 (Chimera Studio era)
+          </a>
+        </div>
+      </div>
+    </section>
   </main>
 </Base>

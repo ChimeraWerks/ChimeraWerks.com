@@ -1,55 +1,57 @@
 ---
-goal: Run the local review of the rebuilt ChimeraWerks.com with the user - they pick an art direction (slice A vs B) and a hero (shader vs 3D) - then iterate on the winner and finish M5 (verify, merge, deploy, post-deploy checks).
-next-focus: rebuild-review
+goal: Redesign ChimeraWerks.com (now live on main) with a fresh creative eye so it flows like a top-tier Silicon Valley product site, not a talented amateur's page - use the ui-design plugin agents and real knowledge of the Chimera app suite, and freely change, delete, or add anything.
+next-focus: creative-redesign
 repo: ChimeraWerks.com
-branch: rebuild/umbrella-site
+branch: main
 updated: 2026-07-06
 ---
 
 # Goal
-Run the local review of the rebuilt site with the user: pick art direction (slice A vs B) and hero (shader vs 3D), iterate on the winner, then finish M5 (verify, merge to main, deploy, post-deploy checks).
+Redesign the live site with a fresh creative eye so it flows like a top-tier Silicon Valley product site. The user's exact verdict on the current version: "a really smart kid made it look good, but it doesn't really flow well or feel like a silicon valley project." Free rein: change, delete, add - use the ui-design plugin agents (ui-designer, design-system-architect, interaction-design, visual-design-foundations) and knowledge of the Chimera app suite (Relay, DNA, Library, Browser, Image Lab - see src/data/ecosystem.ts and the chimera-* skills).
 
 # Done
-- Full plan (research + Codex adversarial cross-check) at C:\Users\charl\.claude\plans\starry-percolating-stonebraker.md; decisions mirrored in Claude project memory.
-- Rebuild executed on branch rebuild/umbrella-site (9 commits, clean tree): Astro scaffold with outDir "out" (deploy pipeline untouched), Tailwind 4 + token layer.
-- Two art-direction slices built: /dir-a (warm-arcane evolved, Relay-derived) and /dir-b (cool precision dark); index currently carries the latest "scientific-DNA" pass with helix hero as default.
-- Both hero variants: OGL shader (default) and lazy R3F 3D behind ?hero=3d.
-- Old Chimera Studio site frozen at public/archive/v1 with _redirects for /devlog/* and /toolkit; a11y audit fixes and privacy-page fix landed.
-- AGENTS.md and package.json already updated on the branch for the Astro toolchain.
+- "Kinetic cut" built and shipped as the landing page (promoted from /dir-c; slices A/B deleted): Lenis smooth scroll + GSAP ScrollTrigger/SplitText, boot loader, HUD chapter counter, page-fixed 3D helix traveling through 5 chapters, three orbiting agent cores (amber=lion=Claude, teal=goat=Codex, blue=serpent=Gemini), 170-mote drift field, engraved asset set (3 specimen plates, 6 card emblems, 2 backdrops) generated via /imagelab in the chimera-plate style.
+- Live theme picker on every page (bottom-right): swaps [data-theme] tokens live, re-colors the WebGL layers via the chimera:themechange event. Registry: src/data/themes.ts.
+- Old Chimera Studio site archived at /archive/v1 with /devlog/* 301s (public/_redirects).
+- Merged to main and pushed; CI deploys out/ to Cloudflare Pages.
 
 # Decisions
-- Astro (latest major) over Next.js static export - converged independently by Claude research and a Codex adversarial consult (thread 019f2e9d-bea0-77b0-b535-46678ff73fac); do not relitigate.
-- Deploy workflow (.github/workflows/deploy.yml) is never modified; build output stays out/.
-- public/archive/v1 is frozen - regenerate only from git tag v1-chimera-studio, never hand-edit.
-- Devlog does not carry forward; inbound /devlog/* links 301 to the archive.
-- User picks direction and hero from rendered pages, not descriptions; losing variants get deleted after the pick.
-- User communication: plain conversation and rendered results; avoid plan-mode style multiple-choice loops (explicit user feedback).
+- Astro static + outDir "out"; deploy workflow untouched (standing rule, see AGENTS.md).
+- Kinetic cut IS the site now; A/B slices deleted, their token themes (arcane/precision) kept for the picker.
+- Animal aliases stay subtle: lion=Claude, goat=Codex, serpent=Gemini, stated in plate microtags only.
+- Copy leads with agentic workflows (rooms, judge panels, handoffs), not mythology - explicit user direction.
+- The KPR motion grammar (lerped scroll, scrubbed reversible reveals, loader handoff, persistent HUD) was user-approved as "pretty good" - evolve it, don't blindly discard, but the redesign has explicit permission to change anything that serves flow.
 
 # Changed / important files
-- src/pages/index.astro, dir-a.astro, dir-b.astro - the review surfaces (hero toggle via ?hero=3d)
-- src/data/ecosystem.ts - drafted app roster (user has veto)
-- public/archive/v1/ + public/_redirects - frozen archive + 301s
-- astro.config.mjs - outDir "out", static output
-- AGENTS.md - updated for Astro commands/scars on this branch
+- src/pages/index.astro - the kinetic landing page (5 chapters)
+- src/scripts/kinetic.ts - all motion orchestration; note the reflow-refresh block at the end (scar)
+- src/components/Hero3D.tsx - helix + page mode + agent moons + drift field; Firefox negative-z scar comment
+- src/components/ThemePicker.astro, src/data/themes.ts - live theming
+- src/styles/slice-kinetic.css + slice-arcane.css - kinetic layout + reused chrome (boundary documented in kinetic css header)
+- src/assets/kinetic/ - generated engraved assets
 
 # Validation
-- Branch builds committed through a11y + privacy fixes; working tree clean.
-- NOT yet verified this session: fresh `npm run build`, local serve walkthrough, Lighthouse pass, and the user's own visual review - that review IS the next session's job.
-- _redirects behavior is Cloudflare-only; verify post-deploy with a curl for a 301 on /devlog/day-19.
+- npm run build green; npm test (AGENTS.md gate) passes.
+- Full-scroll walkthroughs in Camoufox in both themes, including theme-switch-at-page-bottom (the reflow bug repro) - all pass locally.
+- NOT yet verified at save time: production deploy (CI runs on push to main; verify https://chimerawerks.com serves the new site and curl -sI https://chimerawerks.com/devlog/day-19 returns a 301 to /archive/v1/devlog/day-19).
+- Field CWV (p75) only checkable post-deploy via PageSpeed/CrUX.
 
 # Risks / open questions
-- User has not approved any visual direction yet; nothing merges or deploys before their picks.
-- The "scientific-DNA / helix hero" pass on index was a late iteration - confirm the user actually likes it vs the original slice A/B framing before deleting anything.
-- Field CWV (p75) can only be checked post-deploy via PageSpeed/CrUX.
+- Three scars that will bite a redesign: (1) fixed alpha-WebGL canvas at negative z-index inverts colors in Firefox - keep canvas z>=0 with content lifted above; (2) any post-measure reflow (lazy images, theme/font swap) strands scrubbed reveals - kinetic.ts already queues ScrollTrigger.refresh for known sources, add new sources to it; (3) codex-oauth image backend rejects transparent backgrounds - generate on black + mix-blend-mode: screen.
+- The user reviews rendered results, not descriptions (see memory: milestone-first-visual-slices) - build, deploy to the rebuild-preview branch alias, then present URLs.
+- Do not touch .github/workflows/deploy.yml, public/archive/v1/, or public/_redirects (AGENTS.md boundaries).
 
 # Suggested skills
-- /run or preview_start (registry port 20000; do not hard-code) for the local review
-- verify skill for the pre-merge walkthrough; code-review before merging to main
+- ui-design plugin agents: ui-designer, design-system-architect, interaction-design, visual-design-foundations (the brief names them)
+- /imagelab for more assets in the established engraved style (prompt style anchor: src/assets/chimera-plate.png)
+- chimera-browser for real-browser visual verification; wrangler pages deploy out --branch rebuild-preview for review deploys
+- frontend-design skill for aesthetic direction
 
 # Next action
-Start the dev/preview server, open /, /dir-a, /dir-b (each with and without ?hero=3d) plus /archive/v1/, and walk the user through them so they pick direction + hero.
+Verify the production deploy landed (curl https://chimerawerks.com for the new title + the /devlog/day-19 301), then do a structured critique pass of the live site against 3-5 best-in-class Silicon Valley product sites (Linear, Vercel, Stripe tier) to name concretely what "doesn't flow" - then redesign from that critique, not from scratch.
 
 # Artifact links
-- Plan: C:\Users\charl\.claude\plans\starry-percolating-stonebraker.md
-- Codex consult artifacts: C:\Users\charl\AppData\Local\Temp\claude\C--Github-ChimeraWerks-com\6b2f21e9-e22d-4ee8-8d08-a935732a4e88\scratchpad\codex-consult\
-- Git tag v1-chimera-studio (old site); branch rebuild/umbrella-site
+- Live: https://chimerawerks.com · review alias: https://rebuild-preview.chimerawerks-com.pages.dev
+- Plan (original rebuild): C:\Users\charl\.claude\plans\starry-percolating-stonebraker.md
+- KPR study screenshots + generated asset masters: session scratchpad (temp, may be gone)
+- Git tag v1-chimera-studio = archived old site source

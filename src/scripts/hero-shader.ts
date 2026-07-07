@@ -3,9 +3,10 @@
  * with OGL onto a position:fixed canvas pinned behind the entire page
  * (z-index -10 — in front of the body background, behind all content), so the
  * atmosphere runs seamlessly under every section with no break at the hero
- * fold. Theme-aware: colors are read once at init from the --bg / --accent /
- * --accent-2 tokens on <html data-theme>, so the same program renders
- * iris+amber on the arcane slice and violet+cyan on the precision slice.
+ * fold. Theme-aware: colors are read from the --bg / --accent / --accent-2
+ * tokens on <html data-theme> at init and again on every THEME_CHANGE_EVENT,
+ * so the same program renders iris+amber on the arcane slice, violet+cyan on
+ * the precision slice, and recolors live when the theme picker swaps them.
  *
  * Scroll-linked intensity: full smoke strength over the hero viewport, easing
  * down to a dim floor after one viewport of scroll so content sections stay
@@ -17,6 +18,8 @@
  * an optional 3D hero canvas simply layers above this atmosphere.
  */
 import { Mesh, Program, Renderer, Triangle } from "ogl";
+
+import { THEME_CHANGE_EVENT } from "../data/themes";
 
 type Vec3 = [number, number, number];
 
@@ -281,6 +284,15 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
     uAccentB: { value: new Float32Array(3) },
   };
 
+  /* Re-run on THEME_CHANGE_EVENT: the uniforms sample the tokens, not CSS,
+     so a live data-theme swap would otherwise leave the atmosphere stale. */
+  const applyThemeColors = () => {
+    const styles = getComputedStyle(document.documentElement);
+    uniforms.uBg.value.set(readThemeColor(styles, "--bg", FALLBACK.bg));
+    uniforms.uAccentA.value.set(readThemeColor(styles, "--accent", FALLBACK.accent));
+    uniforms.uAccentB.value.set(readThemeColor(styles, "--accent-2", FALLBACK.accent2));
+  };
+
   try {
     renderer = new Renderer({
       canvas,
@@ -293,10 +305,7 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
     });
     const gl = renderer.gl;
 
-    const styles = getComputedStyle(document.documentElement);
-    uniforms.uBg.value.set(readThemeColor(styles, "--bg", FALLBACK.bg));
-    uniforms.uAccentA.value.set(readThemeColor(styles, "--accent", FALLBACK.accent));
-    uniforms.uAccentB.value.set(readThemeColor(styles, "--accent-2", FALLBACK.accent2));
+    applyThemeColors();
 
     const program = new Program(gl, { vertex: VERTEX, fragment: FRAGMENT, uniforms });
     mesh = new Mesh(gl, { geometry: new Triangle(gl), program });
@@ -346,6 +355,7 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
     target.y = (0.5 - e.clientY / window.innerHeight) * 0.06;
   };
   window.addEventListener("pointermove", onPointer, { passive: true });
+  window.addEventListener(THEME_CHANGE_EVENT, applyThemeColors);
 
   let raf = 0;
   let running = false;
@@ -398,6 +408,7 @@ function initHeroShader(canvas: HTMLCanvasElement): void {
       running = false;
       cancelAnimationFrame(raf);
       window.removeEventListener("pointermove", onPointer);
+      window.removeEventListener(THEME_CHANGE_EVENT, applyThemeColors);
       window.removeEventListener("scroll", onScroll);
       window.removeEventListener("resize", resize);
       document.removeEventListener("visibilitychange", syncLoop);
