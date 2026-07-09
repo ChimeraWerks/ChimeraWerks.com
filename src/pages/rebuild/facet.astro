@@ -33,12 +33,12 @@ const BEATS = [
     n: "01",
     h: "One console, whole fleet",
     bad: "Every agent you add is another terminal to babysit, another transcript scrolling where you are not looking.",
-    good: "Relay puts the fleet in shared rooms — personas, live transcripts, spawn controls. However many agents run, you watch one console.",
+    good: "Relay puts the fleet in shared rooms: personas, live transcripts, spawn controls. However many agents run, you watch one console.",
   },
   {
     n: "02",
     h: "Orchestration you can diff",
-    bad: "Judge panels, fusion, debates — in most shops that logic lives in glue scripts only the author can rerun.",
+    bad: "Judge panels, fusion, debates: in most shops that logic lives in glue scripts only the author can rerun.",
     good: "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
   },
   {
@@ -57,7 +57,7 @@ const BEATS = [
     <meta name="color-scheme" content="dark" />
     <meta
       name="description"
-      content="Chimera Werks builds multi-agent tooling: run a fleet of coding agents as one system, in shared rooms with a declarative run language and the trail intact."
+      content="Chimera Werks builds multi-agent tooling. Run a fleet of coding agents as one system, in shared rooms, with a declarative run language and the trail intact."
     />
     <!-- Dev-preview route: keep the unfinished redesign out of indexes.
          Remove when this cut is promoted to the production index. -->
@@ -114,7 +114,7 @@ const BEATS = [
             </h1>
             <p class="lede" data-hero-rise>
               Chimera Werks builds the console, the run language, and the instruments that let Codex,
-              Claude, and local models work in one room — with the trail intact.
+              Claude, and local models work in one room, with the trail intact.
             </p>
             <div class="cta-row" data-hero-rise>
               <a class="btn btn-primary" href="#relay">Meet Chimera Relay</a>
@@ -147,7 +147,7 @@ const BEATS = [
           <p class="tag" data-reveal>The werks</p>
           <h2 class="h-section" data-reveal-title>Five instruments, one bench.</h2>
           <p class="section-sub" data-reveal>
-            Every tool ships from the same bench — shared rooms, shared identity, one console
+            Every tool ships from the same bench: shared rooms, shared identity, one console
             across the fleet.
           </p>
           <div class="werk-grid">
@@ -182,14 +182,14 @@ const BEATS = [
 
           <div class="relay-lead">
             <p class="section-sub" data-reveal>
-              Rooms of agents — Codex, Claude, Hermes, local models — run, argue, and get judged
+              Rooms of agents (Codex, Claude, Hermes, local models) run, argue, and get judged
               behind one pane of glass.
             </p>
             <!-- The cockpit: crisp, literal product UI, tilted in space -->
             <div class="console panel" data-reveal aria-hidden="true">
               <div class="console-bar">
                 <span class="dots"><i></i><i></i><i></i></span>
-                <span class="console-title">relay — room/night-werks</span>
+                <span class="console-title">relay · room/night-werks</span>
                 <span class="console-live"><i></i> live</span>
               </div>
               <div class="console-body">
@@ -729,6 +729,8 @@ const BEATS = [
         margin: 10px 0 0;
         font-size: 0.92rem;
         color: var(--ink-2);
+        /* Measure cap: the full-width card's blurb ran ~145 chars/line. */
+        max-width: 62ch;
       }
       @media (max-width: 860px) {
         .werk-grid {

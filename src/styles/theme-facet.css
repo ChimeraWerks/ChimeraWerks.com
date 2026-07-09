@@ -20,7 +20,8 @@
 
   --ink-1: #f1f3f6;
   --ink-2: #a4a9b4;
-  --ink-3: #767b86;
+  /* ink-3 floor: 4.9:1 on --surface-1 (was #767b86 at 4.4:1, under WCAG AA) */
+  --ink-3: #7e8390;
 
   /* electric indigo + cyan (core brand) */
   --accent: #7c74ff;
