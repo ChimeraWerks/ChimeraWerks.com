@@ -317,8 +317,11 @@ const BEATS = [
         position: relative;
         z-index: 1;
       }
+      /* 1360 not 1160: on real widescreen the narrow wrap left a dead smoke
+         field wider than the content column. Keep this in sync with WRAP_MAX
+         in LowPolyHero.tsx — the 3D subject anchors to this column. */
       .wrap {
-        max-width: 1160px;
+        max-width: min(1360px, 94vw);
         margin: 0 auto;
         padding: 0 clamp(20px, 4vw, 40px);
       }
@@ -455,31 +458,33 @@ const BEATS = [
         background: var(--accent);
         box-shadow: 0 0 8px var(--accent);
       }
+      /* Type scale matches apex (the approved cut) — the facet v1 shrank the
+         display sizes and the page read undersized on widescreen. */
       .h-display {
         margin: 22px 0 0;
         font-family: var(--font-display);
-        font-weight: 700;
-        font-size: clamp(2.6rem, 6.4vw, 4.5rem);
-        line-height: 1.04;
-        letter-spacing: -0.02em;
+        font-weight: 680;
+        font-size: clamp(2.6rem, 6.4vw, 5.2rem);
+        line-height: 1.02;
+        letter-spacing: -0.038em;
         text-wrap: balance;
       }
       .h-statement {
         margin: 20px 0 0;
-        max-width: 18ch;
+        max-width: 16ch;
         font-family: var(--font-display);
-        font-weight: 600;
-        font-size: clamp(2.2rem, 5vw, 3.75rem);
-        line-height: 1.08;
-        letter-spacing: -0.018em;
+        font-weight: 680;
+        font-size: clamp(2.2rem, 5.2vw, 4rem);
+        line-height: 1.05;
+        letter-spacing: -0.035em;
       }
       .h-section {
         margin: 14px 0 0;
         font-family: var(--font-display);
-        font-weight: 600;
-        font-size: clamp(1.9rem, 3.6vw, 2.75rem);
-        line-height: 1.08;
-        letter-spacing: -0.015em;
+        font-weight: 660;
+        font-size: clamp(1.9rem, 3.8vw, 3rem);
+        line-height: 1.06;
+        letter-spacing: -0.03em;
       }
 
       /* hero */
@@ -491,7 +496,7 @@ const BEATS = [
       }
       .hero-copy {
         position: relative;
-        max-width: 620px;
+        max-width: 680px;
       }
       /* Soft legibility pocket: anchored left, fading right, so the copy always
          reads over the faceted core while the core (offset right on desktop)

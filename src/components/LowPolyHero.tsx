@@ -462,7 +462,7 @@ function Shard({ spec, colors }: { spec: ShardSpec; colors: FacetColors }): Reac
 
 /* ---------------------------------------------------------- debris field --- */
 
-const DEBRIS_COUNT = 84;
+const DEBRIS_COUNT = 128;
 
 function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
   const meshRef = useRef<THREE.InstancedMesh>(null);
@@ -528,12 +528,6 @@ function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
 
 /* -------------------------------------------------------------- subject --- */
 
-/* Core + shards, offset right on wide viewports so the headline (left column)
-   sits over open space, not the bright core; centered on narrow where content
-   stacks full-width. The offset is a fraction of the visible world width, not
-   a fixed unit — a fixed x=2.6 left the core behind the headline at 1024 and
-   still touching it at 1440 (seen in the v1 render). Slight down-scale below
-   1440 keeps the core's left edge clear of the copy column. */
 /* Centerpiece pick: the chimera mark is the product; ?core=crystal keeps the
    v1 abstract crystal alive for side-by-side judgment at the preview alias. */
 type CoreVariant = "mark" | "crystal";
@@ -552,18 +546,30 @@ function pinCenter(): boolean {
   return new URLSearchParams(window.location.search).get("pin") === "center";
 }
 
+/* Content-column width — keep in sync with .wrap in facet.astro. */
+const WRAP_MAX = 1360;
+
+/* Core + shards, offset right on wide viewports so the headline (left column)
+   sits over open space; centered on narrow where content stacks full-width.
+   The offset anchors to the CONTENT COLUMN, not a viewport fraction: a
+   viewport-relative offset detached the subject from the copy on widescreen
+   (it drifted toward the monitor edge while the centered wrap stayed put) —
+   the subject belongs to the layout. */
 function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef }): ReactElement {
   const width = useThree((s) => s.size.width);
   const viewportWidth = useThree((s) => s.viewport.width);
   const [variant] = useState(coreVariant);
   const [pinned] = useState(pinCenter);
   const wide = width >= 1024;
-  const x = wide && !pinned ? Math.min(viewportWidth * 0.36, 6.5) : 0;
+  /* Subject center at 72% of the wrap half-width right of page center: hugs
+     the copy column's right side, bleeds slightly past the wrap edge. */
+  const anchorPx = Math.min(WRAP_MAX, width * 0.94) * 0.36;
+  const x = wide && !pinned ? (anchorPx / width) * viewportWidth : 0;
   /* Narrow: fit the core (~4.6 world units wide) inside the viewport with a
      margin — at full scale it fills the fold edge-to-edge and the silhouette
      ("one form") never reads, it's just a wall of facets behind the copy. */
   const scale = wide
-    ? THREE.MathUtils.clamp(width / 1440, 0.82, 1)
+    ? THREE.MathUtils.clamp(width / 1440, 0.82, 1.1)
     : THREE.MathUtils.clamp(viewportWidth / 5.8, 0.55, 1);
   return (
     <group position={[x, 0.15, 0]} scale={scale}>
