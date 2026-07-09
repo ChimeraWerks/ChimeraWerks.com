@@ -494,6 +494,13 @@ const BEATS = [
         align-items: center;
         padding: 128px 0 80px;
       }
+      /* The wrap is a flex item here, so it shrink-wraps to its content and
+         floats centered — the copy never reaches the wrap's left edge and the
+         hero reads as a narrow mobile column at any monitor width. Apex had
+         this rule; dropping it was the facet v1 regression. */
+      .hero .wrap {
+        width: 100%;
+      }
       .hero-copy {
         position: relative;
         max-width: 680px;
