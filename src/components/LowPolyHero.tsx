@@ -1,12 +1,13 @@
 /**
  * LowPolyHero — the spatial-VR cut's signature scene.
  *
- * A faceted crystalline chimera-core: a low-poly deformed icosphere flat-
- * shaded so every triangle reads as a discrete plane, colored on the brand
- * diagonal (violet goat top-left -> indigo lion center -> cyan serpent
- * bottom-right), lifted off pure black by a cool-white key from upper-left
- * and a cyan back-rim. Three faceted shards orbit it (the three strands); a
- * volumetric field of low-poly debris drifts behind, dissolving into fog.
+ * The centerpiece is the faceted chimera mark (goat/lion/serpent, the brand
+ * diagonal) on a parallax stack of additive planes — Phase 2's literal head.
+ * The v1 abstract crystal (low-poly deformed icosphere, flat-shaded, vertex-
+ * colored on the same diagonal) stays reachable via ?core=crystal for
+ * comparison. Three faceted shards orbit the centerpiece (the three
+ * strands); a volumetric field of low-poly debris drifts behind, dissolving
+ * into fog.
  *
  * Material + light rig + motion follow the ui-design system spec:
  * flat shading, key #c9d4ff@2.6 upper-left, rim #45c6e0@2.0 behind-right,
@@ -35,6 +36,12 @@ import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 import { THEME_CHANGE_EVENT } from "../data/themes";
+import markAsset from "../assets/marks/chimera-facet.png";
+
+/* Astro's Vite pipeline returns ImageMetadata for image imports; plain Vite
+   returns a URL string. Accept either so the component survives both. */
+const MARK_URL: string =
+  typeof markAsset === "string" ? markAsset : (markAsset as { src: string }).src;
 
 /* --------------------------------------------------------------- theme --- */
 
@@ -238,6 +245,157 @@ function FacetCore({ colors, pointer }: { colors: FacetColors; pointer: PointerR
   );
 }
 
+/* --------------------------------------------------------- chimera mark --- */
+
+/* The literal centerpiece (Phase 2): the faceted chimera mark on a stack of
+   additive planes. The art was generated on black (the CIL backend rejects
+   transparent bg), and additive blending is what makes that work — black adds
+   nothing, so only the crystal glow composites over the scene. Two dim echo
+   layers behind the mark plus per-layer pointer parallax fake the volume a
+   flat plane doesn't have. */
+interface MarkLayer {
+  z: number;
+  scale: number;
+  opacity: number;
+  parallax: number; /* 1 = locked to the group, <1 lags the pointer (reads deeper) */
+}
+/* Echo opacities low: all three layers carry the same art and the blend is
+   additive — much higher and the lion face stacks past 1.0 and clips to
+   white (seen at full res). */
+const MARK_LAYERS: readonly MarkLayer[] = [
+  { z: -1.1, scale: 1.09, opacity: 0.04, parallax: 0.45 },
+  { z: -0.55, scale: 1.04, opacity: 0.1, parallax: 0.72 },
+  { z: 0, scale: 1, opacity: 1, parallax: 1 },
+];
+const MARK_SIZE = 4.7;
+
+/* The generated art's background is near-black, not black (~rgb(8,8,12) noise
+   floor) — under ONE/ONE additive blending that wash prints the plane's
+   bounding rectangle over the page. Subtract the floor and rescale so the
+   background adds exactly zero. Check: no visible rectangle edge at full res. */
+const BLACK_FLOOR = 16;
+
+function keyOutBlackFloor(img: HTMLImageElement): HTMLCanvasElement | null {
+  const canvas = document.createElement("canvas");
+  canvas.width = img.naturalWidth;
+  canvas.height = img.naturalHeight;
+  const ctx = canvas.getContext("2d");
+  if (!ctx) return null;
+  ctx.drawImage(img, 0, 0);
+  const data = ctx.getImageData(0, 0, canvas.width, canvas.height);
+  const px = data.data;
+  const rescale = 255 / (255 - BLACK_FLOOR);
+  for (let i = 0; i < px.length; i += 4) {
+    px[i] = Math.max(0, (px[i] as number) - BLACK_FLOOR) * rescale;
+    px[i + 1] = Math.max(0, (px[i + 1] as number) - BLACK_FLOOR) * rescale;
+    px[i + 2] = Math.max(0, (px[i + 2] as number) - BLACK_FLOOR) * rescale;
+  }
+  ctx.putImageData(data, 0, 0);
+  return canvas;
+}
+
+function ChimeraMark({ pointer }: { pointer: PointerRef }): ReactElement | null {
+  const groupRef = useRef<THREE.Group>(null);
+  const layerRefs = useRef<(THREE.Mesh | null)[]>([]);
+  const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  const time = useRef(0);
+
+  useEffect(() => {
+    let disposed = false;
+    const img = new Image();
+    img.onload = () => {
+      if (disposed) return;
+      const keyed = keyOutBlackFloor(img);
+      if (!keyed) return;
+      const tex = new THREE.CanvasTexture(keyed);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      tex.anisotropy = 4;
+      time.current = 0; /* restart the clock: the reveal ramp times from texture arrival */
+      setTexture(tex);
+    };
+    img.src = MARK_URL;
+    return () => {
+      disposed = true;
+    };
+  }, []);
+  useEffect(() => () => texture?.dispose(), [texture]);
+
+  useFrame((_, rawDelta) => {
+    const g = groupRef.current;
+    if (!g) return;
+    const dt = Math.min(rawDelta, 1 / 30);
+    time.current += dt;
+    const t = time.current;
+    /* Same living-idle grammar as the crystal, but rotation capped low — a
+       flat additive plane past ~5 degrees reads as a tilted card. */
+    const idleY = Math.sin(t * ((Math.PI * 2) / 16)) * THREE.MathUtils.degToRad(3.5);
+    const py = pointer.current.x * THREE.MathUtils.degToRad(4);
+    const px = -pointer.current.y * THREE.MathUtils.degToRad(2);
+    g.rotation.y = THREE.MathUtils.damp(g.rotation.y, idleY + py, 1.2, dt);
+    g.rotation.x = THREE.MathUtils.damp(g.rotation.x, px, 1.2, dt);
+    g.position.y = Math.sin(t * ((Math.PI * 2) / 9)) * 0.08;
+    /* Reveal: the texture arrives a beat after the canvas fade (image decode
+       + floor keying), so the mark eases in via its color multiplier — ONE/ONE
+       blending ignores opacity, color is the only brightness channel. */
+    const reveal = 1 - Math.pow(1 - Math.min(time.current / 1.1, 1), 3);
+    for (let i = 0; i < MARK_LAYERS.length; i++) {
+      const m = layerRefs.current[i];
+      const spec = MARK_LAYERS[i];
+      if (!m || !spec) continue;
+      (m.material as THREE.MeshBasicMaterial).color.setScalar(spec.opacity * reveal);
+      const lag = 1 - spec.parallax;
+      m.position.x = THREE.MathUtils.damp(m.position.x, pointer.current.x * 0.35 * lag, 1.4, dt);
+      m.position.y = THREE.MathUtils.damp(m.position.y, pointer.current.y * 0.2 * lag, 1.4, dt);
+    }
+  });
+
+  if (!texture) return null;
+
+  return (
+    <group ref={groupRef}>
+      {MARK_LAYERS.map((layer, i) => (
+        <mesh
+          key={i}
+          ref={(el) => {
+            layerRefs.current[i] = el;
+          }}
+          position={[0, 0, layer.z]}
+          scale={layer.scale}
+          renderOrder={10}
+        >
+          <planeGeometry args={[MARK_SIZE, MARK_SIZE]} />
+          {/* Custom blending, not AdditiveBlending: RGB adds (ONE/ONE) but
+              alpha writes ZERO/ONE — the canvas is alpha-composited over the
+              DOM smoke layer, and plain additive still writes alpha≈1, which
+              turned the plane into an opaque black rectangle over the page.
+              Layer dimming rides the color multiplier since ONE/ONE ignores
+              opacity. depthTest off + late renderOrder: opaque shards
+              crossing the plane's depth otherwise punch culled holes in the
+              glow. */}
+          {/* fog off: fogExp2 mixes toward #0a0b0f (not black) across every
+              fragment, and under ONE/ONE additive that uniform wash prints
+              the plane's bounding rectangle. */}
+          <meshBasicMaterial
+            map={texture}
+            color={new THREE.Color(layer.opacity, layer.opacity, layer.opacity)}
+            fog={false}
+            transparent
+            blending={THREE.CustomBlending}
+            blendEquation={THREE.AddEquation}
+            blendSrc={THREE.OneFactor}
+            blendDst={THREE.OneFactor}
+            blendSrcAlpha={THREE.ZeroFactor}
+            blendDstAlpha={THREE.OneFactor}
+            depthWrite={false}
+            depthTest={false}
+            toneMapped={false}
+          />
+        </mesh>
+      ))}
+    </group>
+  );
+}
+
 /* --------------------------------------------------------------- shards --- */
 
 interface ShardSpec {
@@ -273,9 +431,14 @@ function Shard({ spec, colors }: { spec: ShardSpec; colors: FacetColors }): Reac
     const dt = Math.min(rawDelta, 1 / 30);
     time.current += dt;
     const a = time.current * spec.speed * Math.PI * 2 + spec.phase;
-    /* z amplitude damped: at full radius the shard swings so far toward the
-       camera it leaves the frame — only one of three was visible in v1. */
-    m.position.set(Math.cos(a) * spec.radius, Math.sin(a) * spec.radius * 0.4, Math.sin(a) * spec.radius * 0.5);
+    /* z amplitude damped (at full radius the shard swings out of frame —
+       only one of three was visible in v1) and biased behind the mark plane
+       so shards orbit the head, never parade in front of the art. */
+    m.position.set(
+      Math.cos(a) * spec.radius,
+      Math.sin(a) * spec.radius * 0.4,
+      Math.sin(a) * spec.radius * 0.4 - 0.9,
+    );
     m.rotation.x = a * 1.3;
     m.rotation.y = a * 0.9;
   });
@@ -371,11 +534,31 @@ function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
    a fixed unit — a fixed x=2.6 left the core behind the headline at 1024 and
    still touching it at 1440 (seen in the v1 render). Slight down-scale below
    1440 keeps the core's left edge clear of the copy column. */
+/* Centerpiece pick: the chimera mark is the product; ?core=crystal keeps the
+   v1 abstract crystal alive for side-by-side judgment at the preview alias. */
+type CoreVariant = "mark" | "crystal";
+function coreVariant(): CoreVariant {
+  if (typeof window === "undefined") return "mark";
+  return new URLSearchParams(window.location.search).get("core") === "crystal"
+    ? "crystal"
+    : "mark";
+}
+
+/* ?pin=center forces the subject to screen center — art-review hook for
+   screenshot tools whose capture crop can't reach the right-offset subject
+   (Camoufox: fixed 1280x720 top-left crop, variable window width). */
+function pinCenter(): boolean {
+  if (typeof window === "undefined") return false;
+  return new URLSearchParams(window.location.search).get("pin") === "center";
+}
+
 function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef }): ReactElement {
   const width = useThree((s) => s.size.width);
   const viewportWidth = useThree((s) => s.viewport.width);
+  const [variant] = useState(coreVariant);
+  const [pinned] = useState(pinCenter);
   const wide = width >= 1024;
-  const x = wide ? Math.min(viewportWidth * 0.33, 6) : 0;
+  const x = wide && !pinned ? Math.min(viewportWidth * 0.36, 6.5) : 0;
   /* Narrow: fit the core (~4.6 world units wide) inside the viewport with a
      margin — at full scale it fills the fold edge-to-edge and the silhouette
      ("one form") never reads, it's just a wall of facets behind the copy. */
@@ -384,7 +567,11 @@ function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef
     : THREE.MathUtils.clamp(viewportWidth / 5.8, 0.55, 1);
   return (
     <group position={[x, 0.15, 0]} scale={scale}>
-      <FacetCore colors={colors} pointer={pointer} />
+      {variant === "mark" ? (
+        <ChimeraMark pointer={pointer} />
+      ) : (
+        <FacetCore colors={colors} pointer={pointer} />
+      )}
       {SHARDS.map((spec, i) => (
         <Shard key={i} spec={spec} colors={colors} />
       ))}
