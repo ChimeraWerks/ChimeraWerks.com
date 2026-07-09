@@ -127,31 +127,41 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode }, BoundaryStat
 const CORE_RADIUS = 1.9;
 
 /* Deterministic value noise from vertex coords — no per-load variance so the
-   silhouette is stable, no dependency on Math.random at module scope. */
+   silhouette is stable, no dependency on Math.random at module scope. Two
+   octaves: the high-frequency one is what keeps adjacent facets from
+   agreeing, so the form reads as cut planes instead of an inflated ball. */
 function noise3(x: number, y: number, z: number): number {
-  const n = Math.sin(x * 1.7 + 0.3) + Math.sin(y * 2.3 + 1.1) + Math.sin(z * 1.9 + 2.7);
-  return n / 3;
+  const a = Math.sin(x * 1.7 + 0.3) + Math.sin(y * 2.3 + 1.1) + Math.sin(z * 1.9 + 2.7);
+  const b = Math.sin(x * 4.3 + 5.2) + Math.sin(y * 3.9 + 0.8) + Math.sin(z * 4.7 + 3.3);
+  return (a / 3) * 0.65 + (b / 3) * 0.35;
 }
 
-/* Icosphere, irregularly inflated, flat-shaded, vertex-colored on the brand
-   diagonal (violet -> indigo -> cyan across x-minus-y). */
+/* Faceted crystal, flat-shaded, vertex-colored on the brand diagonal
+   (violet -> indigo -> cyan across x-minus-y). Detail 2 (320 faces), not 3:
+   fewer, larger planes are the whole low-poly read — at detail 3 the same
+   noise renders as a smooth potato (seen in the v1 render). Displacement is
+   strong, then the form is elongated on y so the silhouette is a shard,
+   not a sphere. */
 function buildCore(colors: FacetColors): THREE.BufferGeometry {
-  const geo = new THREE.IcosahedronGeometry(CORE_RADIUS, 3).toNonIndexed();
+  const geo = new THREE.IcosahedronGeometry(CORE_RADIUS, 2).toNonIndexed();
   const pos = geo.attributes.position as THREE.BufferAttribute;
   const v = new THREE.Vector3();
   for (let i = 0; i < pos.count; i++) {
     v.fromBufferAttribute(pos, i);
     const dir = v.clone().normalize();
-    const bump = 1 + noise3(dir.x * 2.2, dir.y * 2.2, dir.z * 2.2) * 0.22;
+    const bump = 1 + noise3(dir.x * 2.2, dir.y * 2.2, dir.z * 2.2) * 0.34;
     v.multiplyScalar(bump);
+    v.set(v.x * 0.96, v.y * 1.18, v.z * 0.92);
     pos.setXYZ(i, v.x, v.y, v.z);
   }
+  geo.rotateZ(-0.22);
   /* Flat facets: drop smoothed normals, recompute per-face. */
   geo.deleteAttribute("normal");
   geo.computeVertexNormals();
 
-  /* Diagonal gradient: t along (x - y), remapped to violet@0 / indigo@0.5 /
-     cyan@1 so the light lion face sits center. */
+  /* Diagonal gradient: t along (x - y). Cyan gets the bottom 45% of the ramp
+     (not an even split) — with ACES tonemapping an even split left the cyan
+     strand invisible in the render. */
   const colorAttr = new Float32Array(pos.count * 3);
   const c = new THREE.Color();
   let min = Infinity;
@@ -164,8 +174,8 @@ function buildCore(colors: FacetColors): THREE.BufferGeometry {
   const span = max - min || 1;
   for (let i = 0; i < pos.count; i++) {
     const t = (pos.getX(i) - pos.getY(i) - min) / span;
-    if (t < 0.5) c.copy(colors.violet).lerp(colors.indigo, t * 2);
-    else c.copy(colors.indigo).lerp(colors.cyan, (t - 0.5) * 2);
+    if (t < 0.48) c.copy(colors.violet).lerp(colors.indigo, t / 0.48);
+    else c.copy(colors.indigo).lerp(colors.cyan, (t - 0.48) / 0.52);
     colorAttr[i * 3] = c.r;
     colorAttr[i * 3 + 1] = c.g;
     colorAttr[i * 3 + 2] = c.b;
@@ -203,13 +213,15 @@ function FacetCore({ colors, pointer }: { colors: FacetColors; pointer: PointerR
   return (
     <group ref={groupRef}>
       <mesh geometry={geo}>
+        {/* Emissive low: a uniform glow fills shadowed facets and flattens the
+            plane-vs-plane value contrast the whole look depends on. */}
         <meshStandardMaterial
           vertexColors
           flatShading
-          metalness={0.18}
-          roughness={0.52}
+          metalness={0.22}
+          roughness={0.55}
           emissive={colors.indigo}
-          emissiveIntensity={0.12}
+          emissiveIntensity={0.06}
         />
       </mesh>
       {/* Faint plane-seam tracing — reinforces cut geometry, not a cartoon wire. */}
@@ -237,9 +249,17 @@ interface ShardSpec {
   hue: number;
 }
 const SHARDS: readonly ShardSpec[] = [
-  { radius: 3.1, speed: 0.16, phase: 0.4, incline: 0.4, size: 0.34, hue: 0 },
-  { radius: 3.7, speed: 0.12, phase: 2.6, incline: -0.28, size: 0.28, hue: 1 },
-  { radius: 4.2, speed: 0.095, phase: 4.7, incline: 0.16, size: 0.24, hue: 2 },
+  { radius: 3.0, speed: 0.16, phase: 0.4, incline: 0.4, size: 0.42, hue: 0 },
+  { radius: 3.6, speed: 0.12, phase: 2.6, incline: -0.28, size: 0.36, hue: 1 },
+  { radius: 4.1, speed: 0.095, phase: 4.7, incline: 0.16, size: 0.3, hue: 2 },
+];
+
+/* Three strands, three distinct silhouettes — identical icosahedra read as
+   generic particles, not "the three that make the chimera". */
+const SHARD_GEOMETRY: readonly ReactElement[] = [
+  <octahedronGeometry args={[1, 0]} />,
+  <tetrahedronGeometry args={[1, 0]} />,
+  <icosahedronGeometry args={[1, 0]} />,
 ];
 
 function Shard({ spec, colors }: { spec: ShardSpec; colors: FacetColors }): ReactElement {
@@ -253,15 +273,17 @@ function Shard({ spec, colors }: { spec: ShardSpec; colors: FacetColors }): Reac
     const dt = Math.min(rawDelta, 1 / 30);
     time.current += dt;
     const a = time.current * spec.speed * Math.PI * 2 + spec.phase;
-    m.position.set(Math.cos(a) * spec.radius, Math.sin(a) * spec.radius * 0.4, Math.sin(a) * spec.radius);
+    /* z amplitude damped: at full radius the shard swings so far toward the
+       camera it leaves the frame — only one of three was visible in v1. */
+    m.position.set(Math.cos(a) * spec.radius, Math.sin(a) * spec.radius * 0.4, Math.sin(a) * spec.radius * 0.5);
     m.rotation.x = a * 1.3;
     m.rotation.y = a * 0.9;
   });
 
   return (
     <group rotation={[spec.incline, 0, spec.incline * 0.5]}>
-      <mesh ref={meshRef}>
-        <icosahedronGeometry args={[spec.size, 0]} />
+      <mesh ref={meshRef} scale={spec.size}>
+        {SHARD_GEOMETRY[spec.hue] ?? SHARD_GEOMETRY[0]}
         <meshStandardMaterial
           color={tint}
           flatShading
@@ -325,7 +347,7 @@ function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
       const y = ((y0 + t * speed + 8) % 16) - 8;
       dummy.position.set(x, y, z);
       dummy.rotation.set(t * spin, t * spin * 0.7, 0);
-      const s = 0.03 + Math.abs(z) * 0.004;
+      const s = 0.05 + Math.abs(z) * 0.006;
       dummy.scale.setScalar(s);
       dummy.updateMatrix();
       mesh.setMatrixAt(i, dummy.matrix);
@@ -336,7 +358,7 @@ function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
   return (
     <instancedMesh ref={meshRef} args={[undefined, undefined, DEBRIS_COUNT]} frustumCulled={false}>
       <octahedronGeometry args={[1, 0]} />
-      <meshBasicMaterial transparent opacity={0.28} depthWrite={false} blending={THREE.AdditiveBlending} />
+      <meshBasicMaterial transparent opacity={0.38} depthWrite={false} blending={THREE.AdditiveBlending} />
     </instancedMesh>
   );
 }
@@ -345,12 +367,23 @@ function DebrisField({ colors }: { colors: FacetColors }): ReactElement {
 
 /* Core + shards, offset right on wide viewports so the headline (left column)
    sits over open space, not the bright core; centered on narrow where content
-   stacks full-width. */
+   stacks full-width. The offset is a fraction of the visible world width, not
+   a fixed unit — a fixed x=2.6 left the core behind the headline at 1024 and
+   still touching it at 1440 (seen in the v1 render). Slight down-scale below
+   1440 keeps the core's left edge clear of the copy column. */
 function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef }): ReactElement {
   const width = useThree((s) => s.size.width);
-  const x = width >= 1024 ? 2.6 : 0;
+  const viewportWidth = useThree((s) => s.viewport.width);
+  const wide = width >= 1024;
+  const x = wide ? Math.min(viewportWidth * 0.33, 6) : 0;
+  /* Narrow: fit the core (~4.6 world units wide) inside the viewport with a
+     margin — at full scale it fills the fold edge-to-edge and the silhouette
+     ("one form") never reads, it's just a wall of facets behind the copy. */
+  const scale = wide
+    ? THREE.MathUtils.clamp(width / 1440, 0.82, 1)
+    : THREE.MathUtils.clamp(viewportWidth / 5.8, 0.55, 1);
   return (
-    <group position={[x, 0.15, 0]}>
+    <group position={[x, 0.15, 0]} scale={scale}>
       <FacetCore colors={colors} pointer={pointer} />
       {SHARDS.map((spec, i) => (
         <Shard key={i} spec={spec} colors={colors} />
@@ -366,7 +399,11 @@ function Lights(): ReactElement {
     <>
       <ambientLight color="#20243a" intensity={0.35} />
       <directionalLight color="#c9d4ff" intensity={2.6} position={[-4, 5, 6]} />
-      <directionalLight color="#45c6e0" intensity={2.0} position={[5, 2, -6]} />
+      {/* Rim hot and angled toward camera-right-low: the cyan edge is what
+          separates the core from the near-black bg — at 2.0 straight behind,
+          it vanished under ACES tonemapping and no camera-facing facet ever
+          caught it. */}
+      <directionalLight color="#45c6e0" intensity={3.2} position={[6, -1.5, -3]} />
       <directionalLight color="#6f78d8" intensity={0.6} position={[3, -3, 4]} />
       <pointLight color="#8f7bf0" intensity={0.9} distance={12} position={[-5, 1, 3]} />
     </>

@@ -136,10 +136,10 @@ const BEATS = [
           </p>
           <div class="werk-grid">
             {
-              ECOSYSTEM.map((app, i) => (
+              ECOSYSTEM.map((app) => (
                 <article
                   class:list={["werk", "panel", app.flagship && "werk-flagship", app.id === "more" && "werk-wide"]}
-                  style={`--hue: var(--card-hue-${i % 8})`}
+                  style={`--hue: var(--card-hue-${app.hueIndex})`}
                   data-reveal
                 >
                   <div class="werk-top">
@@ -327,7 +327,11 @@ const BEATS = [
       .vignette {
         position: fixed;
         inset: 0;
-        z-index: 0;
+        /* z 1 (same as main, earlier in DOM): grades the 3D world (host div,
+           z 0, appended to body end) but stays under the content. At z 0 the
+           later-appended canvas painted over it and the grade never touched
+           the scene. */
+        z-index: 1;
         pointer-events: none;
         background: var(--vignette);
       }
@@ -495,14 +499,17 @@ const BEATS = [
       .hero-copy::before {
         content: "";
         position: absolute;
-        inset: -48px -120px -40px -60px;
+        inset: -72px -150px -64px -150px;
         z-index: -1;
         pointer-events: none;
+        /* Ellipse sized to exactly touch the box edges (50% radii, centered),
+           transparent at 100% — an off-center oversized gradient gets clipped
+           by the box and prints a hard rectangle seam over the smoke. */
         background: radial-gradient(
-          115% 100% at 18% 48%,
-          color-mix(in srgb, var(--bg) 80%, transparent) 0%,
-          color-mix(in srgb, var(--bg) 52%, transparent) 46%,
-          transparent 74%
+          50% 50% at 50% 50%,
+          color-mix(in srgb, var(--bg) 74%, transparent) 0%,
+          color-mix(in srgb, var(--bg) 46%, transparent) 55%,
+          transparent 100%
         );
       }
       .lede {
