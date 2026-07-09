@@ -1,0 +1,69 @@
+---
+/**
+ * Page-wide WebGL smoke atmosphere. Drop anywhere; at runtime the canvas
+ * re-parents itself onto <body> and pins itself position:fixed behind ALL
+ * page content (z-index -10, in front of the body background), so the smoke
+ * runs seamlessly under the entire page with no break at the hero fold.
+ * Intensity is scroll-linked: full strength over the hero viewport, easing
+ * down to a dim readable floor after one viewport of scroll.
+ *
+ * The page's CSS backgrounds are the permanent fallback: reduced-motion,
+ * missing WebGL, or a lost context all remove the canvas and leave the page
+ * exactly as authored. #hero-canvas-slot and its children are never touched —
+ * a 3D hero (?hero=3d) layers over this atmosphere instead of replacing it.
+ *
+ * Theme-aware by construction — colors come from the --bg / --accent /
+ * --accent-2 tokens on <html data-theme> at init, so the arcane slice gets
+ * iris+amber smoke and the precision slice gets violet+cyan from the same
+ * program. Logic lives in src/scripts/hero-shader.ts.
+ */
+---
+
+<canvas class="hero-shader-canvas" aria-hidden="true"></canvas>
+
+<script>
+  import { mountHeroShader } from "../scripts/hero-shader";
+
+  // Demo scaffolding for the hero pick: only ?hero=css suppresses the
+  // atmosphere (so the bare CSS background can be judged). ?hero=3d no longer
+  // suppresses it — the 3D hero canvas layers over this one. Remove the gate
+  // once the owner picks a hero.
+  const variant = new URLSearchParams(location.search).get("hero") ?? "shader";
+  if (variant === "css") {
+    document.querySelectorAll("canvas.hero-shader-canvas").forEach((c) => c.remove());
+  } else {
+    // mountHeroShader single-mount guards internally: the first canvas wins,
+    // duplicates remove themselves.
+    for (const canvas of document.querySelectorAll<HTMLCanvasElement>("canvas.hero-shader-canvas")) {
+      mountHeroShader(canvas);
+    }
+  }
+</script>
+
+<style>
+  /* Fixed page-wide layer: behind all content (negative z-index in the root
+     stacking context), in front of the body background. The script re-parents
+     the canvas to <body> so no transformed ancestor can trap it. */
+  .hero-shader-canvas {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: -10;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 600ms ease;
+  }
+
+  .hero-shader-canvas.is-live {
+    opacity: 1;
+  }
+
+  /* Belt and braces: if the script never runs, an inert transparent canvas
+     must not linger behind the page on printouts or reader modes. */
+  @media (prefers-reduced-motion: reduce) {
+    .hero-shader-canvas {
+      display: none;
+    }
+  }
+</style>

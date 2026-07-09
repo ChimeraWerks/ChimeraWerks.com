@@ -5,13 +5,12 @@
  *   - every reveal is scrubbed and reversible (ScrollTrigger scrub), never a
  *     one-shot "fade in on enter" — scrolling back plays the film backward
  *   - SplitText masked line/char reveals for chapter headlines
- *   - a boot loader that hands off into the hero reveal
+ *   - an instant hero rise on load (the boot loader was cut 2026-07: it cost
+ *     3s of entry time for zero information — content leads now)
  *   - persistent HUD: scroll-progress rail + chapter counter
  *
  * Gate: reduced-motion never gets `html.kinetic`, so every pre-hidden or
- * JS-owned state stays inert and the page reads complete and static. The
- * loader overlay self-dismisses via CSS (see .k-loader) so a no-JS visitor
- * is never trapped behind it.
+ * JS-owned state stays inert and the page reads complete and static.
  */
 import { gsap } from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -41,7 +40,7 @@ export function initKinetic(): void {
     });
   }
 
-  boot(lenis);
+  heroRise();
   hud();
   chapters();
 
@@ -69,69 +68,28 @@ export function initKinetic(): void {
   document.fonts.ready.then(queueRefresh);
 }
 
-/* ---------------------------------------------------------------- loader --- */
+/* ------------------------------------------------------------- hero rise --- */
 
 /*
- * Boot sequence: mono status lines tick in, the counter runs to 100, the
- * overlay lifts, and the hero headline rises out of its mask as the overlay
- * leaves — the handoff IS the reveal, one continuous gesture.
+ * Instant entry: the headline rises out of its mask the moment the script
+ * runs — no gate between navigation and content.
  */
-function boot(lenis: Lenis): void {
-  const loader = document.getElementById("k-loader");
-  const pct = document.getElementById("k-boot-pct");
+function heroRise(): void {
   const heroSplits = splitAll("[data-k-hero-split]", "chars");
 
   gsap.set(
     heroSplits.flatMap((s) => s.chars),
     { yPercent: 120, rotate: 4 },
   );
-
-  const heroRise = (): void => {
-    gsap.to(
-      heroSplits.flatMap((s) => s.chars),
-      { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.028, ease: "power4.out" },
-    );
-    gsap.fromTo(
-      "[data-k-hero-rise]",
-      { y: 42, autoAlpha: 0 },
-      { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1, ease: "power3.out", delay: 0.35 },
-    );
-  };
-
-  if (!loader) {
-    heroRise();
-    return;
-  }
-
-  lenis.stop();
-  const counter = { value: 0 };
-  const tl = gsap.timeline({
-    defaults: { ease: "power2.out" },
-    onComplete: () => {
-      lenis.start();
-      loader.remove();
-    },
-  });
-
-  tl.from(".k-boot-line", { autoAlpha: 0, y: 14, stagger: 0.09, duration: 0.4 })
-    .to(
-      counter,
-      {
-        value: 100,
-        duration: 1.1,
-        ease: "power3.inOut",
-        onUpdate: () => {
-          if (pct) pct.textContent = String(Math.round(counter.value)).padStart(3, "0");
-        },
-      },
-      "<",
-    )
-    .to(loader, {
-      yPercent: -100,
-      duration: 0.9,
-      ease: "power4.inOut",
-      onStart: heroRise,
-    });
+  gsap.to(
+    heroSplits.flatMap((s) => s.chars),
+    { yPercent: 0, rotate: 0, duration: 1.1, stagger: 0.028, ease: "power4.out" },
+  );
+  gsap.fromTo(
+    "[data-k-hero-rise]",
+    { y: 42, autoAlpha: 0 },
+    { y: 0, autoAlpha: 1, duration: 0.9, stagger: 0.1, ease: "power3.out", delay: 0.35 },
+  );
 }
 
 /* ------------------------------------------------------------------- hud --- */

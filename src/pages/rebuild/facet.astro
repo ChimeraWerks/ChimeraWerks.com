@@ -1,0 +1,981 @@
+---
+/**
+ * "Facet" — the low-poly / spatial-VR cut. The signature: a real-time faceted
+ * chimera-core (LowPolyHero) floating inside the smoke atmosphere, with the
+ * content on frosted-glass instrument panels above it. Thesis (from the
+ * ui-design composition brief): low-poly = many facets resolving into one
+ * form = "many agents, one fleet" — the aesthetic is the argument.
+ *
+ * v1 milestone: real 3D world + glass spatial page + the apex copy verbatim.
+ * The literal lion-head centerpiece, the 3× facet-assembly moments, and the
+ * 3D micro-scene diagrams are the next pass — this proves the engine + look.
+ *
+ * Reuses apex-motion.ts (same reveal hooks) and the HeroShader smoke. Own
+ * tokens (theme-facet.css). Isolated + disposable; never promoted without
+ * sign-off, and prod only ships from main.
+ */
+import "../../styles/fonts.css";
+import "../../styles/theme-facet.css";
+import HeroShader from "../../components/HeroShader.astro";
+import { ECOSYSTEM } from "../../data/ecosystem";
+
+const LANES = [
+  { name: "oracle", task: "drafting the migration plan", pct: 82 },
+  { name: "mason", task: "implementing relay-core #214", pct: 64 },
+  { name: "warden", task: "adversarial review, pass two", pct: 47 },
+  { name: "courier", task: "syncing artifacts to the room", pct: 91 },
+  { name: "scribe", task: "writing the handoff", pct: 33, active: true },
+];
+
+const BEATS = [
+  {
+    n: "01",
+    h: "One console, whole fleet",
+    bad: "Every agent you add is another terminal to babysit, another transcript scrolling where you are not looking.",
+    good: "Relay puts the fleet in shared rooms — personas, live transcripts, spawn controls. However many agents run, you watch one console.",
+  },
+  {
+    n: "02",
+    h: "Orchestration you can diff",
+    bad: "Judge panels, fusion, debates — in most shops that logic lives in glue scripts only the author can rerun.",
+    good: "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
+  },
+  {
+    n: "03",
+    h: "Failures keep their trail",
+    bad: "When an agent dies three hops down, most consoles hand you a normalized reason code and eat the stderr.",
+    good: "Relay keeps the raw trail: child stderr, RPC hops, exit codes, secrets redacted. The real error is one layer down, never gone.",
+  },
+];
+---
+
+<html lang="en" data-theme="facet">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Chimera Werks builds multi-agent tooling: run a fleet of coding agents as one system, in shared rooms with a declarative run language and the trail intact."
+    />
+    <title>Chimera Werks · Run a fleet of coding agents as one</title>
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"><i id="apex-progress-fill"></i></div>
+    <div class="vignette" aria-hidden="true"></div>
+
+    <header class="nav">
+      <a class="brand" href="/rebuild/facet">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Chimera&nbsp;Werks
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#workflow">Workflow</a>
+        <a href="#werks">Werks</a>
+        <a href="#relay">Relay</a>
+        <a class="nav-cta" href="mailto:hello@chimerawerks.com">Get in touch</a>
+      </nav>
+    </header>
+
+    <!-- Faceted chimera-core + smoke: both fixed behind all content, reading
+         the facet tokens. The loader defers three.js past load (LCP). -->
+    <div id="hero-canvas-slot" aria-hidden="true">
+      <HeroShader />
+    </div>
+    <script>
+      import "../../scripts/facet-3d-loader";
+      import "../../scripts/apex-motion";
+    </script>
+
+    <main>
+      <!-- hero -->
+      <section class="hero">
+        <div class="wrap">
+          <div class="hero-copy">
+            <p class="eyebrow" data-hero-rise>Multi-agent infrastructure</p>
+            <h1 class="h-display" data-hero-title>
+              Run a fleet of coding<br />agents as one.
+            </h1>
+            <p class="lede" data-hero-rise>
+              Chimera Werks builds the console, the run language, and the instruments that let Codex,
+              Claude, and local models work in one room — with the trail intact.
+            </p>
+            <div class="cta-row" data-hero-rise>
+              <a class="btn btn-primary" href="#relay">Meet Chimera Relay</a>
+              <a class="btn btn-ghost" href="mailto:hello@chimerawerks.com">hello@chimerawerks.com</a>
+            </div>
+            <p class="runline" data-hero-rise>
+              <span>Runs</span> Codex · Claude · Hermes · Gemini · local models
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- workflow statement — bare type, world showing through -->
+      <section id="workflow" class="statement">
+        <div class="wrap">
+          <p class="tag" data-reveal>The workflow</p>
+          <h2 class="h-statement" data-reveal-title>
+            One drafts. One builds. One hunts the edge cases. Same room, same problem.
+          </h2>
+          <p class="statement-sub" data-reveal>
+            Agents spawn into shared rooms, split the work by what each does best, argue in judge
+            panels, and hand off with the trail intact. That is the whole product thesis.
+          </p>
+        </div>
+      </section>
+
+      <!-- werks — glass slabs -->
+      <section id="werks" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>The werks</p>
+          <h2 class="h-section" data-reveal-title>Five instruments, one bench.</h2>
+          <p class="section-sub" data-reveal>
+            Every tool ships from the same bench — shared rooms, shared identity, one console
+            across the fleet.
+          </p>
+          <div class="werk-grid">
+            {
+              ECOSYSTEM.map((app, i) => (
+                <article
+                  class:list={["werk", "panel", app.flagship && "werk-flagship", app.id === "more" && "werk-wide"]}
+                  style={`--hue: var(--card-hue-${i % 8})`}
+                  data-reveal
+                >
+                  <div class="werk-top">
+                    <h3>{app.name}</h3>
+                    <span class:list={["status", app.status]}>
+                      <i></i>
+                      {app.status}
+                    </span>
+                  </div>
+                  <p class="werk-tag">{app.tagline}</p>
+                  <p class="werk-blurb">{app.blurb}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- relay deep-dive -->
+      <section id="relay" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>Flagship · Chimera Relay</p>
+          <h2 class="h-section" data-reveal-title>Where the swarm reports for duty.</h2>
+
+          <div class="relay-lead">
+            <p class="section-sub" data-reveal>
+              Rooms of agents — Codex, Claude, Hermes, local models — run, argue, and get judged
+              behind one pane of glass.
+            </p>
+            <!-- The cockpit: crisp, literal product UI, tilted in space -->
+            <div class="console panel" data-reveal aria-hidden="true">
+              <div class="console-bar">
+                <span class="dots"><i></i><i></i><i></i></span>
+                <span class="console-title">relay — room/night-werks</span>
+                <span class="console-live"><i></i> live</span>
+              </div>
+              <div class="console-body">
+                {
+                  LANES.map((l) => (
+                    <div class:list={["lane", l.active && "lane-active"]}>
+                      <div class="lane-top">
+                        <span class="lane-name">{l.name}</span>
+                        <span class="lane-pct">{l.pct}%</span>
+                      </div>
+                      <p class="lane-task">{l.task}</p>
+                      <div class="gauge">
+                        <i style={`width:${l.pct}%`}></i>
+                      </div>
+                    </div>
+                  ))
+                }
+                <div class="console-foot">
+                  <span>judge panel · 3 verdicts in</span>
+                  <span>dna: fusion-3</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="beats">
+            <div class="beat" data-reveal>
+              <div class="beat-copy panel">
+                <p class="beat-n">{BEATS[0].n}</p>
+                <h3>{BEATS[0].h}</h3>
+                <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[0].bad}</p>
+                <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[0].good}</p>
+              </div>
+              <figure class="fig panel">
+                <svg viewBox="0 0 460 280" role="img" aria-label="Four agent harnesses fanning into a single Relay room">
+                  <rect class="node" x="24" y="22" width="116" height="40" rx="10"></rect>
+                  <text class="lbl" x="82" y="46" text-anchor="middle">codex</text>
+                  <rect class="node" x="24" y="88" width="116" height="40" rx="10"></rect>
+                  <text class="lbl" x="82" y="112" text-anchor="middle">claude</text>
+                  <rect class="node" x="24" y="154" width="116" height="40" rx="10"></rect>
+                  <text class="lbl" x="82" y="178" text-anchor="middle">hermes</text>
+                  <rect class="node" x="24" y="220" width="116" height="40" rx="10"></rect>
+                  <text class="lbl" x="82" y="244" text-anchor="middle">local</text>
+                  <path class="edge" d="M140 42 C 224 42, 224 108, 308 108"></path>
+                  <path class="edge" d="M140 108 C 224 108, 224 128, 308 128"></path>
+                  <path class="edge" d="M140 174 C 224 174, 224 152, 308 152"></path>
+                  <path class="edge" d="M140 240 C 224 240, 224 172, 308 172"></path>
+                  <rect class="node-hi" x="308" y="86" width="128" height="108" rx="12"></rect>
+                  <text class="lbl-hi" x="372" y="106" text-anchor="middle">relay · room a</text>
+                  <line class="rule" x1="324" y1="126" x2="420" y2="126"></line>
+                  <line class="rule" x1="324" y1="144" x2="404" y2="144"></line>
+                  <line class="rule" x1="324" y1="162" x2="414" y2="162"></line>
+                  <line class="rule" x1="324" y1="180" x2="392" y2="180"></line>
+                </svg>
+                <figcaption>Fan-in: four strands, one room</figcaption>
+              </figure>
+            </div>
+
+            <div class="beat beat-rev" data-reveal>
+              <div class="beat-copy panel">
+                <p class="beat-n">{BEATS[1].n}</p>
+                <h3>{BEATS[1].h}</h3>
+                <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[1].bad}</p>
+                <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[1].good}</p>
+              </div>
+              <figure class="fig panel">
+                <div class="spec">
+                  <span class="spec-line"><span class="kw">run</span> "triage-panel" &#123;</span>
+                  <span class="spec-line">&nbsp;&nbsp;<span class="key">pattern</span> judge-panel</span>
+                  <span class="spec-line">&nbsp;&nbsp;<span class="key">candidates</span> 3 × codex</span>
+                  <span class="spec-line">&nbsp;&nbsp;<span class="key">judge</span> 1 × claude</span>
+                  <span class="spec-line">&nbsp;&nbsp;<span class="key">output</span> verdict → room</span>
+                  <span class="spec-line">&#125;</span>
+                </div>
+                <figcaption>A DNA run: the whole orchestration in six lines</figcaption>
+              </figure>
+            </div>
+
+            <div class="beat" data-reveal>
+              <div class="beat-copy panel">
+                <p class="beat-n">{BEATS[2].n}</p>
+                <h3>{BEATS[2].h}</h3>
+                <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[2].bad}</p>
+                <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[2].good}</p>
+              </div>
+              <figure class="fig panel">
+                <svg viewBox="0 0 460 230" role="img" aria-label="A run timeline where the failing event expands into its preserved error trail">
+                  <line class="rule" x1="24" y1="52" x2="436" y2="52"></line>
+                  <circle class="dot" cx="70" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="70" y="32" text-anchor="middle">SPAWN</text>
+                  <circle class="dot" cx="178" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="178" y="32" text-anchor="middle">DISPATCH</text>
+                  <circle class="dot" cx="286" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="286" y="32" text-anchor="middle">STREAM</text>
+                  <circle class="bad-fill" cx="394" cy="52" r="4"></circle>
+                  <text class="bad-fill" x="394" y="32" text-anchor="middle">EXIT 127</text>
+                  <path class="bad-stroke" d="M394 56 L394 88 L330 88 L330 96"></path>
+                  <rect class="node" x="110" y="96" width="326" height="104" rx="10"></rect>
+                  <text class="lbl-dim" x="128" y="124">$ relay-diag last --room a</text>
+                  <text class="lbl" x="128" y="148">codex.spawn → exit 127</text>
+                  <text class="bad-fill" x="128" y="172">stderr: ENOENT ./harness (preserved)</text>
+                </svg>
+                <figcaption>The trail survives every hop</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- contact -->
+      <section id="contact" class="contact">
+        <div class="wrap">
+          <p class="tag" data-reveal>Contact · a human answers</p>
+          <h2 class="h-section" data-reveal-title>Open a channel.</h2>
+          <a class="mail" href="mailto:hello@chimerawerks.com" data-reveal>hello@chimerawerks.com</a>
+          <div class="foot" data-reveal>
+            <span>© 2026 Chimera Werks</span>
+            <a href="/archive/v1/">Site archive: v1 (Chimera Studio era)</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink-1);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.55;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      main {
+        position: relative;
+        z-index: 1;
+      }
+      .wrap {
+        max-width: 1160px;
+        margin: 0 auto;
+        padding: 0 clamp(20px, 4vw, 40px);
+      }
+
+      /* fixed atmosphere overlays */
+      .vignette {
+        position: fixed;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        background: var(--vignette);
+      }
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        z-index: 60;
+      }
+      .progress i {
+        display: block;
+        height: 100%;
+        transform: scaleX(0);
+        transform-origin: left;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      }
+
+      /* glass primitive */
+      .panel {
+        background: var(--panel-bg);
+        backdrop-filter: blur(var(--panel-blur)) saturate(1.3);
+        -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(1.3);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--panel-radius);
+        box-shadow: var(--panel-inner-hi), var(--panel-shadow);
+        transition:
+          border-color var(--dur-mid) var(--ease-spatial),
+          transform var(--dur-mid) var(--ease-spatial),
+          box-shadow var(--dur-mid) var(--ease-spatial);
+      }
+      .panel:hover {
+        border-color: var(--panel-border-hi);
+        box-shadow: var(--panel-inner-hi), var(--panel-shadow), 0 0 24px -4px rgba(124, 116, 255, 0.35);
+      }
+
+      /* nav */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px clamp(20px, 4vw, 40px);
+        background: var(--panel-bg-solid);
+        backdrop-filter: blur(var(--panel-blur-nav)) saturate(1.3);
+        -webkit-backdrop-filter: blur(var(--panel-blur-nav)) saturate(1.3);
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-display);
+        font-weight: 640;
+        letter-spacing: -0.01em;
+      }
+      .brand-mark {
+        width: 13px;
+        height: 13px;
+        background: linear-gradient(135deg, var(--facet-violet), var(--accent), var(--accent-2));
+        clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 2.6vw, 32px);
+      }
+      .nav-links a {
+        font-size: 0.9rem;
+        color: var(--ink-2);
+        transition: color var(--dur-fast) ease;
+      }
+      .nav-links a:hover {
+        color: var(--ink-1);
+      }
+      .nav-cta {
+        padding: 8px 16px;
+        border: 1px solid var(--panel-border-hi);
+        border-radius: var(--radius-sm);
+        color: var(--ink-1) !important;
+        font-weight: 500;
+      }
+      .nav-cta:hover {
+        background: var(--accent-dim);
+      }
+      @media (max-width: 700px) {
+        .nav-links a:not(.nav-cta) {
+          display: none;
+        }
+      }
+
+      /* type */
+      .eyebrow,
+      .tag {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+      }
+      .eyebrow {
+        color: var(--accent-hi);
+      }
+      .tag {
+        color: var(--ink-3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tag::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+      }
+      .h-display {
+        margin: 22px 0 0;
+        font-family: var(--font-display);
+        font-weight: 700;
+        font-size: clamp(2.6rem, 6.4vw, 4.5rem);
+        line-height: 1.04;
+        letter-spacing: -0.02em;
+        text-wrap: balance;
+      }
+      .h-statement {
+        margin: 20px 0 0;
+        max-width: 18ch;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: clamp(2.2rem, 5vw, 3.75rem);
+        line-height: 1.08;
+        letter-spacing: -0.018em;
+      }
+      .h-section {
+        margin: 14px 0 0;
+        font-family: var(--font-display);
+        font-weight: 600;
+        font-size: clamp(1.9rem, 3.6vw, 2.75rem);
+        line-height: 1.08;
+        letter-spacing: -0.015em;
+      }
+
+      /* hero */
+      .hero {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        padding: 128px 0 80px;
+      }
+      .hero-copy {
+        position: relative;
+        max-width: 620px;
+      }
+      /* Soft legibility pocket: anchored left, fading right, so the copy always
+         reads over the faceted core while the core (offset right on desktop)
+         stays clear. Not a hard panel — the brief wants bare type in open space. */
+      .hero-copy::before {
+        content: "";
+        position: absolute;
+        inset: -48px -120px -40px -60px;
+        z-index: -1;
+        pointer-events: none;
+        background: radial-gradient(
+          115% 100% at 18% 48%,
+          color-mix(in srgb, var(--bg) 80%, transparent) 0%,
+          color-mix(in srgb, var(--bg) 52%, transparent) 46%,
+          transparent 74%
+        );
+      }
+      .lede {
+        margin: 26px 0 0;
+        max-width: 40ch;
+        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        color: var(--ink-2);
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 34px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        height: 48px;
+        padding: 0 24px;
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        font-weight: 540;
+        transition:
+          transform var(--dur-fast) var(--ease-spatial),
+          background var(--dur-fast) ease,
+          border-color var(--dur-fast) ease;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #0a0b0f;
+        font-weight: 600;
+        box-shadow: 0 0 24px -6px rgba(124, 116, 255, 0.6);
+      }
+      .btn-primary:hover {
+        background: var(--accent-hi);
+      }
+      .btn-ghost {
+        border: 1px solid var(--panel-border-hi);
+        color: var(--ink-1);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        background: var(--panel-bg);
+        backdrop-filter: blur(var(--panel-blur));
+        -webkit-backdrop-filter: blur(var(--panel-blur));
+      }
+      .btn-ghost:hover {
+        border-color: var(--accent);
+      }
+      .runline {
+        margin: 40px 0 0;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.06em;
+        color: var(--ink-3);
+      }
+      .runline span {
+        color: var(--ink-2);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-right: 6px;
+      }
+
+      /* sections */
+      .statement {
+        padding: clamp(80px, 14vh, 170px) 0;
+      }
+      .statement-sub {
+        margin: 28px 0 0;
+        max-width: 52ch;
+        font-size: clamp(1.02rem, 1.4vw, 1.15rem);
+        color: var(--ink-2);
+      }
+      .section {
+        padding: clamp(64px, 9vh, 120px) 0;
+      }
+      .section-sub {
+        margin: 18px 0 0;
+        max-width: 54ch;
+        color: var(--ink-2);
+      }
+
+      /* werk slabs */
+      .werk-grid {
+        margin-top: 44px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .werk {
+        position: relative;
+        padding: 26px 26px 26px 28px;
+        overflow: hidden;
+      }
+      .werk::before {
+        content: "";
+        position: absolute;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 2px;
+        background: var(--hue, var(--accent));
+        box-shadow: 0 0 12px var(--hue, var(--accent));
+        opacity: 0.8;
+      }
+      .werk:hover {
+        transform: translateY(-3px);
+      }
+      .werk-flagship {
+        grid-column: span 2;
+      }
+      .werk-wide {
+        grid-column: 1 / -1;
+        opacity: 0.82;
+      }
+      .werk-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .werk-top h3 {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 1.18rem;
+        font-weight: 620;
+        letter-spacing: -0.01em;
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 0.64rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        white-space: nowrap;
+      }
+      .status i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+      .status.active i {
+        background: var(--good);
+        box-shadow: 0 0 8px var(--good);
+      }
+      .status.incubating i {
+        background: var(--warn);
+      }
+      .werk-tag {
+        margin: 12px 0 0;
+        font-size: 0.9rem;
+        color: var(--ink-1);
+        font-weight: 520;
+      }
+      .werk-blurb {
+        margin: 10px 0 0;
+        font-size: 0.92rem;
+        color: var(--ink-2);
+      }
+      @media (max-width: 860px) {
+        .werk-grid {
+          grid-template-columns: 1fr;
+        }
+        .werk-flagship {
+          grid-column: auto;
+        }
+      }
+
+      /* relay */
+      .relay-lead {
+        margin-top: 44px;
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: clamp(28px, 4vw, 56px);
+        align-items: center;
+      }
+      @media (max-width: 900px) {
+        .relay-lead {
+          grid-template-columns: 1fr;
+        }
+      }
+      .console {
+        overflow: hidden;
+        transform: perspective(1400px) rotateY(-6deg);
+        transform-origin: right center;
+      }
+      .console-bar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 18px;
+        border-bottom: 1px solid var(--panel-border);
+        background: var(--panel-fill);
+      }
+      .dots {
+        display: inline-flex;
+        gap: 7px;
+      }
+      .dots i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--line-2);
+      }
+      .console-title {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--ink-3);
+      }
+      .console-live {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--good);
+      }
+      .console-live i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 8px var(--good);
+      }
+      .console-body {
+        padding: 8px 18px 16px;
+      }
+      .lane {
+        padding: 13px 0;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .lane-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      .lane-name {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .lane-active .lane-name {
+        color: var(--accent-hi);
+      }
+      .lane-pct {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-3);
+      }
+      .lane-task {
+        margin: 4px 0 10px;
+        font-size: 0.88rem;
+        color: var(--ink-2);
+      }
+      .gauge {
+        height: 4px;
+        border-radius: 999px;
+        background: var(--panel-fill);
+        overflow: hidden;
+      }
+      .gauge i {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+      .lane-active .gauge i {
+        box-shadow: 0 0 10px var(--accent);
+      }
+      .lane:not(.lane-active) .gauge i {
+        background: color-mix(in srgb, var(--accent) 55%, var(--line-2));
+      }
+      .console-foot {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 15px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      /* beats */
+      .beats {
+        margin-top: clamp(56px, 8vw, 96px);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(40px, 6vw, 72px);
+      }
+      .beat {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(24px, 4vw, 48px);
+        align-items: center;
+      }
+      .beat-copy {
+        padding: 26px 28px;
+      }
+      .beat-n {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.16em;
+        color: var(--accent-hi);
+      }
+      .beat-copy h3 {
+        margin: 10px 0 18px;
+        font-family: var(--font-display);
+        font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+        font-weight: 620;
+        letter-spacing: -0.02em;
+      }
+      .beat-bad,
+      .beat-good {
+        display: flex;
+        gap: 12px;
+        margin: 0;
+        font-size: 0.96rem;
+        line-height: 1.55;
+      }
+      .beat-bad {
+        color: var(--ink-3);
+        margin-bottom: 12px;
+      }
+      .beat-good {
+        color: var(--ink-1);
+      }
+      .mk {
+        flex: none;
+        font-family: var(--font-mono);
+        font-weight: 700;
+      }
+      .mk-bad {
+        color: var(--bad);
+      }
+      .mk-good {
+        color: var(--accent-2);
+      }
+      .beat-rev .beat-copy {
+        order: 2;
+      }
+      @media (max-width: 820px) {
+        .beat {
+          grid-template-columns: 1fr;
+        }
+        .beat-rev .beat-copy {
+          order: 0;
+        }
+      }
+
+      /* figures */
+      .fig {
+        margin: 0;
+        padding: 24px;
+      }
+      .fig svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .fig figcaption {
+        margin-top: 16px;
+        font-family: var(--font-mono);
+        font-size: 0.68rem;
+        letter-spacing: 0.06em;
+        color: var(--ink-3);
+      }
+      .fig text {
+        font-family: var(--font-mono);
+        font-size: 10.5px;
+        letter-spacing: 0.5px;
+      }
+      .fig .node {
+        fill: var(--surface-2);
+        stroke: var(--line-2);
+      }
+      .fig .node-hi {
+        fill: var(--surface-2);
+        stroke: color-mix(in srgb, var(--accent) 75%, var(--line-2));
+      }
+      .fig .rule {
+        stroke: var(--line-2);
+      }
+      .fig .edge {
+        fill: none;
+        stroke: color-mix(in srgb, var(--accent) 85%, transparent);
+        stroke-width: 1.25;
+      }
+      .fig .dot {
+        fill: var(--accent-2);
+      }
+      .fig .lbl {
+        fill: var(--ink-1);
+      }
+      .fig .lbl-dim {
+        fill: var(--ink-3);
+      }
+      .fig .lbl-hi {
+        fill: var(--accent-hi);
+      }
+      .fig .bad-fill {
+        fill: var(--bad);
+      }
+      .fig .bad-stroke {
+        fill: none;
+        stroke: var(--bad);
+        stroke-width: 1.25;
+      }
+      .spec {
+        font-family: var(--font-mono);
+        font-size: 0.86rem;
+        line-height: 1.85;
+        color: var(--ink-2);
+        display: flex;
+        flex-direction: column;
+      }
+      .spec .kw {
+        color: var(--accent-hi);
+      }
+      .spec .key {
+        color: var(--accent-2);
+        display: inline-block;
+        min-width: 92px;
+      }
+
+      /* contact */
+      .contact {
+        padding: clamp(72px, 10vh, 140px) 0 48px;
+      }
+      .mail {
+        display: inline-block;
+        margin-top: 20px;
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 4.4vw, 3rem);
+        font-weight: 660;
+        letter-spacing: -0.03em;
+        border-bottom: 2px solid var(--accent);
+        transition: color var(--dur-mid) ease;
+      }
+      .mail:hover {
+        color: var(--accent-hi);
+      }
+      .foot {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 72px;
+        padding-top: 24px;
+        border-top: 1px solid var(--panel-border);
+        font-size: 0.82rem;
+        color: var(--ink-3);
+      }
+      .foot a {
+        font-family: var(--font-mono);
+        color: var(--ink-2);
+      }
+      .foot a:hover {
+        color: var(--ink-1);
+      }
+
+      :global(.apex-line) {
+        padding-bottom: 0.08em;
+      }
+    </style>
+  </body>
+</html>
