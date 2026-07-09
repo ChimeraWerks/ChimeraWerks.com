@@ -18,6 +18,7 @@ import "../../styles/fonts.css";
 import "../../styles/theme-facet.css";
 import HeroShader from "../../components/HeroShader.astro";
 import { ECOSYSTEM } from "../../data/ecosystem";
+import markStatic from "../../assets/marks/chimera-facet.webp";
 
 const LANES = [
   { name: "oracle", task: "drafting the migration plan", pct: 82 },
@@ -58,6 +59,9 @@ const BEATS = [
       name="description"
       content="Chimera Werks builds multi-agent tooling: run a fleet of coding agents as one system, in shared rooms with a declarative run language and the trail intact."
     />
+    <!-- Dev-preview route: keep the unfinished redesign out of indexes.
+         Remove when this cut is promoted to the production index. -->
+    <meta name="robots" content="noindex" />
     <title>Chimera Werks · Run a fleet of coding agents as one</title>
   </head>
   <body>
@@ -82,6 +86,18 @@ const BEATS = [
     <div id="hero-canvas-slot" aria-hidden="true">
       <HeroShader />
     </div>
+    <!-- Reduced-motion fallback: every canvas layer gates on the same media
+         query, so without this the brand identity is motion-gated and the
+         reduced experience is a flat black wireframe. -->
+    <img
+      class="static-mark"
+      src={markStatic.src}
+      alt=""
+      width={markStatic.width}
+      height={markStatic.height}
+      loading="lazy"
+      aria-hidden="true"
+    />
     <script>
       import "../../scripts/facet-3d-loader";
       import "../../scripts/apex-motion";
@@ -425,9 +441,37 @@ const BEATS = [
       .nav-cta:hover {
         background: var(--accent-dim);
       }
+      /* Narrow nav keeps the SECTION links (they're the only navigation) and
+         drops the CTA, which duplicates the hero button and contact section.
+         The old rule hid the links and kept the CTA — a dead-end nav. */
       @media (max-width: 700px) {
-        .nav-links a:not(.nav-cta) {
+        .nav-cta {
           display: none;
+        }
+        .nav-links {
+          gap: 14px;
+        }
+        .nav-links a {
+          font-size: 0.85rem;
+        }
+      }
+
+      /* Reduced-motion static brand fallback (canvases are all motion-gated) */
+      .static-mark {
+        display: none;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .static-mark {
+          display: block;
+          position: fixed;
+          right: -4vw;
+          top: 50%;
+          transform: translateY(-52%);
+          width: min(46vw, 720px);
+          height: auto;
+          opacity: 0.55;
+          z-index: 0;
+          pointer-events: none;
         }
       }
 

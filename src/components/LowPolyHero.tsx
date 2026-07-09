@@ -36,7 +36,7 @@ import * as THREE from "three";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 import { THEME_CHANGE_EVENT } from "../data/themes";
-import markAsset from "../assets/marks/chimera-facet.png";
+import markAsset from "../assets/marks/chimera-facet.webp";
 
 /* Astro's Vite pipeline returns ImageMetadata for image imports; plain Vite
    returns a URL string. Accept either so the component survives both. */
@@ -396,6 +396,121 @@ function ChimeraMark({ pointer }: { pointer: PointerRef }): ReactElement | null 
   );
 }
 
+/* ----------------------------------------------------------- dna ascent --- */
+
+/* The biology spine (brand decision: scientific chimera over myth): a
+   low-poly double helix — two strands of faceted particles, distinct genomes
+   in violet and cyan — ascending toward the mark. Past the fusion point the
+   strands converge onto the axis and shrink away, so the read is literal:
+   separate strands fuse into the one form above. Built from the facet
+   world's own vocabulary (instanced polyhedra, like the debris), not the
+   smooth-tube helix from Hero3D. */
+const HELIX_SEGMENTS = 36; /* particles per strand */
+const HELIX_HEIGHT = 6.2;
+const HELIX_RADIUS = 0.55;
+const HELIX_TURNS = 2.4;
+const FUSE_START = 0.72; /* strand fraction where convergence begins */
+const RUNG_EVERY = 3;
+
+function DnaAscent({ colors }: { colors: FacetColors }): ReactElement {
+  const strandARef = useRef<THREE.InstancedMesh>(null);
+  const strandBRef = useRef<THREE.InstancedMesh>(null);
+  const rungRef = useRef<THREE.InstancedMesh>(null);
+  const dummy = useMemo(() => new THREE.Object3D(), []);
+  const time = useRef(0);
+  const rungCount = Math.floor(HELIX_SEGMENTS / RUNG_EVERY);
+
+  useEffect(() => {
+    const tint = new THREE.Color();
+    const strandA = strandARef.current;
+    const strandB = strandBRef.current;
+    if (strandA) {
+      for (let i = 0; i < HELIX_SEGMENTS; i++) {
+        const t = i / (HELIX_SEGMENTS - 1);
+        tint.copy(colors.violet).lerp(colors.indigo, t);
+        strandA.setColorAt(i, tint);
+      }
+      if (strandA.instanceColor) strandA.instanceColor.needsUpdate = true;
+    }
+    if (strandB) {
+      for (let i = 0; i < HELIX_SEGMENTS; i++) {
+        const t = i / (HELIX_SEGMENTS - 1);
+        tint.copy(colors.cyan).lerp(colors.indigo, t * 0.5);
+        strandB.setColorAt(i, tint);
+      }
+      if (strandB.instanceColor) strandB.instanceColor.needsUpdate = true;
+    }
+  }, [colors]);
+
+  useFrame((_, rawDelta) => {
+    const strandA = strandARef.current;
+    const strandB = strandBRef.current;
+    const rungs = rungRef.current;
+    if (!strandA || !strandB || !rungs) return;
+    const dt = Math.min(rawDelta, 1 / 30);
+    time.current += dt;
+    const spin = time.current * 0.35;
+
+    const place = (mesh: THREE.InstancedMesh, i: number, t: number, phase: number): void => {
+      const a = t * HELIX_TURNS * Math.PI * 2 + phase + spin;
+      /* Fusion: past FUSE_START the strand pulls onto the axis and shrinks —
+         two genomes becoming one line, dissolving where the mark begins. */
+      const fuse =
+        t <= FUSE_START ? 0 : Math.pow((t - FUSE_START) / (1 - FUSE_START), 1.4);
+      const r = HELIX_RADIUS * (1 - fuse);
+      dummy.position.set(Math.cos(a) * r, (t - 0.5) * HELIX_HEIGHT, Math.sin(a) * r);
+      dummy.rotation.set(a, a * 0.7, 0);
+      dummy.scale.setScalar(0.085 * (1 - fuse * 0.85));
+      dummy.updateMatrix();
+      mesh.setMatrixAt(i, dummy.matrix);
+    };
+
+    for (let i = 0; i < HELIX_SEGMENTS; i++) {
+      const t = i / (HELIX_SEGMENTS - 1);
+      place(strandA, i, t, 0);
+      place(strandB, i, t, Math.PI);
+    }
+    strandA.instanceMatrix.needsUpdate = true;
+    strandB.instanceMatrix.needsUpdate = true;
+
+    /* Base-pair rungs: thin bars bridging the strands, gone past fusion. */
+    for (let i = 0; i < rungCount; i++) {
+      const t = (i * RUNG_EVERY) / (HELIX_SEGMENTS - 1);
+      const a = t * HELIX_TURNS * Math.PI * 2 + spin;
+      const fuse = t <= FUSE_START ? 0 : 1;
+      dummy.position.set(0, (t - 0.5) * HELIX_HEIGHT, 0);
+      dummy.rotation.set(0, -a, Math.PI / 2);
+      dummy.scale.set(fuse ? 0.0001 : 0.028, HELIX_RADIUS * 2 * 0.92, fuse ? 0.0001 : 0.028);
+      dummy.updateMatrix();
+      rungs.setMatrixAt(i, dummy.matrix);
+    }
+    rungs.instanceMatrix.needsUpdate = true;
+  });
+
+  return (
+    <group>
+      <instancedMesh ref={strandARef} args={[undefined, undefined, HELIX_SEGMENTS]} frustumCulled={false}>
+        <icosahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial flatShading metalness={0.2} roughness={0.5} emissive={colors.violet} emissiveIntensity={0.3} />
+      </instancedMesh>
+      <instancedMesh ref={strandBRef} args={[undefined, undefined, HELIX_SEGMENTS]} frustumCulled={false}>
+        <octahedronGeometry args={[1, 0]} />
+        <meshStandardMaterial flatShading metalness={0.2} roughness={0.5} emissive={colors.cyan} emissiveIntensity={0.3} />
+      </instancedMesh>
+      <instancedMesh ref={rungRef} args={[undefined, undefined, rungCount]} frustumCulled={false}>
+        <boxGeometry args={[1, 1, 1]} />
+        <meshBasicMaterial
+          color={colors.indigo}
+          transparent
+          opacity={0.35}
+          blending={THREE.AdditiveBlending}
+          depthWrite={false}
+        />
+      </instancedMesh>
+    </group>
+  );
+}
+
 /* --------------------------------------------------------------- shards --- */
 
 interface ShardSpec {
@@ -538,12 +653,16 @@ function coreVariant(): CoreVariant {
     : "mark";
 }
 
-/* ?pin=center forces the subject to screen center — art-review hook for
-   screenshot tools whose capture crop can't reach the right-offset subject
-   (Camoufox: fixed 1280x720 top-left crop, variable window width). */
-function pinCenter(): boolean {
-  if (typeof window === "undefined") return false;
-  return new URLSearchParams(window.location.search).get("pin") === "center";
+/* ?pin=center | ?pin=review — art-review hooks for screenshot tools whose
+   capture crop can't reach the right-offset subject (Camoufox: fixed
+   1280x720 top-left crop, variable window width). "center" pins the subject
+   to screen center; "review" also shrinks and lifts it so the mark AND the
+   dna ascent below it fit inside the 720px-tall crop. */
+type PinMode = "none" | "center" | "review";
+function pinMode(): PinMode {
+  if (typeof window === "undefined") return "none";
+  const pin = new URLSearchParams(window.location.search).get("pin");
+  return pin === "center" || pin === "review" ? pin : "none";
 }
 
 /* Content-column width — keep in sync with .wrap in facet.astro. */
@@ -559,7 +678,8 @@ function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef
   const width = useThree((s) => s.size.width);
   const viewportWidth = useThree((s) => s.viewport.width);
   const [variant] = useState(coreVariant);
-  const [pinned] = useState(pinCenter);
+  const [pin] = useState(pinMode);
+  const pinned = pin !== "none";
   const wide = width >= 1024;
   /* Subject center at 72% of the wrap half-width right of page center: hugs
      the copy column's right side, bleeds slightly past the wrap edge. */
@@ -568,16 +688,26 @@ function Subject({ colors, pointer }: { colors: FacetColors; pointer: PointerRef
   /* Narrow: fit the core (~4.6 world units wide) inside the viewport with a
      margin — at full scale it fills the fold edge-to-edge and the silhouette
      ("one form") never reads, it's just a wall of facets behind the copy. */
-  const scale = wide
+  let scale = wide
     ? THREE.MathUtils.clamp(width / 1440, 0.82, 1.1)
     : THREE.MathUtils.clamp(viewportWidth / 5.8, 0.55, 1);
+  let y = 0.15;
+  if (pin === "review") {
+    scale = 0.6;
+    y = 0.8;
+  }
   return (
-    <group position={[x, 0.15, 0]} scale={scale}>
+    <group position={[x, y, 0]} scale={scale}>
       {variant === "mark" ? (
         <ChimeraMark pointer={pointer} />
       ) : (
         <FacetCore colors={colors} pointer={pointer} />
       )}
+      {/* Ascends from below the fold into the mark's base: strands enter
+          frame mid-climb, fuse, and dissolve where the one form begins. */}
+      <group position={[0, -3.7, -0.6]} rotation={[0, 0, -0.14]}>
+        <DnaAscent colors={colors} />
+      </group>
       {SHARDS.map((spec, i) => (
         <Shard key={i} spec={spec} colors={colors} />
       ))}
