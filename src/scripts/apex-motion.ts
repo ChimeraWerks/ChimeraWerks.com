@@ -64,9 +64,27 @@ export function initApex(): void {
    calmer and more deliberate. */
 function heroRise(): void {
   const heading = document.querySelector<HTMLElement>("[data-hero-title]");
-  const lines = heading
-    ? new SplitText(heading, { type: "lines", mask: "lines", linesClass: "apex-line" }).lines
+  /* Authored block-span lockups (facet's tapered 3-liner) must NOT go through
+     SplitText's line pass: it flattens nested spans and greedy-rewraps the
+     text, destroying the designed breaks (seen live: 14/13/8 became 11/9/14).
+     Mask each authored span by hand instead; the visual is identical. */
+  const authored = heading
+    ? Array.from(heading.querySelectorAll<HTMLElement>(":scope > span"))
     : [];
+  let lines: Element[] = [];
+  if (heading && authored.length > 0) {
+    lines = authored.map((span) => {
+      const mask = document.createElement("span");
+      mask.className = "apex-line";
+      mask.style.display = "block";
+      mask.style.overflow = "hidden";
+      span.replaceWith(mask);
+      mask.appendChild(span);
+      return span;
+    });
+  } else if (heading) {
+    lines = new SplitText(heading, { type: "lines", mask: "lines", linesClass: "apex-line" }).lines;
+  }
 
   const tl = gsap.timeline({ defaults: { ease: "power4.out" } });
   if (lines.length) {

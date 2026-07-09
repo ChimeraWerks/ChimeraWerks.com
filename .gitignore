@@ -45,3 +45,4 @@ next-env.d.ts
 
 # astro generated
 .astro/
+.impeccable/live/server.json

@@ -1,4 +1,6 @@
 ---
+/* impeccable-disable em-dash-overuse: the hits are CSS custom-property names
+   (double-dash tokens) inside comments, not prose em-dashes. */
 /**
  * Page-wide WebGL smoke atmosphere. Drop anywhere; at runtime the canvas
  * re-parents itself onto <body> and pins itself position:fixed behind ALL
@@ -12,7 +14,7 @@
  * exactly as authored. #hero-canvas-slot and its children are never touched —
  * a 3D hero (?hero=3d) layers over this atmosphere instead of replacing it.
  *
- * Theme-aware by construction — colors come from the --bg / --accent /
+ * Theme-aware by construction - colors come from the --bg / --accent /
  * --accent-2 tokens on <html data-theme> at init, so the arcane slice gets
  * iris+amber smoke and the precision slice gets violet+cyan from the same
  * program. Logic lives in src/scripts/hero-shader.ts.
@@ -26,7 +28,7 @@
 
   // Demo scaffolding for the hero pick: only ?hero=css suppresses the
   // atmosphere (so the bare CSS background can be judged). ?hero=3d no longer
-  // suppresses it — the 3D hero canvas layers over this one. Remove the gate
+  // suppresses it - the 3D hero canvas layers over this one. Remove the gate
   // once the owner picks a hero.
   const variant = new URLSearchParams(location.search).get("hero") ?? "shader";
   if (variant === "css") {

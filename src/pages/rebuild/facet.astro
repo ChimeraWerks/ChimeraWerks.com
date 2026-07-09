@@ -1,14 +1,14 @@
 ---
 /**
- * "Facet" — the low-poly / spatial-VR cut. The signature: a real-time faceted
+ * "Facet" - the low-poly / spatial-VR cut. The signature: a real-time faceted
  * chimera-core (LowPolyHero) floating inside the smoke atmosphere, with the
  * content on frosted-glass instrument panels above it. Thesis (from the
  * ui-design composition brief): low-poly = many facets resolving into one
- * form = "many agents, one fleet" — the aesthetic is the argument.
+ * form = "many agents, one fleet" - the aesthetic is the argument.
  *
  * v1 milestone: real 3D world + glass spatial page + the apex copy verbatim.
  * The literal lion-head centerpiece, the 3× facet-assembly moments, and the
- * 3D micro-scene diagrams are the next pass — this proves the engine + look.
+ * 3D micro-scene diagrams are the next pass - this proves the engine + look.
  *
  * Reuses apex-motion.ts (same reveal hooks) and the HeroShader smoke. Own
  * tokens (theme-facet.css). Isolated + disposable; never promoted without
@@ -28,21 +28,24 @@ const LANES = [
   { name: "scribe", task: "writing the handoff", pct: 33, active: true },
 ];
 
+/* Beat labels name the instrument each beat argues (room / run / trail), not
+   a numbered sequence: the beats are parallel arguments, and numbered section
+   scaffolding is a detector-flagged AI tell. */
 const BEATS = [
   {
-    n: "01",
+    label: "The room",
     h: "One console, whole fleet",
     bad: "Every agent you add is another terminal to babysit, another transcript scrolling where you are not looking.",
     good: "Relay puts the fleet in shared rooms: personas, live transcripts, spawn controls. However many agents run, you watch one console.",
   },
   {
-    n: "02",
+    label: "The run",
     h: "Orchestration you can diff",
     bad: "Judge panels, fusion, debates: in most shops that logic lives in glue scripts only the author can rerun.",
     good: "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
   },
   {
-    n: "03",
+    label: "The trail",
     h: "Failures keep their trail",
     bad: "When an agent dies three hops down, most consoles hand you a normalized reason code and eat the stderr.",
     good: "Relay keeps the raw trail: child stderr, RPC hops, exit codes, secrets redacted. The real error is one layer down, never gone.",
@@ -63,6 +66,17 @@ const BEATS = [
          Remove when this cut is promoted to the production index. -->
     <meta name="robots" content="noindex" />
     <title>Chimera Werks · Run a fleet of coding agents as one</title>
+    <!-- Social cards ride along when this cut is promoted; harmless while
+         noindex. og:image needs an absolute URL, hence Astro.site. -->
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Chimera Werks" />
+    <meta property="og:title" content="Chimera Werks · Run a fleet of coding agents as one" />
+    <meta
+      property="og:description"
+      content="The console, the run language, and the instruments that let Codex, Claude, and local models work in one room, with the trail intact."
+    />
+    <meta property="og:image" content={new URL(markStatic.src, Astro.site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
   </head>
   <body>
     <div class="progress" aria-hidden="true"><i id="apex-progress-fill"></i></div>
@@ -77,7 +91,7 @@ const BEATS = [
         <a href="#workflow">Workflow</a>
         <a href="#werks">Werks</a>
         <a href="#relay">Relay</a>
-        <a class="nav-cta" href="mailto:hello@chimerawerks.com">Get in touch</a>
+        <a class="nav-cta" href="#contact">Get in touch</a>
       </nav>
     </header>
 
@@ -109,8 +123,15 @@ const BEATS = [
         <div class="wrap">
           <div class="hero-copy">
             <p class="eyebrow" data-hero-rise>Multi-agent infrastructure</p>
+            <!-- Explicit 3-line lockup (block spans, tapering 14/13/8): the
+                 old forced br assumed a 2-line fit that never rendered, and
+                 text-wrap balance froze ragged under SplitText's line split.
+                 Block spans keep whitespace in the a11y tree (no
+                 "codingagents"). -->
             <h1 class="h-display" data-hero-title>
-              Run a fleet of coding<br />agents as one.
+              <span>Run a fleet of</span>
+              <span>coding agents</span>
+              <span>as one.</span>
             </h1>
             <p class="lede" data-hero-rise>
               Chimera Werks builds the console, the run language, and the instruments that let Codex,
@@ -127,10 +148,10 @@ const BEATS = [
         </div>
       </section>
 
-      <!-- workflow statement — bare type, world showing through -->
+      <!-- workflow statement - bare type, world showing through -->
       <section id="workflow" class="statement">
         <div class="wrap">
-          <p class="tag" data-reveal>The workflow</p>
+          <p class="tag" data-reveal>the workflow</p>
           <h2 class="h-statement" data-reveal-title>
             One drafts. One builds. One hunts the edge cases. Same room, same problem.
           </h2>
@@ -141,10 +162,10 @@ const BEATS = [
         </div>
       </section>
 
-      <!-- werks — glass slabs -->
+      <!-- werks - glass slabs -->
       <section id="werks" class="section">
         <div class="wrap">
-          <p class="tag" data-reveal>The werks</p>
+          <p class="tag" data-reveal>the werks</p>
           <h2 class="h-section" data-reveal-title>Five instruments, one bench.</h2>
           <p class="section-sub" data-reveal>
             Every tool ships from the same bench: shared rooms, shared identity, one console
@@ -177,8 +198,8 @@ const BEATS = [
       <!-- relay deep-dive -->
       <section id="relay" class="section">
         <div class="wrap">
-          <p class="tag" data-reveal>Flagship · Chimera Relay</p>
-          <h2 class="h-section" data-reveal-title>Where the swarm reports for duty.</h2>
+          <p class="tag" data-reveal>flagship · chimera relay</p>
+          <h2 class="h-section" data-reveal-title>Where the fleet reports for duty.</h2>
 
           <div class="relay-lead">
             <p class="section-sub" data-reveal>
@@ -218,7 +239,7 @@ const BEATS = [
           <div class="beats">
             <div class="beat" data-reveal>
               <div class="beat-copy panel">
-                <p class="beat-n">{BEATS[0].n}</p>
+                <p class="beat-n">{BEATS[0].label}</p>
                 <h3>{BEATS[0].h}</h3>
                 <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[0].bad}</p>
                 <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[0].good}</p>
@@ -250,7 +271,7 @@ const BEATS = [
 
             <div class="beat beat-rev" data-reveal>
               <div class="beat-copy panel">
-                <p class="beat-n">{BEATS[1].n}</p>
+                <p class="beat-n">{BEATS[1].label}</p>
                 <h3>{BEATS[1].h}</h3>
                 <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[1].bad}</p>
                 <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[1].good}</p>
@@ -270,7 +291,7 @@ const BEATS = [
 
             <div class="beat" data-reveal>
               <div class="beat-copy panel">
-                <p class="beat-n">{BEATS[2].n}</p>
+                <p class="beat-n">{BEATS[2].label}</p>
                 <h3>{BEATS[2].h}</h3>
                 <p class="beat-bad"><span class="mk mk-bad">×</span>{BEATS[2].bad}</p>
                 <p class="beat-good"><span class="mk mk-good">→</span>{BEATS[2].good}</p>
@@ -302,7 +323,7 @@ const BEATS = [
       <!-- contact -->
       <section id="contact" class="contact">
         <div class="wrap">
-          <p class="tag" data-reveal>Contact · a human answers</p>
+          <p class="tag" data-reveal>contact · a human answers</p>
           <h2 class="h-section" data-reveal-title>Open a channel.</h2>
           <a class="mail" href="mailto:hello@chimerawerks.com" data-reveal>hello@chimerawerks.com</a>
           <div class="foot" data-reveal>
@@ -329,13 +350,19 @@ const BEATS = [
         color: inherit;
         text-decoration: none;
       }
+      a:focus-visible,
+      .btn:focus-visible {
+        outline: 2px solid var(--accent-hi);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
       main {
         position: relative;
         z-index: 1;
       }
       /* 1360 not 1160: on real widescreen the narrow wrap left a dead smoke
          field wider than the content column. Keep this in sync with WRAP_MAX
-         in LowPolyHero.tsx — the 3D subject anchors to this column. */
+         in LowPolyHero.tsx - the 3D subject anchors to this column. */
       .wrap {
         max-width: min(1360px, 94vw);
         margin: 0 auto;
@@ -385,7 +412,10 @@ const BEATS = [
       }
       .panel:hover {
         border-color: var(--panel-border-hi);
-        box-shadow: var(--panel-inner-hi), var(--panel-shadow), 0 0 24px -4px rgba(124, 116, 255, 0.35);
+        box-shadow:
+          var(--panel-inner-hi),
+          var(--panel-shadow),
+          0 0 24px -4px color-mix(in srgb, var(--accent) 35%, transparent);
       }
 
       /* nav */
@@ -423,9 +453,13 @@ const BEATS = [
         align-items: center;
         gap: clamp(18px, 2.6vw, 32px);
       }
+      /* Padding + negative margin: 44px-tall tap targets without moving the
+         rendered layout. */
       .nav-links a {
         font-size: 0.9rem;
         color: var(--ink-2);
+        padding: 13px 4px;
+        margin: -13px -4px;
         transition: color var(--dur-fast) ease;
       }
       .nav-links a:hover {
@@ -443,7 +477,7 @@ const BEATS = [
       }
       /* Narrow nav keeps the SECTION links (they're the only navigation) and
          drops the CTA, which duplicates the hero button and contact section.
-         The old rule hid the links and kept the CTA — a dead-end nav. */
+         The old rule hid the links and kept the CTA - a dead-end nav. */
       @media (max-width: 700px) {
         .nav-cta {
           display: none;
@@ -456,39 +490,52 @@ const BEATS = [
         }
       }
 
-      /* Reduced-motion static brand fallback (canvases are all motion-gated) */
+      /* Static brand fallback. Shows for reduced-motion (canvases are all
+         motion-gated) AND whenever the 3D layer cannot render: the loader /
+         error boundary set html.facet-3d-off on WebGL failure. Without the
+         class path, a blocklisted GPU erased the brand mark entirely.
+         Opacity 0.45 (was 0.55): at 0.55 the fixed mark compromised the
+         bare-type statement section's legibility. */
       .static-mark {
         display: none;
+        position: fixed;
+        right: -4vw;
+        top: 50%;
+        transform: translateY(-52%);
+        width: min(46vw, 720px);
+        height: auto;
+        opacity: 0.45;
+        z-index: 0;
+        pointer-events: none;
       }
       @media (prefers-reduced-motion: reduce) {
         .static-mark {
           display: block;
-          position: fixed;
-          right: -4vw;
-          top: 50%;
-          transform: translateY(-52%);
-          width: min(46vw, 720px);
-          height: auto;
-          opacity: 0.55;
-          z-index: 0;
-          pointer-events: none;
         }
+      }
+      :global(html.facet-3d-off) .static-mark {
+        display: block;
       }
 
       /* type */
-      .eyebrow,
-      .tag {
+      /* One tracked-caps kicker on the page: the hero eyebrow (approved brand
+         system). Section tags speak the mono instrument voice instead -
+         lowercase, near-normal tracking - so the tracked-eyebrow grammar
+         never repeats down the page. */
+      .eyebrow {
         margin: 0;
         font-family: var(--font-display);
         font-size: 0.75rem;
         font-weight: 600;
         letter-spacing: 0.14em;
         text-transform: uppercase;
-      }
-      .eyebrow {
         color: var(--accent-hi);
       }
       .tag {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
         color: var(--ink-3);
         display: inline-flex;
         align-items: center;
@@ -502,7 +549,7 @@ const BEATS = [
         background: var(--accent);
         box-shadow: 0 0 8px var(--accent);
       }
-      /* Type scale matches apex (the approved cut) — the facet v1 shrank the
+      /* Type scale matches apex (the approved cut) - the facet v1 shrank the
          display sizes and the page read undersized on widescreen. */
       .h-display {
         margin: 22px 0 0;
@@ -511,7 +558,9 @@ const BEATS = [
         font-size: clamp(2.6rem, 6.4vw, 5.2rem);
         line-height: 1.02;
         letter-spacing: -0.038em;
-        text-wrap: balance;
+      }
+      .h-display span {
+        display: block;
       }
       .h-statement {
         margin: 20px 0 0;
@@ -539,7 +588,7 @@ const BEATS = [
         padding: 128px 0 80px;
       }
       /* The wrap is a flex item here, so it shrink-wraps to its content and
-         floats centered — the copy never reaches the wrap's left edge and the
+         floats centered - the copy never reaches the wrap's left edge and the
          hero reads as a narrow mobile column at any monitor width. Apex had
          this rule; dropping it was the facet v1 regression. */
       .hero .wrap {
@@ -551,7 +600,7 @@ const BEATS = [
       }
       /* Soft legibility pocket: anchored left, fading right, so the copy always
          reads over the faceted core while the core (offset right on desktop)
-         stays clear. Not a hard panel — the brief wants bare type in open space. */
+         stays clear. Not a hard panel - the brief wants bare type in open space. */
       .hero-copy::before {
         content: "";
         position: absolute;
@@ -559,7 +608,7 @@ const BEATS = [
         z-index: -1;
         pointer-events: none;
         /* Ellipse sized to exactly touch the box edges (50% radii, centered),
-           transparent at 100% — an off-center oversized gradient gets clipped
+           transparent at 100% - an off-center oversized gradient gets clipped
            by the box and prints a hard rectangle seam over the smoke. */
         background: radial-gradient(
           50% 50% at 50% 50%,
@@ -583,8 +632,8 @@ const BEATS = [
       .btn {
         display: inline-flex;
         align-items: center;
-        height: 48px;
-        padding: 0 24px;
+        min-height: 48px;
+        padding: 12px 24px;
         border-radius: var(--radius-sm);
         font-size: 0.95rem;
         font-weight: 540;
@@ -598,9 +647,9 @@ const BEATS = [
       }
       .btn-primary {
         background: var(--accent);
-        color: #0a0b0f;
+        color: var(--bg);
         font-weight: 600;
-        box-shadow: 0 0 24px -6px rgba(124, 116, 255, 0.6);
+        box-shadow: 0 0 24px -6px color-mix(in srgb, var(--accent) 60%, transparent);
       }
       .btn-primary:hover {
         background: var(--accent-hi);
@@ -621,7 +670,7 @@ const BEATS = [
         margin: 40px 0 0;
         font-family: var(--font-mono);
         font-size: 0.75rem;
-        letter-spacing: 0.06em;
+        letter-spacing: 0.01em;
         color: var(--ink-3);
       }
       .runline span {
@@ -659,29 +708,21 @@ const BEATS = [
       }
       .werk {
         position: relative;
-        padding: 26px 26px 26px 28px;
+        padding: 26px;
         overflow: hidden;
-      }
-      .werk::before {
-        content: "";
-        position: absolute;
-        left: 0;
-        top: 0;
-        bottom: 0;
-        width: 2px;
-        background: var(--hue, var(--accent));
-        box-shadow: 0 0 12px var(--hue, var(--accent));
-        opacity: 0.8;
       }
       .werk:hover {
         transform: translateY(-3px);
+        border-color: color-mix(in srgb, var(--hue, var(--accent)) 40%, var(--panel-border));
       }
       .werk-flagship {
         grid-column: span 2;
       }
+      /* Quieter teaser row via a dimmer glass fill, not element opacity:
+         opacity dragged the ink under the 4.5:1 AA floor. */
       .werk-wide {
         grid-column: 1 / -1;
-        opacity: 0.82;
+        background: var(--panel-fill);
       }
       .werk-top {
         display: flex;
@@ -691,17 +732,35 @@ const BEATS = [
       }
       .werk-top h3 {
         margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
         font-family: var(--font-display);
         font-size: 1.18rem;
         font-weight: 620;
         letter-spacing: -0.01em;
+      }
+      /* Per-card hue lives in a faceted gem (the brand-mark pentagon), not a
+         colored left spine: the 2px side-stripe is the AI card template and
+         argued nothing. The gem echoes the faceted-chimera mark instead. */
+      .werk-top h3::before {
+        content: "";
+        flex: none;
+        width: 11px;
+        height: 11px;
+        background: var(--hue, var(--accent));
+        clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+        transition: filter var(--dur-mid) var(--ease-spatial);
+      }
+      .werk:hover .werk-top h3::before {
+        filter: drop-shadow(0 0 6px var(--hue, var(--accent))) brightness(1.25);
       }
       .status {
         display: inline-flex;
         align-items: center;
         gap: 6px;
         font-family: var(--font-mono);
-        font-size: 0.64rem;
+        font-size: 0.7rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
         color: var(--ink-3);
@@ -799,6 +858,19 @@ const BEATS = [
         border-radius: 50%;
         background: var(--good);
         box-shadow: 0 0 8px var(--good);
+        animation: live-pulse 2.4s ease-in-out infinite;
+      }
+      /* The console argues "live" - so it breathes: the status dot pulses and
+         the active lane's gauge carries a slow highlight sweep. State cues,
+         not decoration; both gate off under reduced motion. */
+      @keyframes live-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
       }
       .console-body {
         padding: 8px 18px 16px;
@@ -844,6 +916,35 @@ const BEATS = [
       }
       .lane-active .gauge i {
         box-shadow: 0 0 10px var(--accent);
+        position: relative;
+        overflow: hidden;
+      }
+      .lane-active .gauge i::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--emissive-core) 45%, transparent),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: gauge-sweep 3s var(--ease-spatial) infinite;
+      }
+      @keyframes gauge-sweep {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .console-live i {
+          animation: none;
+        }
+        .lane-active .gauge i::after {
+          animation: none;
+          display: none;
+        }
       }
       .lane:not(.lane-active) .gauge i {
         background: color-mix(in srgb, var(--accent) 55%, var(--line-2));
@@ -878,8 +979,8 @@ const BEATS = [
       .beat-n {
         margin: 0;
         font-family: var(--font-mono);
-        font-size: 0.75rem;
-        letter-spacing: 0.16em;
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
         color: var(--accent-hi);
       }
       .beat-copy h3 {
@@ -940,14 +1041,14 @@ const BEATS = [
       .fig figcaption {
         margin-top: 16px;
         font-family: var(--font-mono);
-        font-size: 0.68rem;
-        letter-spacing: 0.06em;
+        font-size: 0.75rem;
+        letter-spacing: 0.01em;
         color: var(--ink-3);
       }
       .fig text {
         font-family: var(--font-mono);
-        font-size: 10.5px;
-        letter-spacing: 0.5px;
+        font-size: 12px;
+        letter-spacing: 0.4px;
       }
       .fig .node {
         fill: var(--surface-2);

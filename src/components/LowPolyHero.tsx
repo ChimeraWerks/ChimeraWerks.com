@@ -124,6 +124,11 @@ class WebGLErrorBoundary extends Component<{ children: ReactNode }, BoundaryStat
   static getDerivedStateFromError(): BoundaryState {
     return { failed: true };
   }
+  override componentDidCatch(): void {
+    /* A context failure must not erase the brand: html.facet-3d-off makes
+       the page show the static mark in this scene's place. */
+    document.documentElement.classList.add("facet-3d-off");
+  }
   override render(): ReactNode {
     return this.state.failed ? null : this.props.children;
   }

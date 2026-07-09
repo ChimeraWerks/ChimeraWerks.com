@@ -21,7 +21,7 @@ export const ECOSYSTEM: EcosystemApp[] = [
     name: "Chimera Relay",
     tagline: "Multi-agent orchestration console",
     blurb:
-      "Run fleets of coding agents - Codex, Claude, Hermes, and more - in shared rooms with personas, DNA runs, and judge panels. One console for the whole swarm.",
+      "Run fleets of coding agents (Codex, Claude, Hermes, and more) in shared rooms with personas, DNA runs, and judge panels. One console for the whole fleet.",
     hueIndex: 6,
     status: "active",
     flagship: true,
