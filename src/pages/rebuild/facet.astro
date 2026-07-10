@@ -1,4 +1,7 @@
 ---
+/* impeccable-disable em-dash-overuse: the hits are CSS custom-property tokens
+   (double-dash names like the per-strand hue variable) in inline style
+   attributes, not prose em-dashes. */
 /**
  * "Facet" - the low-poly / spatial-VR cut. The signature: a real-time faceted
  * chimera-core (LowPolyHero) floating inside the smoke atmosphere, with the
@@ -14,11 +17,15 @@
  * tokens (theme-facet.css). Isolated + disposable; never promoted without
  * sign-off, and prod only ships from main.
  */
+import { Image } from "astro:assets";
 import "../../styles/fonts.css";
 import "../../styles/theme-facet.css";
 import HeroShader from "../../components/HeroShader.astro";
 import { ECOSYSTEM } from "../../data/ecosystem";
 import markStatic from "../../assets/marks/chimera-facet.webp";
+import headGoat from "../../assets/marks/head-goat.png";
+import headLion from "../../assets/marks/head-lion.png";
+import headSerpent from "../../assets/marks/head-serpent.png";
 
 const LANES = [
   { name: "oracle", task: "drafting the migration plan", pct: 82 },
@@ -159,6 +166,26 @@ const BEATS = [
             Agents spawn into shared rooms, split the work by what each does best, argue in judge
             panels, and hand off with the trail intact. That is the whole product thesis.
           </p>
+          <!-- The myth identity layer, faceted register: the mark's three heads
+               named and mapped to their harnesses, each rendered in the mark's
+               own crystal style (CIL, style-referenced from chimera-facet.png).
+               Generated on black + screen blend (transparency scar); no
+               engraved plates, no lore-tag theater (the banned execution). -->
+          <div class="strands" data-reveal>
+            {
+              [
+                { art: headGoat, head: "The goat", alias: "codex · builds & ships", hue: "var(--facet-violet)" },
+                { art: headLion, head: "The lion", alias: "claude · reasons & reviews", hue: "var(--facet-indigo)" },
+                { art: headSerpent, head: "The serpent", alias: "gemini · scouts & sweeps", hue: "var(--facet-cyan)" },
+              ].map((s) => (
+                <div class="strand" style={`--strand: ${s.hue}`}>
+                  <Image class="strand-art" src={s.art} alt="" width={240} format="webp" quality={80} aria-hidden="true" />
+                  <span class="strand-head">{s.head}</span>
+                  <span class="strand-alias">{s.alias}</span>
+                </div>
+              ))
+            }
+          </div>
         </div>
       </section>
 
@@ -507,6 +534,11 @@ const BEATS = [
         opacity: 0.45;
         z-index: 0;
         pointer-events: none;
+        /* The art was generated on near-black (backend rejects transparency);
+           screen blending keys the background out over the smoke - without it
+           the img prints its bounding rectangle (repo scar, same fix as the
+           engraved plates). */
+        mix-blend-mode: screen;
       }
       @media (prefers-reduced-motion: reduce) {
         .static-mark {
@@ -692,6 +724,43 @@ const BEATS = [
       }
       .section {
         padding: clamp(64px, 9vh, 120px) 0;
+      }
+
+      /* three strands (myth identity layer) */
+      .strands {
+        margin-top: clamp(36px, 5vw, 56px);
+        display: flex;
+        flex-wrap: wrap;
+        gap: clamp(20px, 4vw, 56px);
+      }
+      .strand {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        column-gap: 16px;
+        row-gap: 2px;
+        align-items: center;
+      }
+      .strand-art {
+        grid-row: span 2;
+        width: clamp(72px, 8vw, 104px);
+        height: auto;
+        /* The art ships with real alpha (black-floor keyed offline, PIL):
+           mix-blend-mode can't reach the world canvases from inside main's
+           stacking context (z-index 1 isolates it), so blending printed each
+           head's black plate. Keyed alpha works over any backdrop. */
+        filter: drop-shadow(0 0 18px color-mix(in srgb, var(--strand, var(--accent)) 30%, transparent));
+      }
+      .strand-head {
+        font-family: var(--font-display);
+        font-weight: 640;
+        font-size: 1.05rem;
+        letter-spacing: -0.01em;
+      }
+      .strand-alias {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
       }
       .section-sub {
         margin: 18px 0 0;

@@ -65,8 +65,16 @@ Kicker system: ONE tracked-caps eyebrow (hero only, approved); section tags spea
 - Reduced motion: all canvases gate off; the static faceted-mark image is the mandatory brand fallback.
 - WebGL failure (probe fail, bundle fetch fail, context error) sets `html.facet-3d-off`, which also shows the static mark: the beast moment must never silently vanish.
 
+## Myth identity layer
+
+Owner decision (2026-07-09): the myth layer is expanded beyond the single mark, in the faceted register only.
+The three heads appear individually (goat=Codex violet, lion=Claude indigo, serpent=Gemini cyan) with harness aliases, e.g. the workflow strands row.
+Execution rules: crystal-facet style matched to the mark (CIL, style-referenced), real alpha (black-floor keyed offline; mix-blend-mode cannot reach the world canvases from inside main's stacking context), sentence-case naming.
+Still banned: engraved AI plates, lore-tag theater ("the specimen"), occult vocabulary, myth-as-mechanic copy.
+
 ## Assets
 
-- The one myth artifact: `src/assets/marks/chimera-facet.png/.webp` (faceted chimera head).
+- The myth mark: `src/assets/marks/chimera-facet.png/.webp` (faceted three-headed chimera).
+- Per-head renders: `src/assets/marks/head-goat/-lion/-serpent.png` (alpha-keyed, CIL-generated in the mark's style).
 - Smoke atmosphere: `HeroShader.astro`; faceted core + DNA ascent: `LowPolyHero.tsx`.
 - Ecosystem roster and card copy: `src/data/ecosystem.ts`.
