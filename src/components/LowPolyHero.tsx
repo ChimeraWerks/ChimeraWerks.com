@@ -37,11 +37,23 @@ import { Canvas, useFrame, useThree } from "@react-three/fiber";
 
 import { THEME_CHANGE_EVENT } from "../data/themes";
 import markAsset from "../assets/marks/chimera-facet.webp";
+import wireAsset from "../assets/marks/chimera-wire.webp";
 
 /* Astro's Vite pipeline returns ImageMetadata for image imports; plain Vite
    returns a URL string. Accept either so the component survives both. */
-const MARK_URL: string =
-  typeof markAsset === "string" ? markAsset : (markAsset as { src: string }).src;
+function assetUrl(asset: unknown): string {
+  return typeof asset === "string" ? asset : (asset as { src: string }).src;
+}
+const MARK_URL: string = assetUrl(markAsset);
+/* ?mark=wire - the hologram-wireframe beast candidate (theme-decision
+   review, 2026-07-10). Same additive-plane pipeline as the crystal mark. */
+const WIRE_URL: string = assetUrl(wireAsset);
+
+type MarkArt = "facet" | "wire";
+function markArt(): MarkArt {
+  if (typeof window === "undefined") return "facet";
+  return new URLSearchParams(window.location.search).get("mark") === "wire" ? "wire" : "facet";
+}
 
 /* --------------------------------------------------------------- theme --- */
 
@@ -303,6 +315,9 @@ function ChimeraMark({ pointer }: { pointer: PointerRef }): ReactElement | null 
   const groupRef = useRef<THREE.Group>(null);
   const layerRefs = useRef<(THREE.Mesh | null)[]>([]);
   const [texture, setTexture] = useState<THREE.Texture | null>(null);
+  /* Plane height follows the art (crystal mark is square; the wireframe
+     beast is 3:2 landscape) - a square plane would stretch it. */
+  const [aspect, setAspect] = useState(1);
   const time = useRef(0);
 
   useEffect(() => {
@@ -316,9 +331,10 @@ function ChimeraMark({ pointer }: { pointer: PointerRef }): ReactElement | null 
       tex.colorSpace = THREE.SRGBColorSpace;
       tex.anisotropy = 4;
       time.current = 0; /* restart the clock: the reveal ramp times from texture arrival */
+      setAspect(keyed.height / keyed.width);
       setTexture(tex);
     };
-    img.src = MARK_URL;
+    img.src = markArt() === "wire" ? WIRE_URL : MARK_URL;
     return () => {
       disposed = true;
     };
@@ -368,7 +384,7 @@ function ChimeraMark({ pointer }: { pointer: PointerRef }): ReactElement | null 
           scale={layer.scale}
           renderOrder={10}
         >
-          <planeGeometry args={[MARK_SIZE, MARK_SIZE]} />
+          <planeGeometry args={[MARK_SIZE, MARK_SIZE * aspect]} />
           {/* Custom blending, not AdditiveBlending: RGB adds (ONE/ONE) but
               alpha writes ZERO/ONE — the canvas is alpha-composited over the
               DOM smoke layer, and plain additive still writes alpha≈1, which
