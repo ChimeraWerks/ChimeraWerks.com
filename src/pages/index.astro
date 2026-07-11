@@ -1,480 +1,1590 @@
 ---
 /**
- * The landing page — "the kinetic cut," promoted from direction slice C
- * after the 2026-07 review (slices A/B deleted; their token themes live on
- * in the theme picker).
- * One continuous world: the page-fixed helix (Hero3D mode="page") and the
- * smoke atmosphere are the scene; numbered chapters are camera stops. All
- * motion is GSAP-owned and scrubbed (scripts/kinetic.ts): lerped smooth
- * scroll, masked type reveals, an instant hero rise (the boot loader was
- * cut 2026-07), and a persistent HUD frame with a chapter counter.
+ * The landing page - the "wire" hologram-bench cut, promoted 2026-07-11
+ * (owner call; supersedes the kinetic cut). Dev sibling: /rebuild/wire.
+ * The wireframe chimera (myth subject)
+ * rendered as a live holographic projection (engineering medium): the beast
+ * materializes above an emitter ring while the page argues the product in
+ * four moments, none of them walls of text:
  *
- * 2026-07 restructure (the "flow cut", from the Linear/Vercel/Stripe
- * critique): content is instant, the hero pairs the category claim with the
- * Relay console as product proof, section headlines step down a register,
- * and scroll travel was roughly halved.
+ *   1. The failure mode - a wall of babysat terminals converging into one room.
+ *   2. Why native - Relay drives the real harnesses, never a reimplemented loop.
+ *   3. The engine - six harness dialects adapted into one room structure.
+ *   4. Beyond the console - the engine's real seams and what else plugs in.
  *
- * Reuses slice-arcane.css component chrome but none of its animated classes
- * (see the header of slice-kinetic.css for the boundary).
+ * Product claims verified against the Chimera-Relay repo (harness registry,
+ * adapter contract, DNA primitives, diagnostics) - not memory.
+ *
+ * Sibling of /rebuild/facet (both live on the preview alias for comparison;
+ * promotion is a separate decision). Reuses apex-motion + HeroShader smoke;
+ * own 3D scene (WireHero), own tokens (theme-wire.css).
  */
-import { Picture } from "astro:assets";
-import Base from "../layouts/Base.astro";
-import EcosystemCard from "../components/EcosystemCard.astro";
-import StatusDot from "../components/StatusDot.astro";
+import "../styles/fonts.css";
+import "../styles/theme-wire.css";
 import HeroShader from "../components/HeroShader.astro";
 import { ECOSYSTEM } from "../data/ecosystem";
-import type { ImageMetadata } from "astro";
-import chimeraPlate from "../assets/chimera-plate.png";
-import plateLion from "../assets/kinetic/plate-lion.png";
-import plateGoat from "../assets/kinetic/plate-goat.png";
-import plateSerpent from "../assets/kinetic/plate-serpent.png";
-import backdropRooms from "../assets/kinetic/backdrop-rooms.png";
-import backdropSignal from "../assets/kinetic/backdrop-signal.png";
-import emblemRelay from "../assets/kinetic/emblem-relay.png";
-import emblemDna from "../assets/kinetic/emblem-dna.png";
-import emblemLibrary from "../assets/kinetic/emblem-library.png";
-import emblemBrowser from "../assets/kinetic/emblem-browser.png";
-import emblemImagelab from "../assets/kinetic/emblem-imagelab.png";
-import emblemMore from "../assets/kinetic/emblem-more.png";
-import "../styles/slice-arcane.css";
-import "../styles/slice-kinetic.css";
+import markStatic from "../assets/marks/chimera-wire.webp";
 
-/* Engraved seals per werk; generated in the chimera-plate style (imagelab). */
-const EMBLEMS: Record<string, ImageMetadata> = {
-  relay: emblemRelay,
-  dna: emblemDna,
-  library: emblemLibrary,
-  browser: emblemBrowser,
-  imagelab: emblemImagelab,
-  more: emblemMore,
-};
+/* The six harness providers, straight from Relay's DEFAULT_HARNESS_REGISTRY
+   (src/server/harnessRegistry.ts). Transport wording matches the adapters. */
+const HARNESSES = [
+  { id: "codex", how: "the real codex app-server, JSON-RPC over stdio" },
+  { id: "claude-code", how: "the official Claude Agent SDK, stream-json fallback" },
+  { id: "opencode", how: "the opencode CLI, driven turn by turn" },
+  { id: "antigravity", how: "Google's agy CLI over ConPTY, resumed by uuid" },
+  { id: "hermes", how: "the Nous Hermes CLI, session id caught from stderr" },
+  { id: "local", how: "any OpenAI-compatible endpoint on your loopback" },
+];
 
-/* The three strands of the working chimera. The animals are quiet aliases:
-   lion=Claude, goat=Codex, serpent=Gemini — stated in the tags, never
-   belabored in the copy. */
-const GENOMES = [
+const REASONS = [
   {
-    plate: plateLion,
-    tag: "strand i · lion — claude · reasons & reviews",
-    alt: "Engraved lion head specimen plate — the Claude strand",
+    tag: "tuning",
+    h: "Models are tuned for their own tools",
+    p: "Every vendor trains its model against its own harness. A reimplemented agent loop fights that tuning on every turn; the native CLI rides it.",
   },
   {
-    plate: plateGoat,
-    tag: "strand ii · goat — codex · builds & ships",
-    alt: "Engraved goat head specimen plate — the Codex strand",
+    tag: "upstream",
+    h: "Upstream features land free",
+    p: "When Codex or Claude Code ships something new, Relay inherits it the day you update the CLI. There is nothing to re-port and no clone to catch up.",
   },
   {
-    plate: plateSerpent,
-    tag: "strand iii · serpent — gemini · scouts & sweeps",
-    alt: "Engraved coiled serpent specimen plate — the Gemini strand",
+    tag: "auth",
+    h: "Auth and quotas just work",
+    p: "Your existing sign-ins and subscriptions drive the fleet: OAuth sessions and provider quotas, not API keys pasted into an imitation.",
   },
 ];
 
-type Lane = {
-  name: string;
-  hue: number;
-  task: string;
-  pct: number;
-  active?: boolean;
-  caret?: boolean;
-};
-const LANES: Lane[] = [
-  { name: "oracle", hue: 6, task: "drafting the migration plan", pct: 82 },
-  { name: "mason", hue: 0, task: "implementing relay-core #214", pct: 64 },
-  { name: "warden", hue: 2, task: "adversarial review, pass two", pct: 47 },
-  { name: "courier", hue: 3, task: "syncing artifacts to the room", pct: 91 },
-  { name: "scribe", hue: 1, task: "writing the handoff", pct: 33, active: true, caret: true },
+/* The babysitting wall: each pane is one thing you are currently keeping
+   alive by hand. The dead pane is the argument. */
+const TERMS = [
+  {
+    title: "pty-0 · codex",
+    lines: ["▸ tool apply_patch src/retry.ts", "turn 12 · 48.2k tokens", "waiting on approval…", "▸ tool run_tests", "3 passed · 1 flaky"],
+  },
+  {
+    title: "pty-1 · claude -p",
+    lines: ["streaming…", "▸ Read ci/retry.spec.ts", "thinking (12s)", "▸ Edit ci/retry.spec.ts", "output truncated"],
+  },
+  {
+    title: "glue.sh",
+    lines: ["#!/bin/bash", "for a in codex claude; do", "  $a run …  # pray", "done", "wait; cat out-*.txt"],
+  },
+  {
+    title: "tail -f run.log",
+    lines: ["[07:41:02] agent 2 idle", "[07:41:09] retry 3/5", "[07:41:31] agent 2 idle", "[07:42:07] retry 4/5", "[07:44:55] agent 2 idle"],
+  },
+  { title: "pty-3 · hermes", dead: true, lines: [] },
+  {
+    title: "pty-4 · review",
+    lines: ["verdict pending…", "judge 1/3 returned", "judge 2/3 returned", "waiting on judge 3", "(window lost focus)"],
+  },
 ];
 
-const BEATS = [
+const LANES = [
+  { name: "oracle", task: "drafting the migration plan", pct: 82 },
+  { name: "mason", task: "implementing relay-core #214", pct: 64 },
+  { name: "warden", task: "adversarial review, pass two", pct: 47 },
+  { name: "courier", task: "syncing artifacts to the room", pct: 91 },
+  { name: "scribe", task: "writing the handoff", pct: 33, active: true },
+];
+
+/* The portability seams, matched to real engine surfaces (HTTP routes, the
+   dna-mcp tools, the chimera-dna CLI bin, the in-process DnaRuntime). */
+const SEAMS = [
   {
-    title: "One console, whole fleet",
-    problem:
-      "Every agent you add is another terminal to babysit, another transcript scrolling somewhere you are not looking.",
-    solution:
-      "Relay puts the fleet in shared rooms: personas, live transcripts, spawn controls. However many agents are running, you watch one console.",
+    sig: "POST /dna → 202 · GET /rooms/:id/events (SSE)",
+    h: "CI that judges itself",
+    p: "Your pipeline submits a judge-panel run on every pull request; three harnesses argue, one verdict lands back as a status check.",
   },
   {
-    title: "Orchestration you can diff",
-    problem:
-      "Judge panels, fusion runs, debates: in most shops that logic lives in glue scripts only the author can rerun.",
-    solution:
-      "Relay speaks Chimera DNA, a declarative run language. The whole orchestration becomes a document: readable, diffable, rerunnable on any harness.",
+    sig: "chimera-dna run bench.dna.js --args '…'",
+    h: "A cross-vendor eval farm",
+    p: "One prompt, six harnesses, best-of-N scoring. Nightly model bake-offs from a single cron line, results as a typed report.",
   },
   {
-    title: "Failures keep their trail",
-    problem:
-      "When an agent dies three hops down, most consoles hand you a normalized reason code and eat the stderr.",
-    solution:
-      "Relay keeps the raw trail: child stderr, RPC hops, exit codes, secrets redacted. The real error is one layer down, never gone.",
+    sig: "ChimeraDna · ChimeraDnaMonitor (MCP)",
+    h: "Any agent as conductor",
+    p: "Your own assistant launches and monitors fleet runs as ordinary tool calls, then reads the results back into its context.",
+  },
+  {
+    sig: "new DnaRuntime({ registry, emit })",
+    h: "Your dashboard, this engine",
+    p: "Embed the runtime in-process, subscribe to the event stream, and render a team wallboard exactly the way you want.",
   },
 ];
 ---
 
-<Base
-  title="Chimera Werks · Many agents, one beast"
-  description="Chimera Werks builds multi-agent tooling: Chimera Relay, DNA, Library, Browser, and Image Lab. Fleets of coding agents, run as one."
-  theme="arcane"
->
-  <!-- =============================================================== hud -->
-  <div class="k-frame" aria-hidden="true"></div>
-  <header class="k-hud-top">
-    <a class="k-brand" href="/">CW<i>.</i></a>
-    <nav class="k-hud-nav" aria-label="Chapters">
-      <a href="#workflow">workflow</a>
-      <a href="#werks">werks</a>
-      <a href="#relay">relay</a>
-      <a href="#contact">contact</a>
-    </nav>
-  </header>
-  <div class="k-rail" aria-hidden="true">
-    <span class="k-rail-glyph">+</span>
-    <span class="k-rail-track"><span id="k-rail-fill"></span></span>
-  </div>
-  <div class="k-ch" aria-hidden="true">
-    <span id="k-ch-num">001</span>
-    <span id="k-ch-name">the beast</span>
-  </div>
+<html lang="en" data-theme="wire">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="color-scheme" content="dark" />
+    <meta
+      name="description"
+      content="Chimera Werks builds multi-agent tooling. Chimera Relay drives the native Codex, Claude Code, and Hermes CLIs as one fleet, in shared rooms, with the trail intact."
+    />
+    <title>Chimera Werks · Run a fleet of coding agents as one</title>
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Chimera Werks" />
+    <meta property="og:title" content="Chimera Werks · Run a fleet of coding agents as one" />
+    <meta
+      property="og:description"
+      content="The console, the run language, and the instruments that let the native Codex, Claude, and local harnesses work in one room, with the trail intact."
+    />
+    <meta property="og:image" content={new URL(markStatic.src, Astro.site).href} />
+    <meta name="twitter:card" content="summary_large_image" />
+  </head>
+  <body>
+    <div class="progress" aria-hidden="true"><i id="apex-progress-fill"></i></div>
+    <div class="vignette" aria-hidden="true"></div>
 
-  <main>
-    <!-- ==================================================== ch 001 · hero -->
-    <section class="k-chapter k-hero grain" data-chapter="001" data-chapter-name="the beast">
-      <!-- Page-mode helix: the loader script mounts the canvas fixed on
-           <body>; the smoke atmosphere parks here before re-parenting. -->
-      <div id="hero-canvas-slot" data-hero3d="page" aria-hidden="true">
-        <HeroShader />
-      </div>
-      <script>
-        import "../scripts/hero-3d-loader";
-        import "../scripts/kinetic";
-      </script>
+    <header class="nav">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true"></span>
+        Chimera&nbsp;Werks
+      </a>
+      <nav class="nav-links" aria-label="Sections">
+        <a href="#problem">The problem</a>
+        <a href="#native">Why native</a>
+        <a href="#engine">The engine</a>
+        <a href="#werks">Werks</a>
+        <a class="nav-cta" href="#contact">Get in touch</a>
+      </nav>
+    </header>
 
-      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
-        <div class="grid items-center gap-14 lg:grid-cols-[1.08fr_1fr]">
-          <div>
-            <p class="k-kicker" data-k-hero-rise>chimera werks // multi-agent tooling</p>
-            <h1 class="k-display k-display-hero mt-6">
-              <span class="block" data-k-hero-split>Many agents.</span>
-              <span class="block" data-k-hero-split>One beast<span class="k-period">.</span></span>
+    <!-- Hologram beast + smoke: both fixed behind all content, reading the
+         wire tokens. The loader defers three.js past load (LCP). -->
+    <div id="hero-canvas-slot" aria-hidden="true">
+      <HeroShader />
+    </div>
+    <!-- Reduced-motion fallback: every canvas layer gates on the same media
+         query, so without this the brand identity is motion-gated. Also shown
+         when the 3D layer cannot render (html.facet-3d-off, the repo-wide
+         signal). -->
+    <img
+      class="static-mark"
+      src={markStatic.src}
+      alt=""
+      width={markStatic.width}
+      height={markStatic.height}
+      loading="lazy"
+      aria-hidden="true"
+    />
+    <script>
+      import "../scripts/wire-3d-loader";
+      import "../scripts/apex-motion";
+      import "../scripts/wire-motion";
+    </script>
+
+    <main>
+      <!-- hero -->
+      <section class="hero">
+        <div class="wrap">
+          <div class="hero-copy">
+            <p class="eyebrow" data-hero-rise>Multi-agent infrastructure</p>
+            <!-- Explicit 3-line lockup (block spans): text-wrap balance froze
+                 ragged under SplitText's line split, and apex-motion masks
+                 authored spans by hand. Block spans keep whitespace in the
+                 a11y tree. -->
+            <h1 class="h-display" data-hero-title>
+              <span>Run a fleet of</span>
+              <span>coding agents</span>
+              <span>as one.</span>
             </h1>
-            <p class="mt-8 max-w-md text-lg leading-relaxed text-ink-2" data-k-hero-rise>
-              Chimera Werks builds the stack that lets a fleet of coding agents work as one
-              animal: shared rooms, a declarative run language, and the instruments around them.
+            <p class="lede" data-hero-rise>
+              Chimera Relay drives the real Codex, Claude Code, and Hermes CLIs as one fleet:
+              shared rooms, a scriptable run language, and failures that keep their stderr.
             </p>
-            <div class="mt-8 flex flex-wrap items-center gap-4" data-k-hero-rise>
-              <a href="#relay" class="btn btn-primary">Meet Chimera Relay</a>
-              <a href="mailto:hello@chimerawerks.com" class="btn btn-ghost">hello@chimerawerks.com</a>
+            <div class="cta-row" data-hero-rise>
+              <a class="btn btn-primary" href="#problem">See the argument</a>
+              <a class="btn btn-ghost" href="mailto:hello@chimerawerks.com">hello@chimerawerks.com</a>
             </div>
-            <p class="k-microtag mt-10" data-k-hero-rise>
-              relay · dna · library · browser · image lab
+            <p class="runline" data-hero-rise>
+              <span>Drives</span> codex · claude-code · opencode · antigravity · hermes · local
             </p>
           </div>
-          <!-- The flagship IS the hero proof: Relay's room console, live-styled. -->
-          <div class="console-wrap k-hero-console" data-k-hero-rise aria-hidden="true">
-            <div class="console">
-              <div class="console-head">
-                <span>relay · room/night-werks</span>
-                <span class="pill">
-                  <StatusDot status="active" hue="var(--accent-2)" />
-                  live
-                </span>
-              </div>
-              <div>
-                {
-                  LANES.map((lane) => (
-                    <div
-                      class:list={["lane", "spine", lane.active && "lane-active"]}
-                      style={`--hue: var(--card-hue-${lane.hue})`}
-                    >
-                      <div class="lane-top">
-                        <span class="lane-name">{lane.name}</span>
-                        <span class="lane-pct">{lane.pct}%</span>
+        </div>
+      </section>
+
+      <!-- moment 1: the failure mode -->
+      <section id="problem" class="section section-roomy">
+        <div class="wrap">
+          <p class="tag" data-reveal>the failure mode</p>
+          <h2 class="h-statement" data-reveal-title>You already run a fleet. It runs you.</h2>
+          <p class="statement-sub" data-reveal>
+            Three agents means three terminals to babysit, a glue script only you can rerun,
+            and one error you never saw because a wrapper ate the stderr.
+          </p>
+
+          <!-- The wall: live-ish terminal panes, one dead. Scrolling through
+               the section converges them into the room console below
+               (wire-motion); reduced motion reads it as a static before/after. -->
+          <div class="term-wall" data-term-wall data-reveal aria-hidden="true">
+            {
+              TERMS.map((t) => (
+                <div class:list={["term", t.dead && "term-dead"]}>
+                  <div class="term-bar">
+                    <i class:list={["term-dot", t.dead && "term-dot-dead"]}></i>
+                    <span>{t.title}</span>
+                  </div>
+                  {t.dead ? (
+                    <div class="term-body term-body-dead">
+                      <span class="term-bad">exit 127 · reason: agent_timeout</span>
+                      <span class="term-gone">stderr: (swallowed)</span>
+                      <span class="term-cursor">▍</span>
+                    </div>
+                  ) : (
+                    <div class="term-body">
+                      <div class="term-scroll">
+                        {t.lines.map((l) => (
+                          <span>{l}</span>
+                        ))}
+                        {t.lines.map((l) => (
+                          <span>{l}</span>
+                        ))}
                       </div>
-                      <p class="lane-task">
-                        {lane.task}
-                        {lane.caret && <span class="caret"></span>}
-                      </p>
+                    </div>
+                  )}
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="room-after">
+            <p class="room-lead" data-reveal>
+              Relay collapses the wall into a room: every agent a lane, every lane live,
+              nothing running where you are not looking.
+            </p>
+            <div class="console panel" data-reveal aria-hidden="true">
+              <div class="console-bar">
+                <span class="dots"><i></i><i></i><i></i></span>
+                <span class="console-title">relay · room/night-werks</span>
+                <span class="console-live"><i></i> live</span>
+              </div>
+              <div class="console-body">
+                {
+                  LANES.map((l) => (
+                    <div class:list={["lane", l.active && "lane-active"]}>
+                      <div class="lane-top">
+                        <span class="lane-name">{l.name}</span>
+                        <span class="lane-pct">{l.pct}%</span>
+                      </div>
+                      <p class="lane-task">{l.task}</p>
                       <div class="gauge">
-                        <i style={`--w: ${lane.pct}%`}></i>
+                        <i style={`width:${l.pct}%`}></i>
                       </div>
                     </div>
                   ))
                 }
-              </div>
-              <div class="console-foot">
-                <span>judge panel · 3 verdicts in</span>
-                <span>dna: fusion-3</span>
+                <div class="console-foot">
+                  <span>judge panel · 3 verdicts in</span>
+                  <span>trail: intact</span>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
 
-    <!-- =============================================== ch 002 · statement -->
-    <section
-      id="workflow"
-      class="k-chapter k-statement"
-      data-chapter="002"
-      data-chapter-name="the workflow"
-    >
-      <div class="k-statement-stage grain">
-        <div class="k-statement-art" aria-hidden="true">
-          <Picture
-            src={chimeraPlate}
-            formats={["avif", "webp"]}
-            widths={[852, 1280, 1704]}
-            sizes="100vw"
-            loading="lazy"
-            decoding="async"
-            alt=""
-          />
-        </div>
-        <div class="k-statement-scrim" aria-hidden="true"></div>
-        <div class="relative z-10 mx-auto w-full max-w-6xl px-6 sm:px-14">
-          <p class="k-microtag">the workflow · one room · three minds</p>
-          <h2 class="k-display k-display-ch mt-6 max-w-4xl" data-k-split>
-            One drafts. One builds. One hunts the edge cases. Same room, same problem.
-          </h2>
-          <p class="mt-8 max-w-md leading-relaxed text-ink-2" data-k="rise">
-            That is the workflow: agents spawn into shared rooms, split the work by what each
-            does best, argue in judge panels, and hand off with the trail intact.
+      <!-- moment 2: why native -->
+      <section id="native" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>no reinvented wheels</p>
+          <h2 class="h-section" data-reveal-title>The native harness is the product. We drive it.</h2>
+          <p class="section-sub" data-reveal>
+            Relay does not reimplement an agent loop. It discovers the AI CLIs already signed in
+            on your machine and drives each one over its own best transport.
           </p>
-          <p class="mt-6 font-mono text-xs tracking-[0.1em] text-ink-3" data-k="rise">
-            lion · goat · serpent — three strands, one working body
-          </p>
-        </div>
-      </div>
-    </section>
 
-    <!-- The three genomes: one engraved plate per strand. Own flow block so
-         it never scrolls over the sticky statement stage above. -->
-    <div class="k-chapter relative pt-10 pb-20">
-      <div class="k-triptych mx-auto w-full max-w-6xl px-6 sm:px-14">
-        {
-          GENOMES.map((g) => (
-            <figure class="k-plate" data-k="rise">
-              <Picture
-                src={g.plate}
-                formats={["avif", "webp"]}
-                widths={[520, 1040]}
-                sizes="(min-width: 1024px) 30vw, 90vw"
-                loading="lazy"
-                decoding="async"
-                alt={g.alt}
-              />
-              <figcaption class="k-microtag mt-3">{g.tag}</figcaption>
-            </figure>
-          ))
+          <div class="roster panel" data-reveal>
+            {
+              HARNESSES.map((h) => (
+                <div class="roster-row">
+                  <span class="roster-id">{h.id}</span>
+                  <span class="roster-how">{h.how}</span>
+                </div>
+              ))
+            }
+          </div>
+
+          <div class="reasons">
+            {
+              REASONS.map((r) => (
+                <div class="reason" data-reveal>
+                  <p class="reason-tag">{r.tag}</p>
+                  <h3>{r.h}</h3>
+                  <p>{r.p}</p>
+                </div>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- moment 3: the adapter engine -->
+      <section id="engine" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>the adapter engine</p>
+          <h2 class="h-section" data-reveal-title>Six dialects in. One room out.</h2>
+          <p class="section-sub" data-reveal>
+            Every harness speaks its own protocol. The engine adapts each one into the structure
+            a room understands: turns, live events, artifacts, and a trail that survives.
+          </p>
+
+          <figure class="fig panel fig-pipeline" data-reveal>
+            <svg
+              viewBox="0 0 960 320"
+              role="img"
+              aria-label="Raw harness protocols flow through the adapter contract and come out as one room structure"
+            >
+              <!-- sources -->
+              <rect class="node" x="16" y="24" width="220" height="48" rx="10"></rect>
+              <text class="lbl" x="34" y="44">codex</text>
+              <text class="lbl-dim" x="34" y="62">json-rpc over stdio</text>
+              <rect class="node" x="16" y="92" width="220" height="48" rx="10"></rect>
+              <text class="lbl" x="34" y="112">claude-code</text>
+              <text class="lbl-dim" x="34" y="130">agent sdk events</text>
+              <rect class="node" x="16" y="160" width="220" height="48" rx="10"></rect>
+              <text class="lbl" x="34" y="180">antigravity</text>
+              <text class="lbl-dim" x="34" y="198">conpty + transcript.jsonl</text>
+              <rect class="node" x="16" y="228" width="220" height="48" rx="10"></rect>
+              <text class="lbl" x="34" y="248">hermes · local</text>
+              <text class="lbl-dim" x="34" y="266">stdout · http</text>
+              <!-- flows in -->
+              <path class="edge flow" d="M236 48 C 320 48, 320 128, 396 128"></path>
+              <path class="edge flow" d="M236 116 C 320 116, 320 144, 396 144"></path>
+              <path class="edge flow" d="M236 184 C 320 184, 320 160, 396 160"></path>
+              <path class="edge flow" d="M236 252 C 320 252, 320 176, 396 176"></path>
+              <!-- adapter -->
+              <rect class="node-hi" x="396" y="76" width="212" height="152" rx="12"></rect>
+              <text class="lbl-hi" x="502" y="102" text-anchor="middle">AgentRuntimeAdapter</text>
+              <text class="lbl-dim" x="502" y="130" text-anchor="middle">validate · startSession</text>
+              <text class="lbl-dim" x="502" y="152" text-anchor="middle">sendTurn · interrupt</text>
+              <text class="lbl-dim" x="502" y="174" text-anchor="middle">archive · dispose</text>
+              <text class="lbl-dim" x="502" y="204" text-anchor="middle">secrets redacted</text>
+              <!-- flows out -->
+              <path class="edge-2 flow" d="M608 120 C 680 120, 680 62, 744 62"></path>
+              <path class="edge-2 flow" d="M608 144 C 680 144, 680 128, 744 128"></path>
+              <path class="edge-2 flow" d="M608 168 C 680 168, 680 194, 744 194"></path>
+              <path class="edge-2 flow" d="M608 192 C 680 192, 680 260, 744 260"></path>
+              <!-- room structure -->
+              <rect class="node" x="744" y="38" width="200" height="48" rx="10"></rect>
+              <text class="lbl" x="762" y="66">transcript entries</text>
+              <rect class="node" x="744" y="104" width="200" height="48" rx="10"></rect>
+              <text class="lbl" x="762" y="132">live events (sse)</text>
+              <rect class="node" x="744" y="170" width="200" height="48" rx="10"></rect>
+              <text class="lbl" x="762" y="198">artifacts, by reference</text>
+              <rect class="node" x="744" y="236" width="200" height="48" rx="10"></rect>
+              <text class="lbl" x="762" y="264">usage + model detected</text>
+            </svg>
+            <figcaption>
+              One adapter contract per harness; the room never learns which dialect it heard
+            </figcaption>
+          </figure>
+
+          <div class="beats">
+            <div class="beat" data-reveal>
+              <div class="beat-copy panel">
+                <p class="beat-n">The run</p>
+                <h3>Orchestration you can diff</h3>
+                <p class="beat-bad">
+                  <span class="mk mk-bad">×</span>Judge panels, fusion, debates: in most shops that
+                  logic lives in glue scripts only the author can rerun.
+                </p>
+                <p class="beat-good">
+                  <span class="mk mk-good">→</span>In Chimera DNA the whole orchestration is a small
+                  script. Every agent call can target a different harness and model: readable,
+                  diffable, rerunnable.
+                </p>
+              </div>
+              <figure class="fig panel">
+                <div class="spec" aria-label="A Chimera DNA run script">
+                  <span class="spec-line"><span class="kw">const</span> fix = <span class="str">"Fix the flaky retry test"</span>;</span>
+                  <span class="spec-line"><span class="kw">const</span> panel = <span class="kw">await</span> parallel([</span>
+                  <span class="spec-line">&nbsp;&nbsp;() => agent(fix, &#123; harness: <span class="str">"codex"</span> &#125;),</span>
+                  <span class="spec-line">&nbsp;&nbsp;() => agent(fix, &#123; harness: <span class="str">"claude-code"</span>,</span>
+                  <span class="spec-line">&nbsp;&nbsp;&nbsp;&nbsp;persona: <span class="str">"warden"</span> &#125;),</span>
+                  <span class="spec-line">&nbsp;&nbsp;() => agent(fix, &#123; harness: <span class="str">"hermes"</span> &#125;),</span>
+                  <span class="spec-line">]);</span>
+                  <span class="spec-line"><span class="kw">const</span> verdict = <span class="kw">await</span> agent(judge(panel),</span>
+                  <span class="spec-line">&nbsp;&nbsp;&#123; harness: <span class="str">"claude-code"</span>, schema: VERDICT &#125;);</span>
+                </div>
+                <figcaption>Three harnesses argue, one judges: nine lines, no glue</figcaption>
+              </figure>
+            </div>
+
+            <div class="beat beat-rev" data-reveal>
+              <div class="beat-copy panel">
+                <p class="beat-n">The trail</p>
+                <h3>Failures keep their trail</h3>
+                <p class="beat-bad">
+                  <span class="mk mk-bad">×</span>When an agent dies three hops down, most consoles
+                  hand you a normalized reason code and eat the stderr.
+                </p>
+                <p class="beat-good">
+                  <span class="mk mk-good">→</span>Relay captures the raw error before it is
+                  normalized: child stderr, every RPC hop, exit codes, secrets redacted. The real
+                  error is one layer down, never gone.
+                </p>
+              </div>
+              <figure class="fig panel">
+                <svg
+                  viewBox="0 0 460 230"
+                  role="img"
+                  aria-label="A run timeline where the failing event expands into its preserved error trail"
+                >
+                  <line class="rule" x1="24" y1="52" x2="436" y2="52"></line>
+                  <circle class="dot" cx="70" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="70" y="32" text-anchor="middle">SPAWN</text>
+                  <circle class="dot" cx="178" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="178" y="32" text-anchor="middle">DISPATCH</text>
+                  <circle class="dot" cx="286" cy="52" r="3"></circle>
+                  <text class="lbl-dim" x="286" y="32" text-anchor="middle">STREAM</text>
+                  <circle class="bad-fill" cx="394" cy="52" r="4"></circle>
+                  <text class="bad-fill" x="394" y="32" text-anchor="middle">EXIT 127</text>
+                  <path class="bad-stroke" d="M394 56 L394 88 L330 88 L330 96"></path>
+                  <rect class="node" x="110" y="96" width="326" height="104" rx="10"></rect>
+                  <text class="lbl-dim" x="128" y="124">$ relay-diag run dna-4f2a</text>
+                  <text class="lbl" x="128" y="148">codex.spawn → exit 127</text>
+                  <text class="bad-fill" x="128" y="172">stderr: ENOENT ./harness (preserved)</text>
+                </svg>
+                <figcaption>The trail survives every hop</figcaption>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- moment 4: the portable engine -->
+      <section id="portable" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>beyond the console</p>
+          <h2 class="h-section" data-reveal-title>The console is a client. The engine does not care.</h2>
+          <p class="section-sub" data-reveal>
+            Relay's UI talks to the engine over the same surfaces you can: HTTP and SSE, MCP
+            tools, a CLI, or in-process. Point anything at it.
+          </p>
+
+          <div class="seams">
+            {
+              SEAMS.map((s) => (
+                <div class="seam panel" data-reveal>
+                  <code class="seam-sig">{s.sig}</code>
+                  <h3>{s.h}</h3>
+                  <p>{s.p}</p>
+                </div>
+              ))
+            }
+          </div>
+          <p class="seam-foot" data-reveal>
+            Versioned wire types on every response; the reference UI consumes the same client SDK
+            you would.
+          </p>
+        </div>
+      </section>
+
+      <!-- werks -->
+      <section id="werks" class="section">
+        <div class="wrap">
+          <p class="tag" data-reveal>the werks</p>
+          <h2 class="h-section" data-reveal-title>Five instruments, one bench.</h2>
+          <p class="section-sub" data-reveal>
+            Every tool ships from the same bench: shared rooms, shared identity, one console
+            across the fleet.
+          </p>
+          <div class="werk-grid">
+            {
+              ECOSYSTEM.map((app) => (
+                <article
+                  class:list={["werk", "panel", app.flagship && "werk-flagship", app.id === "more" && "werk-wide"]}
+                  style={`--hue: var(--card-hue-${app.hueIndex})`}
+                  data-reveal
+                >
+                  <div class="werk-top">
+                    <h3>{app.name}</h3>
+                    <span class:list={["status", app.status]}>
+                      <i></i>
+                      {app.status}
+                    </span>
+                  </div>
+                  <p class="werk-tag">{app.tagline}</p>
+                  <p class="werk-blurb">{app.blurb}</p>
+                </article>
+              ))
+            }
+          </div>
+        </div>
+      </section>
+
+      <!-- contact -->
+      <section id="contact" class="contact">
+        <div class="wrap">
+          <p class="tag" data-reveal>contact · a human answers</p>
+          <h2 class="h-section" data-reveal-title>Open a channel.</h2>
+          <a class="mail" href="mailto:hello@chimerawerks.com" data-reveal>hello@chimerawerks.com</a>
+          <div class="foot" data-reveal>
+            <span>© 2026 Chimera Werks</span>
+            <a href="/archive/v1/">Site archive: v1 (Chimera Studio era)</a>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <style>
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--ink-1);
+        font-family: var(--font-body);
+        -webkit-font-smoothing: antialiased;
+        line-height: 1.55;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      a:focus-visible,
+      .btn:focus-visible {
+        outline: 2px solid var(--accent-hi);
+        outline-offset: 3px;
+        border-radius: 2px;
+      }
+      main {
+        position: relative;
+        z-index: 1;
+      }
+      /* Keep in sync with WRAP_MAX in WireHero.tsx - the 3D subject anchors
+         to this column. */
+      .wrap {
+        max-width: min(1360px, 94vw);
+        margin: 0 auto;
+        padding: 0 clamp(20px, 4vw, 40px);
+      }
+
+      /* fixed atmosphere overlays */
+      .vignette {
+        position: fixed;
+        inset: 0;
+        /* z 1 (same as main, earlier in DOM): grades the 3D world but stays
+           under the content (facet scar). */
+        z-index: 1;
+        pointer-events: none;
+        background: var(--vignette);
+      }
+      .progress {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        z-index: 60;
+      }
+      .progress i {
+        display: block;
+        height: 100%;
+        transform: scaleX(0);
+        transform-origin: left;
+        background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      }
+
+      /* glass primitive */
+      .panel {
+        background: var(--panel-bg);
+        backdrop-filter: blur(var(--panel-blur)) saturate(1.3);
+        -webkit-backdrop-filter: blur(var(--panel-blur)) saturate(1.3);
+        border: 1px solid var(--panel-border);
+        border-radius: var(--panel-radius);
+        box-shadow: var(--panel-inner-hi), var(--panel-shadow);
+        transition:
+          border-color var(--dur-mid) var(--ease-spatial),
+          transform var(--dur-mid) var(--ease-spatial),
+          box-shadow var(--dur-mid) var(--ease-spatial);
+      }
+      .panel:hover {
+        border-color: var(--panel-border-hi);
+        box-shadow:
+          var(--panel-inner-hi),
+          var(--panel-shadow),
+          0 0 24px -4px color-mix(in srgb, var(--accent) 35%, transparent);
+      }
+
+      /* nav */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 50;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 15px clamp(20px, 4vw, 40px);
+        background: var(--panel-bg-solid);
+        backdrop-filter: blur(var(--panel-blur-nav)) saturate(1.3);
+        -webkit-backdrop-filter: blur(var(--panel-blur-nav)) saturate(1.3);
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .brand {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-display);
+        font-weight: 640;
+        letter-spacing: -0.01em;
+      }
+      /* The brand mark stays the faceted crystal gem (owner decision): the
+         hologram beast is the hero creature, not the logo. */
+      .brand-mark {
+        width: 13px;
+        height: 13px;
+        background: linear-gradient(135deg, var(--facet-violet), var(--accent), var(--accent-2));
+        clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+      }
+      .nav-links {
+        display: flex;
+        align-items: center;
+        gap: clamp(18px, 2.6vw, 32px);
+      }
+      /* Padding + negative margin: 44px-tall tap targets without moving the
+         rendered layout. */
+      .nav-links a {
+        font-size: 0.9rem;
+        color: var(--ink-2);
+        padding: 13px 4px;
+        margin: -13px -4px;
+        transition: color var(--dur-fast) ease;
+      }
+      .nav-links a:hover {
+        color: var(--ink-1);
+      }
+      .nav-cta {
+        padding: 8px 16px;
+        border: 1px solid var(--panel-border-hi);
+        border-radius: var(--radius-sm);
+        color: var(--ink-1) !important;
+        font-weight: 500;
+      }
+      .nav-cta:hover {
+        background: var(--accent-dim);
+      }
+      /* Narrow nav keeps the SECTION links (they're the only navigation) and
+         drops the CTA, which duplicates the hero button and contact section. */
+      @media (max-width: 700px) {
+        .nav-cta {
+          display: none;
         }
-      </div>
-    </div>
+        .nav-links {
+          gap: 12px;
+        }
+        .nav-links a {
+          font-size: 0.82rem;
+        }
+      }
 
-    <!-- =================================================== ch 003 · werks -->
-    <section
-      id="werks"
-      class="k-chapter k-section-pad grain"
-      data-chapter="003"
-      data-chapter-name="the werks"
-    >
-      <div class="mx-auto w-full max-w-6xl px-6 sm:px-14">
-        <p class="k-microtag">the werks · shared identity system</p>
-        <h2 class="k-display k-display-sub mt-6" data-k-split>Every head of the beast.</h2>
-        <p class="mt-6 max-w-prose text-ink-2" data-k="rise">
-          Every tool ships from the same bench: shared hues, shared statuses, shared rooms
-          across the fleet.
-        </p>
-        <div class="mt-10 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {
-            ECOSYSTEM.map((app) => (
-              <div
-                class:list={[
-                  app.flagship && "sm:col-span-2",
-                  app.id === "more" && "sm:col-span-2 lg:col-span-3",
-                ]}
-                data-k="rise"
-              >
-                <EcosystemCard app={app} emblem={EMBLEMS[app.id]} />
-              </div>
-            ))
-          }
-        </div>
-      </div>
-    </section>
+      /* Static brand fallback: reduced-motion + any 3D failure path. The wire
+         art ships on near-black; screen blending keys the plate out over the
+         smoke (repo scar: without it the img prints its bounding rectangle). */
+      .static-mark {
+        display: none;
+        position: fixed;
+        right: -4vw;
+        top: 50%;
+        transform: translateY(-52%);
+        width: min(52vw, 780px);
+        height: auto;
+        opacity: 0.5;
+        z-index: 0;
+        pointer-events: none;
+        mix-blend-mode: screen;
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .static-mark {
+          display: block;
+        }
+      }
+      :global(html.facet-3d-off) .static-mark {
+        display: block;
+      }
 
-    <!-- =================================================== ch 004 · relay -->
-    <section
-      id="relay"
-      class="k-chapter k-section-pad grain"
-      data-chapter="004"
-      data-chapter-name="the flagship"
-    >
-      <div class="k-chapter-bg" aria-hidden="true">
-        <Picture
-          src={backdropRooms}
-          formats={["avif", "webp"]}
-          widths={[1280, 1920]}
-          sizes="100vw"
-          loading="lazy"
-          decoding="async"
-          alt=""
-        />
-      </div>
-      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
-        <p class="k-microtag">flagship werk · chimera relay</p>
-        <h2 class="k-display k-display-sub mt-6" data-k-split>Where the swarm reports for duty.</h2>
+      /* type */
+      /* One tracked-caps kicker on the page: the hero eyebrow (approved brand
+         system). Section tags speak the mono instrument voice instead. */
+      .eyebrow {
+        margin: 0;
+        font-family: var(--font-display);
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent-hi);
+      }
+      .tag {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        letter-spacing: 0.02em;
+        color: var(--ink-3);
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .tag::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 999px;
+        background: var(--accent);
+        box-shadow: 0 0 8px var(--accent);
+      }
+      .h-display {
+        margin: 22px 0 0;
+        font-family: var(--font-display);
+        font-weight: 680;
+        font-size: clamp(2.6rem, 6.4vw, 5.2rem);
+        line-height: 1.02;
+        letter-spacing: -0.038em;
+      }
+      .h-display span {
+        display: block;
+      }
+      .h-statement {
+        margin: 20px 0 0;
+        max-width: 18ch;
+        font-family: var(--font-display);
+        font-weight: 680;
+        font-size: clamp(2.2rem, 5.2vw, 4rem);
+        line-height: 1.05;
+        letter-spacing: -0.035em;
+      }
+      .h-section {
+        margin: 14px 0 0;
+        font-family: var(--font-display);
+        font-weight: 660;
+        font-size: clamp(1.9rem, 3.8vw, 3rem);
+        line-height: 1.06;
+        letter-spacing: -0.03em;
+      }
 
-        <p class="mt-8 max-w-2xl text-lg leading-relaxed text-ink-2" data-k="rise">
-          Rooms of agents — Codex, Claude, Hermes, local models — run, argue, and get judged
-          behind one pane of glass. Three werks below, one per head.
-        </p>
+      /* hero */
+      .hero {
+        min-height: 100dvh;
+        display: flex;
+        align-items: center;
+        padding: 128px 0 80px;
+      }
+      /* The wrap is a flex item here: without an explicit width it
+         shrink-wraps and floats centered (facet scar). */
+      .hero .wrap {
+        width: 100%;
+      }
+      .hero-copy {
+        position: relative;
+        max-width: 680px;
+      }
+      /* Soft legibility pocket: anchored left, fading right, so the copy
+         always reads over the hologram while the beast stays clear. */
+      .hero-copy::before {
+        content: "";
+        position: absolute;
+        inset: -72px -150px -64px -150px;
+        z-index: -1;
+        pointer-events: none;
+        background: radial-gradient(
+          50% 50% at 50% 50%,
+          color-mix(in srgb, var(--bg) 74%, transparent) 0%,
+          color-mix(in srgb, var(--bg) 46%, transparent) 55%,
+          transparent 100%
+        );
+      }
+      .lede {
+        margin: 26px 0 0;
+        max-width: 44ch;
+        font-size: clamp(1.05rem, 1.5vw, 1.25rem);
+        color: var(--ink-2);
+      }
+      .cta-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 14px;
+        margin-top: 34px;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        min-height: 48px;
+        padding: 12px 24px;
+        border-radius: var(--radius-sm);
+        font-size: 0.95rem;
+        font-weight: 540;
+        transition:
+          transform var(--dur-fast) var(--ease-spatial),
+          background var(--dur-fast) ease,
+          border-color var(--dur-fast) ease;
+      }
+      .btn:active {
+        transform: scale(0.97);
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: var(--bg);
+        font-weight: 600;
+        box-shadow: 0 0 24px -6px color-mix(in srgb, var(--accent) 60%, transparent);
+      }
+      .btn-primary:hover {
+        background: var(--accent-hi);
+      }
+      .btn-ghost {
+        border: 1px solid var(--panel-border-hi);
+        color: var(--ink-1);
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        background: var(--panel-bg);
+        backdrop-filter: blur(var(--panel-blur));
+        -webkit-backdrop-filter: blur(var(--panel-blur));
+      }
+      .btn-ghost:hover {
+        border-color: var(--accent);
+      }
+      .runline {
+        margin: 40px 0 0;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.01em;
+        color: var(--ink-3);
+      }
+      .runline span {
+        color: var(--ink-2);
+        text-transform: uppercase;
+        letter-spacing: 0.14em;
+        margin-right: 6px;
+      }
 
-        <div class="mt-20 flex flex-col gap-20">
-          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-            <div class="beat" data-k="rise">
-              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">01</p>
-              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[0].title}</h3>
-              <p class="beat-problem mt-5">
-                <span class="mark mark-bad">×</span>
-                <span>{BEATS[0].problem}</span>
-              </p>
-              <p class="beat-solution">
-                <span class="mark mark-good">→</span>
-                <span>{BEATS[0].solution}</span>
-              </p>
-            </div>
-            <figure class="af-fig min-w-0" data-k="drift">
-              <svg
-                viewBox="0 0 460 280"
-                role="img"
-                aria-label="Schematic: four agent harnesses fanning into a single Relay room"
-              >
-                <rect class="af-node" x="24" y="22" width="116" height="40" rx="10"></rect>
-                <text class="af-label" x="82" y="46" text-anchor="middle">codex</text>
-                <rect class="af-node" x="24" y="88" width="116" height="40" rx="10"></rect>
-                <text class="af-label" x="82" y="112" text-anchor="middle">claude</text>
-                <rect class="af-node" x="24" y="154" width="116" height="40" rx="10"></rect>
-                <text class="af-label" x="82" y="178" text-anchor="middle">hermes</text>
-                <rect class="af-node" x="24" y="220" width="116" height="40" rx="10"></rect>
-                <text class="af-label" x="82" y="244" text-anchor="middle">local</text>
-                <path class="af-edge" d="M140 42 C 224 42, 224 108, 308 108"></path>
-                <path class="af-edge" d="M140 108 C 224 108, 224 128, 308 128"></path>
-                <path class="af-edge" d="M140 174 C 224 174, 224 152, 308 152"></path>
-                <path class="af-edge" d="M140 240 C 224 240, 224 172, 308 172"></path>
-                <rect class="af-node-hi" x="308" y="86" width="128" height="108" rx="12"></rect>
-                <text class="af-label-hi" x="372" y="106" text-anchor="middle">relay · room a</text>
-                <line class="af-rule" x1="324" y1="126" x2="420" y2="126"></line>
-                <line class="af-rule" x1="324" y1="144" x2="404" y2="144"></line>
-                <line class="af-rule" x1="324" y1="162" x2="414" y2="162"></line>
-                <line class="af-rule" x1="324" y1="180" x2="392" y2="180"></line>
-              </svg>
-              <figcaption class="af-figcap">fig. 1 · fan-in: four strands, one room</figcaption>
-            </figure>
-          </div>
+      /* sections */
+      .section {
+        padding: clamp(64px, 9vh, 120px) 0;
+      }
+      .section-roomy {
+        padding: clamp(88px, 13vh, 170px) 0;
+      }
+      .statement-sub {
+        margin: 28px 0 0;
+        max-width: 52ch;
+        font-size: clamp(1.02rem, 1.4vw, 1.15rem);
+        color: var(--ink-2);
+      }
+      .section-sub {
+        margin: 18px 0 0;
+        max-width: 54ch;
+        color: var(--ink-2);
+      }
 
-          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-            <div class="beat lg:order-2" data-k="rise">
-              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">02</p>
-              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[1].title}</h3>
-              <p class="beat-problem mt-5">
-                <span class="mark mark-bad">×</span>
-                <span>{BEATS[1].problem}</span>
-              </p>
-              <p class="beat-solution">
-                <span class="mark mark-good">→</span>
-                <span>{BEATS[1].solution}</span>
-              </p>
-            </div>
-            <figure class="af-fig min-w-0 lg:order-1" data-k="drift">
-              <div class="af-spec overflow-x-auto">
-                <span class="af-line"><span><span class="text-ink-1">run</span> "triage-panel" &#123;</span></span>
-                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">pattern</span><span class="af-val">judge-panel</span></span></span>
-                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">candidates</span><span class="af-val">3 × codex</span></span></span>
-                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">judge</span><span class="af-val">1 × claude</span></span></span>
-                <span class="af-line"><span>&nbsp;&nbsp;<span class="af-key">output</span><span class="af-val">verdict → room</span></span></span>
-                <span class="af-line"><span>&#125;</span></span>
-              </div>
-              <figcaption class="af-figcap">
-                fig. 2 · a dna run: the whole orchestration in six lines
-              </figcaption>
-            </figure>
-          </div>
+      /* the failure-mode wall */
+      .term-wall {
+        margin-top: clamp(40px, 5vw, 64px);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+      }
+      @media (max-width: 860px) {
+        .term-wall {
+          grid-template-columns: repeat(2, 1fr);
+        }
+      }
+      @media (max-width: 540px) {
+        .term-wall {
+          grid-template-columns: 1fr;
+        }
+      }
+      .term {
+        border: 1px solid var(--line-1);
+        border-radius: 10px;
+        background: color-mix(in srgb, var(--surface-1) 82%, transparent);
+        overflow: hidden;
+        will-change: transform, opacity;
+      }
+      .term-bar {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        border-bottom: 1px solid var(--line-1);
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        color: var(--ink-3);
+        background: color-mix(in srgb, var(--surface-2) 70%, transparent);
+      }
+      .term-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--warn);
+        opacity: 0.8;
+      }
+      .term-dot-dead {
+        background: var(--bad);
+        box-shadow: 0 0 8px var(--bad);
+      }
+      .term-body {
+        height: 118px;
+        overflow: hidden;
+        padding: 10px 12px;
+        font-family: var(--font-mono);
+        font-size: 0.72rem;
+        line-height: 1.75;
+        color: var(--ink-3);
+        /* Fade the scroll loop's seam at both edges. */
+        mask-image: linear-gradient(180deg, transparent 0, #000 12px, #000 calc(100% - 12px), transparent 100%);
+      }
+      .term-scroll {
+        display: flex;
+        flex-direction: column;
+        animation: term-scroll 11s linear infinite;
+      }
+      /* Desync the panes so the wall reads as independent processes. */
+      .term:nth-child(2) .term-scroll {
+        animation-duration: 9s;
+      }
+      .term:nth-child(3) .term-scroll {
+        animation-duration: 13s;
+      }
+      .term:nth-child(4) .term-scroll {
+        animation-duration: 8s;
+      }
+      .term:nth-child(6) .term-scroll {
+        animation-duration: 10s;
+      }
+      .term-scroll span {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      @keyframes term-scroll {
+        to {
+          transform: translateY(-50%);
+        }
+      }
+      .term-dead {
+        border-color: color-mix(in srgb, var(--bad) 45%, var(--line-1));
+      }
+      .term-body-dead {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
+      }
+      .term-bad {
+        color: var(--bad);
+      }
+      .term-gone {
+        color: var(--ink-3);
+        text-decoration: line-through;
+        text-decoration-color: color-mix(in srgb, var(--bad) 60%, transparent);
+      }
+      .term-cursor {
+        color: var(--bad);
+        animation: cursor-blink 1.1s steps(1) infinite;
+      }
+      @keyframes cursor-blink {
+        50% {
+          opacity: 0;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .term-scroll {
+          animation: none;
+        }
+        .term-cursor {
+          animation: none;
+        }
+      }
 
-          <div class="grid items-center gap-8 lg:grid-cols-2 lg:gap-14">
-            <div class="beat" data-k="rise">
-              <p class="font-mono text-xs tracking-[0.18em] text-ink-3">03</p>
-              <h3 class="mt-2 font-display text-2xl font-semibold text-ink-1">{BEATS[2].title}</h3>
-              <p class="beat-problem mt-5">
-                <span class="mark mark-bad">×</span>
-                <span>{BEATS[2].problem}</span>
-              </p>
-              <p class="beat-solution">
-                <span class="mark mark-good">→</span>
-                <span>{BEATS[2].solution}</span>
-              </p>
-            </div>
-            <figure class="af-fig min-w-0" data-k="drift">
-              <svg
-                viewBox="0 0 460 230"
-                role="img"
-                aria-label="Schematic: a run timeline where the failing event expands into its preserved error trail"
-              >
-                <line class="af-rule" x1="24" y1="52" x2="436" y2="52"></line>
-                <circle class="af-dot" cx="70" cy="52" r="3"></circle>
-                <text class="af-label-dim" x="70" y="32" text-anchor="middle">SPAWN</text>
-                <circle class="af-dot" cx="178" cy="52" r="3"></circle>
-                <text class="af-label-dim" x="178" y="32" text-anchor="middle">DISPATCH</text>
-                <circle class="af-dot" cx="286" cy="52" r="3"></circle>
-                <text class="af-label-dim" x="286" y="32" text-anchor="middle">STREAM</text>
-                <circle class="af-bad-fill" cx="394" cy="52" r="4"></circle>
-                <text class="af-bad-fill" x="394" y="32" text-anchor="middle">EXIT 127</text>
-                <path class="af-bad-stroke" d="M394 56 L394 88 L330 88 L330 96"></path>
-                <rect class="af-node" x="110" y="96" width="326" height="104" rx="10"></rect>
-                <text class="af-label-dim" x="128" y="124">$ relay-diag last --room a</text>
-                <text class="af-label" x="128" y="148">codex.spawn → exit 127</text>
-                <text class="af-bad-fill" x="128" y="172">stderr: ENOENT ./harness (preserved)</text>
-              </svg>
-              <figcaption class="af-figcap">fig. 3 · the trail survives every hop</figcaption>
-            </figure>
-          </div>
-        </div>
-      </div>
-    </section>
+      .room-after {
+        margin-top: clamp(48px, 7vw, 88px);
+        display: grid;
+        grid-template-columns: 0.9fr 1.1fr;
+        gap: clamp(28px, 4vw, 56px);
+        align-items: center;
+      }
+      @media (max-width: 900px) {
+        .room-after {
+          grid-template-columns: 1fr;
+        }
+      }
+      .room-lead {
+        margin: 0;
+        max-width: 40ch;
+        font-size: clamp(1.05rem, 1.5vw, 1.2rem);
+        color: var(--ink-1);
+        font-weight: 520;
+      }
 
-    <!-- ================================================= ch 005 · contact -->
-    <section
-      id="contact"
-      class="k-chapter k-section-pad grain"
-      data-chapter="005"
-      data-chapter-name="open a channel"
-    >
-      <div class="k-chapter-bg" aria-hidden="true">
-        <Picture
-          src={backdropSignal}
-          formats={["avif", "webp"]}
-          widths={[1280, 1920]}
-          sizes="100vw"
-          loading="lazy"
-          decoding="async"
-          alt=""
-        />
-      </div>
-      <div class="relative mx-auto w-full max-w-6xl px-6 sm:px-14">
-        <p class="k-microtag">contact · one inbox, a human answers</p>
-        <h2 class="k-display k-display-sub mt-6" data-k-split>Open a channel.</h2>
-        <p class="mt-10" data-k="rise">
-          <a href="mailto:hello@chimerawerks.com" class="k-contact-mail">hello@chimerawerks.com</a>
-        </p>
-        <div class="mt-16 flex flex-wrap items-center justify-between gap-6" data-k="rise">
-          <span class="text-xs text-ink-3">© 2026 Chimera Werks</span>
-          <a
-            href="/archive/v1/"
-            class="font-mono text-xs text-ink-2 underline decoration-line-2 underline-offset-4 transition-colors hover:text-ink-1"
-          >
-            Site archive: v1 (Chimera Studio era)
-          </a>
-        </div>
-      </div>
-    </section>
-  </main>
-</Base>
+      /* console (the "after") */
+      .console {
+        overflow: hidden;
+        transform: perspective(1400px) rotateY(-6deg);
+        transform-origin: right center;
+      }
+      .console-bar {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        padding: 13px 18px;
+        border-bottom: 1px solid var(--panel-border);
+        background: var(--panel-fill);
+      }
+      .dots {
+        display: inline-flex;
+        gap: 7px;
+      }
+      .dots i {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: var(--line-2);
+      }
+      .console-title {
+        font-family: var(--font-mono);
+        font-size: 0.8rem;
+        color: var(--ink-3);
+      }
+      .console-live {
+        margin-left: auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--good);
+      }
+      .console-live i {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        background: var(--good);
+        box-shadow: 0 0 8px var(--good);
+        animation: live-pulse 2.4s ease-in-out infinite;
+      }
+      /* The console argues "live", so it breathes. State cues, not
+         decoration; both gate off under reduced motion. */
+      @keyframes live-pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .console-body {
+        padding: 8px 18px 16px;
+      }
+      .lane {
+        padding: 13px 0;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .lane-top {
+        display: flex;
+        align-items: baseline;
+        justify-content: space-between;
+      }
+      .lane-name {
+        font-family: var(--font-mono);
+        font-size: 0.85rem;
+        font-weight: 600;
+      }
+      .lane-active .lane-name {
+        color: var(--accent-hi);
+      }
+      .lane-pct {
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-3);
+      }
+      .lane-task {
+        margin: 4px 0 10px;
+        font-size: 0.88rem;
+        color: var(--ink-2);
+      }
+      .gauge {
+        height: 4px;
+        border-radius: 999px;
+        background: var(--panel-fill);
+        overflow: hidden;
+      }
+      .gauge i {
+        display: block;
+        height: 100%;
+        border-radius: 999px;
+        background: var(--accent);
+      }
+      .lane-active .gauge i {
+        box-shadow: 0 0 10px var(--accent);
+        position: relative;
+        overflow: hidden;
+      }
+      .lane-active .gauge i::after {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          color-mix(in srgb, var(--emissive-core) 45%, transparent),
+          transparent
+        );
+        transform: translateX(-100%);
+        animation: gauge-sweep 3s var(--ease-spatial) infinite;
+      }
+      @keyframes gauge-sweep {
+        to {
+          transform: translateX(100%);
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .console-live i {
+          animation: none;
+        }
+        .lane-active .gauge i::after {
+          animation: none;
+          display: none;
+        }
+      }
+      .lane:not(.lane-active) .gauge i {
+        background: color-mix(in srgb, var(--accent) 55%, var(--line-2));
+      }
+      .console-foot {
+        display: flex;
+        justify-content: space-between;
+        padding-top: 15px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+      }
+
+      /* harness roster: an instrument list, not a card grid */
+      .roster {
+        margin-top: 44px;
+        padding: 8px 26px;
+      }
+      .roster-row {
+        display: grid;
+        grid-template-columns: 170px 1fr;
+        gap: 18px;
+        align-items: baseline;
+        padding: 14px 0;
+        border-bottom: 1px solid var(--panel-border);
+      }
+      .roster-row:last-child {
+        border-bottom: 0;
+      }
+      .roster-id {
+        font-family: var(--font-mono);
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--accent-2-hi);
+      }
+      .roster-how {
+        font-size: 0.92rem;
+        color: var(--ink-2);
+      }
+      @media (max-width: 640px) {
+        .roster-row {
+          grid-template-columns: 1fr;
+          gap: 2px;
+        }
+      }
+
+      .reasons {
+        margin-top: clamp(40px, 5vw, 64px);
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: clamp(24px, 4vw, 56px);
+      }
+      @media (max-width: 860px) {
+        .reasons {
+          grid-template-columns: 1fr;
+        }
+      }
+      .reason-tag {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        color: var(--accent-hi);
+      }
+      .reason h3 {
+        margin: 10px 0 12px;
+        font-family: var(--font-display);
+        font-size: clamp(1.2rem, 1.8vw, 1.45rem);
+        font-weight: 620;
+        letter-spacing: -0.02em;
+      }
+      .reason p:last-child {
+        margin: 0;
+        font-size: 0.95rem;
+        color: var(--ink-2);
+        max-width: 42ch;
+      }
+
+      /* pipeline figure */
+      .fig-pipeline {
+        margin-top: 44px;
+      }
+      .fig {
+        margin: 0;
+        padding: 24px;
+      }
+      .fig svg {
+        display: block;
+        width: 100%;
+        height: auto;
+      }
+      .fig figcaption {
+        margin-top: 16px;
+        font-family: var(--font-mono);
+        font-size: 0.75rem;
+        letter-spacing: 0.01em;
+        color: var(--ink-3);
+      }
+      .fig text {
+        font-family: var(--font-mono);
+        font-size: 13px;
+        letter-spacing: 0.4px;
+      }
+      .fig .node {
+        fill: var(--surface-2);
+        stroke: var(--line-2);
+      }
+      .fig .node-hi {
+        fill: var(--surface-2);
+        stroke: color-mix(in srgb, var(--accent) 75%, var(--line-2));
+      }
+      .fig .rule {
+        stroke: var(--line-2);
+      }
+      .fig .edge {
+        fill: none;
+        stroke: color-mix(in srgb, var(--accent) 85%, transparent);
+        stroke-width: 1.25;
+      }
+      .fig .edge-2 {
+        fill: none;
+        stroke: color-mix(in srgb, var(--accent-2) 85%, transparent);
+        stroke-width: 1.25;
+      }
+      /* Data visibly flowing along the pipeline; still edges under reduced
+         motion carry the same diagram. */
+      .fig .flow {
+        stroke-dasharray: 7 11;
+        animation: flow-dash 1.4s linear infinite;
+      }
+      @keyframes flow-dash {
+        to {
+          stroke-dashoffset: -18;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .fig .flow {
+          animation: none;
+        }
+      }
+      .fig .dot {
+        fill: var(--accent-2);
+      }
+      .fig .lbl {
+        fill: var(--ink-1);
+      }
+      .fig .lbl-dim {
+        fill: var(--ink-3);
+      }
+      .fig .lbl-hi {
+        fill: var(--accent-hi);
+      }
+      .fig .bad-fill {
+        fill: var(--bad);
+      }
+      .fig .bad-stroke {
+        fill: none;
+        stroke: var(--bad);
+        stroke-width: 1.25;
+      }
+
+      /* beats */
+      .beats {
+        margin-top: clamp(56px, 8vw, 96px);
+        display: flex;
+        flex-direction: column;
+        gap: clamp(40px, 6vw, 72px);
+      }
+      .beat {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: clamp(24px, 4vw, 48px);
+        align-items: center;
+      }
+      .beat-copy {
+        padding: 26px 28px;
+      }
+      .beat-n {
+        margin: 0;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.02em;
+        color: var(--accent-hi);
+      }
+      .beat-copy h3 {
+        margin: 10px 0 18px;
+        font-family: var(--font-display);
+        font-size: clamp(1.35rem, 2.2vw, 1.7rem);
+        font-weight: 620;
+        letter-spacing: -0.02em;
+      }
+      .beat-bad,
+      .beat-good {
+        display: flex;
+        gap: 12px;
+        margin: 0;
+        font-size: 0.96rem;
+        line-height: 1.55;
+      }
+      .beat-bad {
+        color: var(--ink-3);
+        margin-bottom: 12px;
+      }
+      .beat-good {
+        color: var(--ink-1);
+      }
+      .mk {
+        flex: none;
+        font-family: var(--font-mono);
+        font-weight: 700;
+      }
+      .mk-bad {
+        color: var(--bad);
+      }
+      .mk-good {
+        color: var(--accent-2);
+      }
+      .beat-rev .beat-copy {
+        order: 2;
+      }
+      @media (max-width: 820px) {
+        .beat {
+          grid-template-columns: 1fr;
+        }
+        .beat-rev .beat-copy {
+          order: 0;
+        }
+      }
+      .spec {
+        font-family: var(--font-mono);
+        font-size: 0.84rem;
+        line-height: 1.85;
+        color: var(--ink-2);
+        display: flex;
+        flex-direction: column;
+        overflow-x: auto;
+      }
+      .spec .kw {
+        color: var(--accent-hi);
+      }
+      .spec .str {
+        color: var(--accent-2);
+      }
+
+      /* portability seams */
+      .seams {
+        margin-top: 44px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+      }
+      @media (max-width: 860px) {
+        .seams {
+          grid-template-columns: 1fr;
+        }
+      }
+      .seam {
+        padding: 24px 26px;
+      }
+      .seam-sig {
+        display: block;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        letter-spacing: 0.01em;
+        color: var(--accent-2-hi);
+        padding-bottom: 14px;
+        border-bottom: 1px solid var(--panel-border);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .seam h3 {
+        margin: 16px 0 8px;
+        font-family: var(--font-display);
+        font-size: 1.18rem;
+        font-weight: 620;
+        letter-spacing: -0.01em;
+      }
+      .seam p {
+        margin: 0;
+        font-size: 0.92rem;
+        color: var(--ink-2);
+        max-width: 52ch;
+      }
+      .seam-foot {
+        margin: 24px 0 0;
+        font-family: var(--font-mono);
+        font-size: 0.78rem;
+        color: var(--ink-3);
+        max-width: 62ch;
+      }
+
+      /* werk slabs */
+      .werk-grid {
+        margin-top: 44px;
+        display: grid;
+        gap: 16px;
+        grid-template-columns: repeat(3, 1fr);
+      }
+      .werk {
+        position: relative;
+        padding: 26px;
+        overflow: hidden;
+      }
+      .werk:hover {
+        transform: translateY(-3px);
+        border-color: color-mix(in srgb, var(--hue, var(--accent)) 40%, var(--panel-border));
+      }
+      .werk-flagship {
+        grid-column: span 2;
+      }
+      /* Quieter teaser row via a dimmer glass fill, not element opacity:
+         opacity dragged the ink under the 4.5:1 AA floor. */
+      .werk-wide {
+        grid-column: 1 / -1;
+        background: var(--panel-fill);
+      }
+      .werk-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .werk-top h3 {
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-family: var(--font-display);
+        font-size: 1.18rem;
+        font-weight: 620;
+        letter-spacing: -0.01em;
+      }
+      /* Per-card hue lives in a faceted gem (the brand-mark pentagon), not a
+         colored left spine (the AI card template, banned). */
+      .werk-top h3::before {
+        content: "";
+        flex: none;
+        width: 11px;
+        height: 11px;
+        background: var(--hue, var(--accent));
+        clip-path: polygon(50% 0, 100% 38%, 82% 100%, 18% 100%, 0 38%);
+        transition: filter var(--dur-mid) var(--ease-spatial);
+      }
+      .werk:hover .werk-top h3::before {
+        filter: drop-shadow(0 0 6px var(--hue, var(--accent))) brightness(1.25);
+      }
+      .status {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-family: var(--font-mono);
+        font-size: 0.7rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--ink-3);
+        white-space: nowrap;
+      }
+      .status i {
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+      .status.active i {
+        background: var(--good);
+        box-shadow: 0 0 8px var(--good);
+      }
+      .status.incubating i {
+        background: var(--warn);
+      }
+      .werk-tag {
+        margin: 12px 0 0;
+        font-size: 0.9rem;
+        color: var(--ink-1);
+        font-weight: 520;
+      }
+      .werk-blurb {
+        margin: 10px 0 0;
+        font-size: 0.92rem;
+        color: var(--ink-2);
+        max-width: 62ch;
+      }
+      @media (max-width: 860px) {
+        .werk-grid {
+          grid-template-columns: 1fr;
+        }
+        .werk-flagship {
+          grid-column: auto;
+        }
+      }
+
+      /* contact */
+      .contact {
+        padding: clamp(72px, 10vh, 140px) 0 48px;
+      }
+      .mail {
+        display: inline-block;
+        margin-top: 20px;
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 4.4vw, 3rem);
+        font-weight: 660;
+        letter-spacing: -0.03em;
+        border-bottom: 2px solid var(--accent);
+        transition: color var(--dur-mid) ease;
+      }
+      .mail:hover {
+        color: var(--accent-hi);
+      }
+      .foot {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        gap: 12px;
+        margin-top: 72px;
+        padding-top: 24px;
+        border-top: 1px solid var(--panel-border);
+        font-size: 0.82rem;
+        color: var(--ink-3);
+      }
+      .foot a {
+        font-family: var(--font-mono);
+        color: var(--ink-2);
+      }
+      .foot a:hover {
+        color: var(--ink-1);
+      }
+
+      :global(.apex-line) {
+        padding-bottom: 0.08em;
+      }
+    </style>
+  </body>
+</html>
