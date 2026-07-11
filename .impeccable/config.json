@@ -1,0 +1,11 @@
+{
+  "detector": {
+    "ignoreRules": [
+      "ai-color-palette",
+      "dark-glow",
+      "hero-eyebrow-chip"
+    ],
+    "ignoreFiles": [],
+    "ignoreValues": []
+  }
+}

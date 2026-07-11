@@ -4,77 +4,13 @@
  * motion here is GSAP-owned (see scripts/kinetic.ts); this file deliberately
  * defines NO scroll/entry animations of its own so the two systems never
  * fight. Static layout must read complete without JS: nothing is pre-hidden
- * in CSS, and the loader dismisses itself (see .k-loader).
+ * in CSS.
  *
  * Reuses slice-arcane.css for component chrome (console, figures, buttons,
  * grain) but never its animated classes (.rise, .hero-letter, .reveal-view,
  * .sh-reveal, .specimen-art) — those carry CSS timelines that would double
  * with the GSAP scrub.
  */
-
-/* ---------------------------------------------------------------- loader --- */
-
-.k-loader {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  padding: clamp(20px, 4vw, 48px);
-  background: var(--bg);
-  /* No-JS safety valve: if kinetic.ts never runs, the overlay folds away on
-     its own instead of trapping the reader. JS removes the node before this
-     fires on the happy path. */
-  animation: k-loader-dismiss 0.6s ease 3.2s forwards;
-}
-
-html.kinetic .k-loader {
-  animation: none;
-}
-
-@keyframes k-loader-dismiss {
-  to {
-    opacity: 0;
-    visibility: hidden;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .k-loader {
-    display: none;
-  }
-}
-
-.k-boot-lines {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.k-boot-line {
-  font-family: var(--font-mono);
-  font-size: 0.6875rem;
-  letter-spacing: 0.14em;
-  text-transform: uppercase;
-  color: var(--ink-3);
-}
-
-.k-boot-line em {
-  font-style: normal;
-  color: var(--accent-2);
-}
-
-.k-boot-pct {
-  align-self: flex-end;
-  font-family: var(--font-display);
-  font-size: clamp(4rem, 14vw, 11rem);
-  font-weight: 750;
-  line-height: 0.85;
-  letter-spacing: -0.02em;
-  color: var(--ink-1);
-  font-variant-numeric: tabular-nums;
-}
 
 /* ------------------------------------------------------------------- hud --- */
 
@@ -215,29 +151,33 @@ html.kinetic .k-loader {
   color: var(--ink-1);
 }
 
+/* Hero headline: a claim, not a wordmark — sized to share the viewport with
+   the console proof beside it. (The 13rem cropped-trespass wordmark was cut
+   2026-07: brand lives in the nav; the hero's job is to say what this is.) */
 .k-display-hero {
-  font-size: clamp(3.4rem, 13vw, 13rem);
-  /* Trespass: the wordmark starts before the margin like KPR's cropped
-     KEEP/PRO — the section's overflow clip does the cutting, so the lines
-     must never soft-wrap. */
-  margin-left: -0.045em;
-  white-space: nowrap;
+  /* Sized so each authored line stays one rendered line in the hero's grid
+     column — the nowrap below means an oversize font overflows instead of
+     wrapping, which is how the accent period once ended up alone on line 3. */
+  font-size: clamp(2.7rem, 5vw, 4.6rem);
 }
 
 .k-display-hero [data-k-hero-split] {
-  display: block;
-}
-
-.k-display-hero .k-line2 {
-  margin-left: clamp(1.5rem, 9vw, 9rem);
+  white-space: nowrap;
 }
 
 .k-display-hero .k-period {
   color: var(--accent-2);
 }
 
+/* Statement chapter keeps the monumental register... */
 .k-display-ch {
   font-size: clamp(2.6rem, 7.5vw, 6.5rem);
+}
+
+/* ...section headlines step down so the page has a hierarchy, not five
+   equal shouts. */
+.k-display-sub {
+  font-size: clamp(2.1rem, 4.4vw, 3.9rem);
 }
 
 .k-microtag {
@@ -295,11 +235,28 @@ main {
   padding: clamp(90px, 14vh, 160px) 0 clamp(70px, 10vh, 120px);
 }
 
+/* Hero proof: the Relay console rides shotgun with the claim. Slight lean
+   keeps it feeling like an object on the bench, not a screenshot in a frame. */
+.k-hero-console {
+  max-width: 520px;
+  justify-self: center;
+  width: 100%;
+}
+
+@media (min-width: 1024px) {
+  .k-hero-console {
+    justify-self: end;
+    rotate: 0.6deg;
+  }
+}
+
 /* Statement chapter: tall track, sticky stage. The extra height is the film
    strip the scrub plays through; position:sticky keeps the stage pinned with
    zero JS involved, so no-JS still renders a coherent full-screen scene. */
 .k-statement {
-  min-height: 230vh;
+  /* Pin length is the price of the art zoom; 230vh read as "the page is
+     stuck". 150vh keeps the scrub legible at half the scroll cost. */
+  min-height: 150vh;
 }
 
 .k-statement-stage {
@@ -335,8 +292,8 @@ main {
 }
 
 .k-section-pad {
-  padding-top: clamp(90px, 16vh, 180px);
-  padding-bottom: clamp(90px, 16vh, 180px);
+  padding-top: clamp(70px, 10vh, 120px);
+  padding-bottom: clamp(70px, 10vh, 120px);
 }
 
 /* Genome triptych: three engraved plates in a row, cropped square-ish. */

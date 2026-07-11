@@ -1,0 +1,57 @@
+/*
+ * Theme "apex" — the professional cut. A neutral, cool near-black with one
+ * electric-indigo accent and a cyan counterpoint: the register of a premium
+ * infrastructure product, not the warm-occult mood of the arcane slice.
+ *
+ * Same semantic contract as the other themes, so the WebGL helix + smoke
+ * (Hero3D / hero-shader read --bg/--accent/--accent-2/--card-hue-N off
+ * <html>) retune to this palette with zero JS changes. The card-hue ramp is
+ * deliberately cool-biased (indigo/cyan/violet, no amber/green carnival) so
+ * the 3D reads as jewel-toned data, which is the whole professionalism play.
+ */
+
+[data-theme="apex"] {
+  --bg: #0a0b0f;
+  --surface-1: #101218;
+  --surface-2: #161923;
+  --surface-3: #1d212c;
+
+  --line-1: #222633;
+  --line-2: #2e3341;
+
+  --ink-1: #f1f3f6;
+  --ink-2: #a4a9b4;
+  /* 4.6:1 on --bg */
+  --ink-3: #767b86;
+
+  /* electric indigo */
+  --accent: #7c74ff;
+  --accent-hi: #9a93ff;
+  --accent-dim: #1a1930;
+
+  /* cyan counterpoint */
+  --accent-2: #45c6e0;
+  --accent-2-hi: #78d9ee;
+  --accent-2-dim: #0f2730;
+
+  --good: #46c98a;
+  --warn: #d7ab4e;
+  --bad: #e86d78;
+
+  /* Cool jewel ramp — drives the helix rungs, halo, drift field, agent cores. */
+  --card-hue-0: #45c6e0;
+  --card-hue-1: #7c74ff;
+  --card-hue-2: #5a8cf0;
+  --card-hue-3: #8f7bf5;
+  --card-hue-4: #4fb0d8;
+  --card-hue-5: #b07af0;
+  --card-hue-6: #6d9bf0;
+  --card-hue-7: #56c2c8;
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --font-body: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+}

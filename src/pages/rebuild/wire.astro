@@ -1,8 +1,6 @@
 ---
 /**
- * The landing page - the "wire" hologram-bench cut, promoted 2026-07-11
- * (owner call; supersedes the kinetic cut). Dev sibling: /rebuild/wire.
- * The wireframe chimera (myth subject)
+ * "Wire" - the hologram-bench cut. The wireframe chimera (myth subject)
  * rendered as a live holographic projection (engineering medium): the beast
  * materializes above an emitter ring while the page argues the product in
  * four moments, none of them walls of text:
@@ -19,11 +17,11 @@
  * promotion is a separate decision). Reuses apex-motion + HeroShader smoke;
  * own 3D scene (WireHero), own tokens (theme-wire.css).
  */
-import "../styles/fonts.css";
-import "../styles/theme-wire.css";
-import HeroShader from "../components/HeroShader.astro";
-import { ECOSYSTEM } from "../data/ecosystem";
-import markStatic from "../assets/marks/chimera-wire.webp";
+import "../../styles/fonts.css";
+import "../../styles/theme-wire.css";
+import HeroShader from "../../components/HeroShader.astro";
+import { ECOSYSTEM } from "../../data/ecosystem";
+import markStatic from "../../assets/marks/chimera-wire.webp";
 
 /* The six harness providers, straight from Relay's DEFAULT_HARNESS_REGISTRY
    (src/server/harnessRegistry.ts). Transport wording matches the adapters. */
@@ -123,6 +121,9 @@ const SEAMS = [
       name="description"
       content="Chimera Werks builds multi-agent tooling. Chimera Relay drives the native Codex, Claude Code, and Hermes CLIs as one fleet, in shared rooms, with the trail intact."
     />
+    <!-- Dev-preview route: keep the unfinished redesign out of indexes.
+         Remove when this cut is promoted to the production index. -->
+    <meta name="robots" content="noindex" />
     <title>Chimera Werks · Run a fleet of coding agents as one</title>
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="Chimera Werks" />
@@ -139,7 +140,7 @@ const SEAMS = [
     <div class="vignette" aria-hidden="true"></div>
 
     <header class="nav">
-      <a class="brand" href="/">
+      <a class="brand" href="/rebuild/wire">
         <span class="brand-mark" aria-hidden="true"></span>
         Chimera&nbsp;Werks
       </a>
@@ -171,9 +172,9 @@ const SEAMS = [
       aria-hidden="true"
     />
     <script>
-      import "../scripts/wire-3d-loader";
-      import "../scripts/apex-motion";
-      import "../scripts/wire-motion";
+      import "../../scripts/wire-3d-loader";
+      import "../../scripts/apex-motion";
+      import "../../scripts/wire-motion";
     </script>
 
     <main>
