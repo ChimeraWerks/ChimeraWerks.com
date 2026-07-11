@@ -1,0 +1,91 @@
+/*
+ * Theme "wire" - the hologram-bench cut. Forked from theme-facet (same
+ * approved brand palette: indigo #7c74ff + cyan #45c6e0 on near-black
+ * #0a0b0f) so /rebuild/wire and /rebuild/facet stay independently tunable on
+ * the preview alias. Adds the hologram vocabulary: projection glow, scanline
+ * rhythm, and terminal-chrome tokens for the instrument sections.
+ *
+ * The WebGL scene reads --facet-* / --accent* off <html>, so the whole world
+ * retunes from here.
+ */
+
+[data-theme="wire"] {
+  --bg: #0a0b0f;
+  --surface-1: #10121a;
+  --surface-2: #161923;
+  --surface-3: #1d212c;
+
+  --line-1: #222633;
+  --line-2: #2e3341;
+
+  --ink-1: #f1f3f6;
+  --ink-2: #a4a9b4;
+  /* ink-3 floor: 4.9:1 on --surface-1 (facet scar; do not darken) */
+  --ink-3: #7e8390;
+
+  /* electric indigo + cyan (core brand) */
+  --accent: #7c74ff;
+  --accent-hi: #9a93ff;
+  --accent-dim: #1a1930;
+  --accent-2: #45c6e0;
+  --accent-2-hi: #78d9ee;
+  --accent-2-dim: #0f2730;
+
+  --good: #46c98a;
+  --warn: #d7ab4e;
+  --bad: #e86d78;
+
+  /* three signature geometry hues (goat violet · lion indigo · serpent cyan) */
+  --facet-violet: #8f7bf0;
+  --facet-indigo: #6c63f5;
+  --facet-cyan: #45c6e0;
+
+  /* emissive / rim */
+  --emissive-core: #dff6ff;
+  --rim: #5fd3ec;
+  --rim-2: #8b7bff;
+
+  /* cool jewel ramp for shards + card gems */
+  --card-hue-0: #45c6e0;
+  --card-hue-1: #7c74ff;
+  --card-hue-2: #5a8cf0;
+  --card-hue-3: #8f7bf5;
+  --card-hue-4: #4fb0d8;
+  --card-hue-5: #b07af0;
+  --card-hue-6: #6d9bf0;
+  --card-hue-7: #56c2c8;
+
+  /* hologram vocabulary */
+  --holo: #6fd6ec; /* projection light: cyan-forward, between the accents */
+  --holo-dim: rgba(111, 214, 236, 0.14);
+  --holo-scan: rgba(111, 214, 236, 0.05); /* CSS scanline stripe */
+
+  /* frosted floating-glass panels (facet contract, unchanged) */
+  --panel-bg: rgba(16, 18, 26, 0.55);
+  --panel-bg-solid: rgba(20, 23, 33, 0.72);
+  --panel-fill: rgba(10, 11, 15, 0.35);
+  --panel-blur: 18px;
+  --panel-blur-nav: 28px;
+  --panel-border: rgba(140, 150, 190, 0.14);
+  --panel-border-hi: rgba(154, 147, 255, 0.3);
+  --panel-inner-hi: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  --panel-shadow: 0 12px 40px -8px rgba(0, 0, 0, 0.65), 0 2px 8px -2px rgba(0, 0, 0, 0.5);
+  --panel-radius: 16px;
+
+  /* atmosphere */
+  --fog: #0a0b0f;
+  --vignette: radial-gradient(120% 90% at 50% 42%, transparent 0%, transparent 55%, rgba(0, 0, 0, 0.35) 100%);
+
+  --radius: 12px;
+  --radius-sm: 8px;
+
+  --font-display: "Archivo Variable", system-ui, sans-serif;
+  --font-body: "Inter Variable", system-ui, sans-serif;
+  --font-mono: "JetBrains Mono Variable", ui-monospace, "Cascadia Mono", monospace;
+
+  /* spatial motion grammar */
+  --ease-spatial: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 160ms;
+  --dur-mid: 320ms;
+  --dur-slow: 620ms;
+}
