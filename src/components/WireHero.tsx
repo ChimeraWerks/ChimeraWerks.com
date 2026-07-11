@@ -432,141 +432,183 @@ function PolarGrid({ colors }: { colors: WireColors }): ReactElement {
   );
 }
 
-/* ------------------------------------------------------- render particles --- */
+/* ------------------------------------------------------- hologram dust --- */
 
-/* Motes rising through the cone into the beast - the projection "rendering"
-   its subject. Distributed inside the cone's radius at each height; they
-   shrink out near the top instead of fading (per-instance opacity isn't a
-   thing without a custom shader, and scale reads the same). */
-const MOTE_COUNT = 110;
-const MOTE_H = 3.4; /* emitter to beast underside */
+/* Soft point-sprite dust, fully GPU-driven. The first pass used small
+   octahedra for both the cone motes and the background debris; at hero scale
+   they rasterized as hard confetti squares (owner feedback, 2026-07-11).
+   Points with a radial-falloff sprite read as projector dust instead.
+   Check: no square silhouettes at full res. */
 
-function RenderMotes({ colors }: { colors: WireColors }): ReactElement {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const time = useRef(0);
-
-  const seeds = useMemo(() => {
-    const arr = new Float32Array(MOTE_COUNT * 4); /* angle, radiusFrac, phase, speed */
-    for (let i = 0; i < MOTE_COUNT; i++) {
-      const h = (n: number) => Math.abs((Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1);
-      arr[i * 4] = h(1) * Math.PI * 2;
-      arr[i * 4 + 1] = 0.15 + h(2) * 0.85;
-      arr[i * 4 + 2] = h(3);
-      arr[i * 4 + 3] = 0.25 + h(4) * 0.4;
-    }
-    return arr;
-  }, []);
-
-  useEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const tint = new THREE.Color();
-    const ramp = [colors.holo, colors.indigo, colors.cyan];
-    for (let i = 0; i < MOTE_COUNT; i++) {
-      tint.copy(ramp[i % 3] ?? colors.holo);
-      mesh.setColorAt(i, tint);
-    }
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [colors]);
-
-  useFrame((_, rawDelta) => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const dt = Math.min(rawDelta, 1 / 30);
-    time.current += dt;
-    const t = time.current;
-    for (let i = 0; i < MOTE_COUNT; i++) {
-      const angle = (seeds[i * 4] as number) + t * 0.1;
-      const rf = seeds[i * 4 + 1] as number;
-      const phase = seeds[i * 4 + 2] as number;
-      const speed = seeds[i * 4 + 3] as number;
-      const yFrac = (phase + t * speed * 0.28) % 1;
-      /* Cone radius grows with height (0.42 at emitter → 2.35 at top). */
-      const r = (0.42 + yFrac * 1.9) * rf;
-      dummy.position.set(Math.cos(angle) * r, yFrac * MOTE_H, Math.sin(angle) * r);
-      dummy.rotation.set(t * 0.6 + i, t * 0.4, 0);
-      /* Grow in near the emitter, shrink out near the beast. */
-      const fade = Math.min(yFrac / 0.12, 1) * (1 - Math.max(0, (yFrac - 0.78) / 0.22));
-      dummy.scale.setScalar(0.035 * fade + 0.0001);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-    }
-    mesh.instanceMatrix.needsUpdate = true;
+function dustMaterial(vertex: string, colorA: THREE.Color, colorB: THREE.Color): THREE.ShaderMaterial {
+  return new THREE.ShaderMaterial({
+    vertexShader: vertex,
+    fragmentShader: DUST_FRAG,
+    uniforms: {
+      uTime: { value: 0 },
+      uColorA: { value: colorA },
+      uColorB: { value: colorB },
+    },
+    transparent: true,
+    depthWrite: false,
+    depthTest: false,
+    blending: THREE.CustomBlending,
+    blendEquation: THREE.AddEquation,
+    blendSrc: THREE.OneFactor,
+    blendDst: THREE.OneFactor,
+    blendSrcAlpha: THREE.ZeroFactor,
+    blendDstAlpha: THREE.OneFactor,
   });
-
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, MOTE_COUNT]} frustumCulled={false}>
-      <octahedronGeometry args={[1, 0]} />
-      <meshBasicMaterial transparent opacity={0.7} depthWrite={false} blending={THREE.AdditiveBlending} />
-    </instancedMesh>
-  );
 }
 
-/* ---------------------------------------------------------- debris field --- */
+/* Additive soft dot: dim halo + hot core, alpha folded into RGB (ONE/ONE). */
+const DUST_FRAG = /* glsl */ `
+  varying float vAlpha;
+  varying vec3 vColor;
+  void main() {
+    float d = length(gl_PointCoord - 0.5);
+    float halo = smoothstep(0.5, 0.06, d);
+    float core = smoothstep(0.16, 0.0, d);
+    gl_FragColor = vec4(vColor * (halo * 0.4 + core * 0.9) * vAlpha, 0.0);
+  }
+`;
 
-const DEBRIS_COUNT = 96;
+/* Rising within the projection cone: radius follows the cone wall, fading in
+   off the emitter and out under the beast. */
+const CONE_DUST_VERT = /* glsl */ `
+  attribute vec4 aSeed; /* angle, radiusFrac, phase, speed */
+  attribute float aMix;
+  attribute float aSize;
+  uniform float uTime;
+  uniform vec3 uColorA;
+  uniform vec3 uColorB;
+  varying float vAlpha;
+  varying vec3 vColor;
+  void main() {
+    float yFrac = fract(aSeed.z + uTime * aSeed.w * 0.28);
+    float angle = aSeed.x + uTime * 0.12;
+    float r = (0.42 + yFrac * 1.9) * aSeed.y;
+    vec3 pos = vec3(cos(angle) * r, yFrac * 3.4, sin(angle) * r);
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = aSize * (56.0 / -mv.z);
+    /* 0.55: fine sparks, not fireflies - at full brightness the swarm washed
+       out the beast's lower half. */
+    vAlpha = min(yFrac / 0.14, 1.0) * (1.0 - smoothstep(0.72, 1.0, yFrac)) * 0.55;
+    vColor = mix(uColorA, uColorB, aMix);
+  }
+`;
 
-function DebrisField({ colors }: { colors: WireColors }): ReactElement {
-  const meshRef = useRef<THREE.InstancedMesh>(null);
-  const dummy = useMemo(() => new THREE.Object3D(), []);
-  const time = useRef(0);
+/* Deterministic scatter - index-hashed, not Math.random (module-safe). */
+function hashAt(i: number, n: number): number {
+  return (Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1;
+}
 
-  const seeds = useMemo(() => {
-    const arr = new Float32Array(DEBRIS_COUNT * 5); /* x,y,z,speed,spin */
-    /* Deterministic scatter - index-hashed, not Math.random (module-safe). */
-    for (let i = 0; i < DEBRIS_COUNT; i++) {
-      const h = (n: number) => (Math.sin(i * 12.9898 + n * 78.233) * 43758.5453) % 1;
-      arr[i * 5] = (h(1) - 0.5) * 26;
-      arr[i * 5 + 1] = (h(2) - 0.5) * 16;
-      arr[i * 5 + 2] = -3 - Math.abs(h(3)) * 12;
-      arr[i * 5 + 3] = 0.05 + Math.abs(h(4)) * 0.1;
-      arr[i * 5 + 4] = 0.1 + Math.abs(h(5)) * 0.2;
-    }
-    return arr;
-  }, []);
+function dustGeometry(
+  count: number,
+  fill: (i: number, seed: Float32Array, mix: Float32Array, size: Float32Array) => void,
+  bounds: THREE.Sphere,
+): THREE.BufferGeometry {
+  const geo = new THREE.BufferGeometry();
+  const pos = new Float32Array(count * 3); /* placeholder; the shader owns position */
+  const seed = new Float32Array(count * 4);
+  const mix = new Float32Array(count);
+  const size = new Float32Array(count);
+  for (let i = 0; i < count; i++) fill(i, seed, mix, size);
+  geo.setAttribute("position", new THREE.BufferAttribute(pos, 3));
+  geo.setAttribute("aSeed", new THREE.BufferAttribute(seed, 4));
+  geo.setAttribute("aMix", new THREE.BufferAttribute(mix, 1));
+  geo.setAttribute("aSize", new THREE.BufferAttribute(size, 1));
+  /* Shader-driven positions: culling needs an explicit generous bounds. */
+  geo.boundingSphere = bounds;
+  return geo;
+}
 
-  useEffect(() => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const tint = new THREE.Color();
-    const ramp = [colors.cyan, colors.indigo, colors.violet];
-    for (let i = 0; i < DEBRIS_COUNT; i++) {
-      tint.copy(ramp[i % 3] ?? colors.indigo).multiplyScalar(0.6 + (i % 4) * 0.12);
-      mesh.setColorAt(i, tint);
-    }
-    if (mesh.instanceColor) mesh.instanceColor.needsUpdate = true;
-  }, [colors]);
+const CONE_DUST_COUNT = 90;
 
-  useFrame((_, rawDelta) => {
-    const mesh = meshRef.current;
-    if (!mesh) return;
-    const dt = Math.min(rawDelta, 1 / 30);
-    time.current += dt;
-    const t = time.current;
-    for (let i = 0; i < DEBRIS_COUNT; i++) {
-      const x = seeds[i * 5] as number;
-      const y0 = seeds[i * 5 + 1] as number;
-      const z = seeds[i * 5 + 2] as number;
-      const speed = seeds[i * 5 + 3] as number;
-      const spin = seeds[i * 5 + 4] as number;
-      const y = ((y0 + t * speed + 8) % 16) - 8;
-      dummy.position.set(x, y, z);
-      dummy.rotation.set(t * spin, t * spin * 0.7, 0);
-      const s = 0.05 + Math.abs(z) * 0.006;
-      dummy.scale.setScalar(s);
-      dummy.updateMatrix();
-      mesh.setMatrixAt(i, dummy.matrix);
-    }
-    mesh.instanceMatrix.needsUpdate = true;
+function ConeDust({ colors }: { colors: WireColors }): ReactElement {
+  const material = useMemo(() => dustMaterial(CONE_DUST_VERT, colors.holo, colors.indigo), [colors]);
+  useEffect(() => () => material.dispose(), [material]);
+
+  const geometry = useMemo(
+    () =>
+      dustGeometry(
+        CONE_DUST_COUNT,
+        (i, seed, mix, size) => {
+          seed[i * 4] = Math.abs(hashAt(i, 1)) * Math.PI * 2;
+          seed[i * 4 + 1] = 0.1 + Math.abs(hashAt(i, 2)) * 0.9;
+          seed[i * 4 + 2] = Math.abs(hashAt(i, 3));
+          seed[i * 4 + 3] = 0.25 + Math.abs(hashAt(i, 4)) * 0.45;
+          mix[i] = Math.abs(hashAt(i, 5));
+          size[i] = 0.6 + Math.abs(hashAt(i, 6)) * 1.1;
+        },
+        new THREE.Sphere(new THREE.Vector3(0, 1.7, 0), 6),
+      ),
+    [],
+  );
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  useFrame((state) => {
+    material.uniforms.uTime!.value = state.clock.elapsedTime;
   });
 
-  return (
-    <instancedMesh ref={meshRef} args={[undefined, undefined, DEBRIS_COUNT]} frustumCulled={false}>
-      <octahedronGeometry args={[1, 0]} />
-      <meshBasicMaterial transparent opacity={0.3} depthWrite={false} blending={THREE.AdditiveBlending} />
-    </instancedMesh>
+  return <points geometry={geometry} material={material} renderOrder={9} frustumCulled={false} />;
+}
+
+/* ---------------------------------------------------------- depth dust --- */
+
+/* Sparse ambient dust drifting far behind the subject - atmosphere depth,
+   kept very dim so it reads as air, not particles. */
+const DEPTH_DUST_VERT = /* glsl */ `
+  attribute vec4 aSeed; /* x, y0, z, speed */
+  attribute float aMix;
+  attribute float aSize;
+  uniform float uTime;
+  uniform vec3 uColorA;
+  uniform vec3 uColorB;
+  varying float vAlpha;
+  varying vec3 vColor;
+  void main() {
+    float y = mod(aSeed.y + uTime * aSeed.w + 8.0, 16.0) - 8.0;
+    vec3 pos = vec3(aSeed.x, y, aSeed.z);
+    vec4 mv = modelViewMatrix * vec4(pos, 1.0);
+    gl_Position = projectionMatrix * mv;
+    gl_PointSize = aSize * (70.0 / -mv.z);
+    /* Fade near the vertical wrap seam so respawns never pop. */
+    vAlpha = (1.0 - smoothstep(6.0, 8.0, abs(y))) * 0.35;
+    vColor = mix(uColorA, uColorB, aMix);
+  }
+`;
+
+const DEPTH_DUST_COUNT = 140;
+
+function DepthDust({ colors }: { colors: WireColors }): ReactElement {
+  const material = useMemo(() => dustMaterial(DEPTH_DUST_VERT, colors.indigo, colors.cyan), [colors]);
+  useEffect(() => () => material.dispose(), [material]);
+
+  const geometry = useMemo(
+    () =>
+      dustGeometry(
+        DEPTH_DUST_COUNT,
+        (i, seed, mix, size) => {
+          seed[i * 4] = (hashAt(i, 1) - 0.5) * 26;
+          seed[i * 4 + 1] = (hashAt(i, 2) - 0.5) * 16;
+          seed[i * 4 + 2] = -3 - Math.abs(hashAt(i, 3)) * 12;
+          seed[i * 4 + 3] = 0.05 + Math.abs(hashAt(i, 4)) * 0.1;
+          mix[i] = Math.abs(hashAt(i, 5));
+          size[i] = 0.8 + Math.abs(hashAt(i, 6)) * 1.6;
+        },
+        new THREE.Sphere(new THREE.Vector3(0, 0, -9), 20),
+      ),
+    [],
   );
+  useEffect(() => () => geometry.dispose(), [geometry]);
+
+  useFrame((state) => {
+    material.uniforms.uTime!.value = state.clock.elapsedTime;
+  });
+
+  return <points geometry={geometry} material={material} frustumCulled={false} />;
 }
 
 /* -------------------------------------------------------------- subject --- */
@@ -614,7 +656,7 @@ function Subject({ colors, pointer }: { colors: WireColors; pointer: PointerRef 
       <group position={[0, -3.2, -0.3]}>
         <EmitterBase colors={colors} />
         <LightCone colors={colors} />
-        <RenderMotes colors={colors} />
+        <ConeDust colors={colors} />
       </group>
     </group>
   );
@@ -781,7 +823,7 @@ export default function WireHero(): ReactElement | null {
           >
             <fogExp2 attach="fog" args={[colors.bg.getHex(), 0.028]} />
             <Lights />
-            <DebrisField colors={colors} />
+            <DepthDust colors={colors} />
             <Subject colors={colors} pointer={pointer} />
             <CameraDrift />
             <FirstFrame onFrame={handleFirstFrame} />
