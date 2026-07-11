@@ -1,8 +1,15 @@
 # Design
 
-Visual system of the current chosen direction: the "facet" cut (`/rebuild/facet`, `[data-theme="facet"]`).
-Source of truth for tokens is `src/styles/theme-facet.css`; this file describes intent so variants stay on brand.
-The production index still runs the older kinetic cut; facet supersedes it once promoted.
+Visual system of the shipped direction: the "wire" hologram-bench cut (production index and `/rebuild/wire`, `[data-theme="wire"]`).
+Source of truth for tokens is `src/styles/theme-wire.css` (forked from `theme-facet.css`; same approved palette plus the hologram vocabulary: `--holo*` projection tokens).
+The facet cut (`/rebuild/facet`) remains a live sibling for comparison; everything below describes the shared system unless marked wire-only.
+Owner note 2026-07-11: shipped as "for now" - the owner does not love it yet; expect further creative iteration.
+
+## Wire-only layer
+
+- Hero creature: the wireframe hologram beast (`src/assets/marks/chimera-wire.webp`) on a scanline/glitch shader with a materialization sweep, projected above an emitter ring + light cone (`src/components/WireHero.tsx`).
+- Particles are soft point sprites (halo + hot core), never mesh confetti: instanced octahedra rasterized as squares at hero scale (owner-rejected 2026-07-11).
+- Page argument: four moments (failure-mode terminal wall converging into the room console, native-harness roster, adapter-engine pipeline, portability seams), copy verified against the Chimera-Relay repo.
 
 ## Concept
 

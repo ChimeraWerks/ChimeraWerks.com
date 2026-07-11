@@ -1,60 +1,61 @@
 ---
-goal: Continue the low-poly / spatial-VR "facet" redesign of ChimeraWerks.com. Get the user's verdict on the v1 facet cut (/rebuild/facet), then build Phase 2 - swap the abstract faceted core for the literal chimera (lion) head and add the three scripted facet-assembly moments - all on a dev branch and reviewed via the rebuild-preview alias, never touching production.
-next-focus: facet-phase2
+goal: Iterate the live wire (hologram-bench) production site toward something the owner actually loves - bolder creative swings on the hero, motion, and section art within the brand rails - and close the open product gaps (outbound proof links, werk card URLs).
+next-focus: wire-iteration
 repo: ChimeraWerks.com
 branch: rebuild/redesign-cuts
-updated: 2026-07-08
+updated: 2026-07-11
 ---
 
 # Goal
-Continue the low-poly / spatial-VR "facet" redesign. First get the user's verdict on the rendered v1 (/rebuild/facet); if the direction lands, build Phase 2 (literal chimera head + the 3x facet-assembly moments + 3D diagram micro-scenes). Everything stays on the dev branch and is reviewed via the `rebuild-preview` Cloudflare alias - production is never touched during dev.
+Iterate the live wire (hologram-bench) production site toward something the owner actually loves - bolder creative swings on the hero, motion, and section art within the brand rails - and close the open product gaps (outbound proof links, werk card URLs).
 
 # Done
-- Multi-cut redesign explored as separate `/rebuild/*` routes (prod untouched):
-  - "flow cut" (restructured the live kinetic index) - user rejected the look, kept the pacing lesson.
-  - clean/light + dark/stripped product-site variants (Daylight/Graphite) - user rejected both; deleted.
-  - "apex" professional cut (`/rebuild/apex`, theme `apex`, cool indigo/cyan, DNA-helix hero) - user liked it; **snapshotted at `snapshots/apex-cut/`** with a MANIFEST + all deps.
-  - **chosen direction: low-poly / spatial-VR "facet" cut** (`/rebuild/facet`).
-- New brand mark: a faceted low-poly chimera (mark #3) generated via Chimera Image Lab, saved at `src/assets/marks/chimera-facet.png`. (Two rejected mark directions were monoline + helix-beast.)
-- Facet v1 built to two ui-design agents' specs (design-system-architect = tokens/material/light-rig/glass/motion; ui-designer = composition thesis "many facets -> one form = many agents, one fleet"). Deployed to rebuild-preview.
-- Cleaned up stale localhost servers: stopped my only one (`:20000` astro preview). Everything else on 200xx is the user's own Chimera stack (Relay x5, Browser, Lock, Memory) - left alone.
+- Built the "wire" hologram-bench cut at `/rebuild/wire`: wireframe chimera beast as a live holographic projection (custom scanline/glitch shader, materialization sweep, emitter ring + light cone + rising dust) over the smoke world.
+- Four content moments, all product claims verified against the Chimera-Relay repo (not memory): failure-mode terminal wall converging into the room console; native-harness roster (6 real adapters + transports) with 3 reasons native beats reimplemented; adapter-engine pipeline (real `AgentRuntimeAdapter` verbs) + real Chimera DNA script + preserved-trail beat; portability seams (HTTP/SSE, `chimera-dna` CLI, MCP tools, in-process `DnaRuntime`) with invented-but-credible use cases.
+- Owner review round: replaced mesh-confetti particles (instanced octahedra, rejected as childish) with soft point-sprite dust, then tuned counts/sizes/alpha down from a firefly swarm to fine sparks.
+- **PROMOTED TO PRODUCTION** (owner call): wire page is now `src/pages/index.astro`; branch merged to `main` (17c179b); CI deploy green; https://chimerawerks.com serves the wire cut; `/devlog/*` archive redirects verified live.
+- Docs synced: DESIGN.md now describes the wire layer as shipped; AGENTS.md gained the dev-mode R3F scar.
 
 # Decisions
-- Brand: **biology/science as the core, myth as one crafted mark** (not literal moody engraving). "Professional" for this user = the dark cinematic 3D world executed to studio craft, NOT a clean/light product site. See memory chimerawerks-professional-look.
-- Palette held to cool indigo (`#7c74ff`) + cyan (`#45c6e0`) on near-black (`#0a0b0f`) - monochrome discipline is the guardrail against "crypto/rainbow" amateur read.
-- v1 facet centerpiece is an ABSTRACT faceted crystal (proves engine + look). Phase 2 makes it the literal chimera head. Do not relitigate the low-poly VR direction without a new user steer.
-- Reused (not rebuilt): the smoke atmosphere (HeroShader/hero-shader), apex-motion reveal system, Hero3D gate patterns. LowPolyHero is a separate component so apex/index still work.
+- Wire cut ships "for now" - the owner said they still do not love the site. Iterate, do not defend the current design.
+- Myth leads, engineering is the medium: the hologram wireframe beast is the hero creature; the faceted crystal gem stays the nav/brand mark.
+- Particles must be soft point sprites (halo + hot core); mesh confetti is owner-rejected.
+- "RL-tuned for their own harness" copy is our framing, not a Relay repo quote (repo evidence: transport decision in relay-dynamic-dna-design.md, subscription-first auth in AGENTS.md).
+- Facet (`/rebuild/facet`) and apex remain live siblings for comparison; do not delete without a steer.
+- The old never-touch-main rail was superseded ONLY for this promotion; future dev stays on branches + rebuild-preview until the owner says ship.
 
 # Changed / important files
-- `src/pages/rebuild/facet.astro` - the spatial page (glass panels over the 3D world), theme `facet`.
-- `src/components/LowPolyHero.tsx` - real R3F faceted core + shards + debris + light rig + scroll fade. The v1 centerpiece to upgrade in Phase 2.
-- `src/scripts/facet-3d-loader.ts` - defers three.js past load (LCP), mounts LowPolyHero fixed behind content.
-- `src/styles/theme-facet.css` - facet tokens (faceted ramps, glass, fog, motion) extending apex.
-- `src/pages/rebuild/apex.astro` + `snapshots/apex-cut/` - the liked "professional cut" and its preserved copy.
-- UNSHIPPED, do not push to main as-is: `src/pages/index.astro`, `src/scripts/kinetic.ts`, `src/styles/slice-arcane.css`, `src/styles/slice-kinetic.css` carry the rejected flow-cut edits to the LIVE homepage. Production still runs the original kinetic page from `main`.
+- `src/pages/index.astro` - the production wire page (promoted copy; root-relative imports, no noindex).
+- `src/pages/rebuild/wire.astro` - dev sibling of the same page.
+- `src/components/WireHero.tsx` - the hologram scene: HoloMark shader (scanlines/glitch/sweep, additive black-floor keying in-shader), EmitterBase, LightCone, ConeDust/DepthDust point sprites. WRAP_MAX must stay in sync with `.wrap`.
+- `src/styles/theme-wire.css` - wire tokens, forked from facet, adds `--holo*`.
+- `src/scripts/wire-3d-loader.ts` / `wire-motion.ts` - deferred 3D mount; terminal-wall convergence scrub (invalidateOnRefresh, reflow scar).
+- `.claude/launch.json` - added `dev-host` / `preview-host` (Camoufox needs `--host` + LAN IP).
 
 # Validation
-- `npm run build` green (5 pages). No mobile overflow on apex or facet (DOM-measured).
-- Facet 3D VERIFIED rendering live in a foreground browser (Camoufox): faceted core in cool palette, scroll-fade to dim ambient behind content, glass panels legible. Deployed and 200 at the preview alias.
-- NOT verified: the desktop-width composition (core offset right, headline in clear space) - Camoufox window is locked ~751px and Chrome pauses WebGL when backgrounded, so neither shows desktop + live 3D. View it at full width in a real foreground browser.
+- `npm run build` green (6 pages); impeccable detector clean on the new files; CI deploy succeeded.
+- Live prod verified: 200, `data-theme="wire"`, WebGL beast rendering (Camoufox full-res screenshots), archive 301s intact.
+- Verified narrow (~750px) and wide layouts via screenshots; NOT verified: intermediate breakpoints (820-1024px) and real mobile pixels (tooling can't reach them - see memory visual-verification-paths).
+- Reduced-motion path (static mark + inert wall) implemented but not visually exercised this session.
 
 # Risks / open questions
-- Scars carried into facet: (1) fixed alpha-WebGL canvas must stay z>=0 (Firefox inverts at negative z); (2) post-measure reflow strands scrubbed reveals - apex-motion queues a debounced ScrollTrigger.refresh; (3) CIL/codex image backend rejects transparent bg (generate on black).
-- The abstract core may not read as "chimera" enough for the user - if so, pivot the centerpiece before building Phase 2 choreography.
-- Werk cards still have no real URLs (unclickable) - the last gap vs a real product site; needs URLs from the user.
-- Verification tooling: Camoufox screenshots crop + window locked narrow; Chrome won't shrink and pauses WebGL backgrounded. See memory visual-verification-paths.
+- Owner does not love the site; expect another creative round - possibly a different hero treatment, richer section art (image-gen authority granted: /chimera-image-gpt unlimited, CIL fallback), or stronger motion choreography.
+- Open P1 from the critique snapshot (.impeccable/critique/): no outbound proof links (GitHub, live Relay). Werk cards still unclickable - needs owner URLs.
+- R3F routes render NOTHING under `npm run dev` (react preamble error; loader falls back silently). Verify 3D on `npm run preview` only. (Now an AGENTS.md scar.)
+- Claude Browser pane hung on every call this session; Camoufox (chimera-browser skill, LAN IP + evaluate route) carried all verification.
+- og:image is the raw 3:2 wire webp on black - fine, but a composed og card would be better.
 
 # Suggested skills
-- ui-design plugin agents (design-system-architect, ui-designer) - already seeded the facet specs; reuse for Phase 2.
-- chimera-image-lab (`cil`) for the literal chimera head / assets in the faceted style (env: `cil` not on PATH, use the checkout venv at `C:\Github\Chimera-Image-Lab`; aspect-ratio control is loose).
-- chimera-browser (Camoufox) for foreground 3D verification.
+- impeccable (bolder/overdrive/animate for the next creative round), frontend-design
+- chimera-browser (Camoufox verification recipe in memory visual-verification-paths)
+- chimera-image-gpt / chimera-image-lab for section art and og card
+- ui-design agents for a fresh composition critique
 
 # Next action
-Ask the user for their verdict on the rendered v1 facet cut (https://rebuild-preview.chimerawerks-com.pages.dev/rebuild/facet, viewed at desktop width). If yes: build Phase 2 - replace the abstract core in LowPolyHero.tsx with the literal chimera head (mark on shader-lit parallax planes per the composition brief's Phase 1 ramp, or a low-poly GLB) and add the hero facet-assembly + workflow triptych + contact converge. Spin the preview server back up only when actively building; deploy to rebuild-preview, never main.
+Ask the owner what specifically falls flat (hero? copy? pacing? color?), then run an impeccable critique of the live index at desktop width and draft 2-3 bold variant directions as rendered slices on rebuild-preview.
 
 # Artifact links
-- Live prod (untouched): https://chimerawerks.com
-- Review alias: https://rebuild-preview.chimerawerks-com.pages.dev  (/ = flow cut, /rebuild/apex = professional cut, /rebuild/facet = low-poly VR)
-- Apex snapshot: snapshots/apex-cut/ (MANIFEST.md)
-- Marks gallery artifact (3 logo directions): https://claude.ai/code/artifact/e135035d-fadc-4502-b60b-6701ee9f43d0
-- Original rebuild plan: C:\Users\charl\.claude\plans\starry-percolating-stonebraker.md
+- Live prod: https://chimerawerks.com (wire cut)
+- Review alias: https://rebuild-preview.chimerawerks-com.pages.dev (/rebuild/wire, /rebuild/facet, /rebuild/apex)
+- Merge commit to main: 17c179b; promotion commit: ee2dccf
+- Critique snapshot: .impeccable/critique/ (28/40, open P1 proof links)

@@ -25,6 +25,10 @@ Keep `npm run build` green for any change — CI deploys its `out/` on push to `
 - **Keep `@emnapi/core`/`@emnapi/runtime` pinned in devDependencies.** npm on Windows omits peer deps of
   not-installed optional wasm packages from the lock, which broke `npm ci` on the Linux deploy runner
   (2026-07). The devDep pins force hoisted lock entries. Check: the CI `npm ci` step is green.
+- **R3F/React 3D routes render NOTHING under `npm run dev`.** The dynamic import throws
+  "@vitejs/plugin-react can't detect preamble" and the loader silently falls back to the static mark,
+  which reads as "my scene is broken" (cost a debugging cycle, 2026-07-11). Verify 3D on
+  `npm run preview` (built output). Check: two canvases on the page, no `facet-3d-off` on `<html>`.
 - **Theme tokens are the only styling contract.** Components consume semantic tokens (`--bg`, `--ink-*`,
   `--accent*`, `--surface-*`) defined per `[data-theme]` in `src/styles/theme-*.css`; hard-coding a hex in
   a component breaks the other theme silently. Fontsource variable packages register names with a
